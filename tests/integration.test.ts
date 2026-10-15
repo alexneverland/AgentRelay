@@ -131,6 +131,34 @@ test(
       });
       const ca = await connect(tokenA.token, 'Owner-A'),
         cb = await connect(tokenB.token, 'Owner-B');
+      await t.test('Owner settings preserve identity and isolate agent management', async () => {
+        const d = await web<{ tokens: Array<{ id: string; last_used_at: string | null }> }>(
+          a.jwt,
+          'dashboard',
+        );
+        assert.ok(d.tokens.find((x) => x.id === tokenA.id)?.last_used_at);
+        await web(
+          b.jwt,
+          'update_agent',
+          { agent_id: agentA.id, name: 'Spoofed', client: 'Codex', active: false },
+          404,
+        );
+        await web(a.jwt, 'update_profile', { display_name: 'Fixture owner A' });
+        await web(a.jwt, 'update_agent', {
+          agent_id: agentA.id,
+          name: 'Fixture A edited',
+          client: 'Codex',
+          active: false,
+        });
+        await assert.rejects(() => call(ca, 'get_inbox', {}), /expired or was revoked/);
+        await web(a.jwt, 'update_agent', {
+          agent_id: agentA.id,
+          name: 'Fixture A',
+          client: 'Codex',
+          active: true,
+        });
+        await call(ca, 'get_inbox', {});
+      });
       const qInput = {
         request_id: crypto.randomUUID(),
         title: `[INTEGRATION TEST ${run}] Avoid duplicate posts after a retry`,
@@ -280,6 +308,27 @@ test(
           const privateTokens = await b.client.schema('private').from('credentials').select('*');
           assert.ok(privateTokens.error);
           await web(b.jwt, 'create_token', { agent_id: agentA.id, scopes: ['read'] }, 403);
+          const foreignProfile = await b.client
+            .from('profiles')
+            .update({ display_name: 'Spoofed owner' })
+            .eq('id', a.id)
+            .select();
+          assert.ifError(foreignProfile.error);
+          assert.deepEqual(foreignProfile.data, []);
+          const ownProfile = await b.client
+            .from('profiles')
+            .update({ display_name: 'Fixture owner B' })
+            .eq('id', b.id)
+            .select('display_name');
+          assert.ifError(ownProfile.error);
+          assert.equal(ownProfile.data?.[0]?.display_name, 'Fixture owner B');
+          const foreignAgentEdit = await b.client
+            .from('agents')
+            .update({ name: 'Spoofed agent' })
+            .eq('id', agentA.id)
+            .select();
+          assert.ifError(foreignAgentEdit.error);
+          assert.deepEqual(foreignAgentEdit.data, []);
         },
       );
       await t.test(

@@ -2,7 +2,8 @@
 
 import { useI18n } from './i18n';
 import { useState } from 'react';
-import { ArrowRight, ShieldCheck } from 'lucide-react';
+import { ArrowRight, KeyRound, ShieldCheck } from 'lucide-react';
+import type { Agent } from '@/lib/types';
 export function Composer({ onSubmit }: { onSubmit: (data: unknown) => Promise<void> }) {
   const { t: tr } = useI18n();
   const [draft, setDraft] = useState<Record<string, unknown> | null>(null),
@@ -177,7 +178,13 @@ export function Composer({ onSubmit }: { onSubmit: (data: unknown) => Promise<vo
     </form>
   );
 }
-export function AgentForm({ onSubmit }: { onSubmit: (data: unknown) => Promise<void> }) {
+export function AgentForm({
+  onSubmit,
+  initial,
+}: {
+  onSubmit: (data: unknown) => Promise<void>;
+  initial?: Agent;
+}) {
   const { t: tr } = useI18n();
   const [busy, setBusy] = useState(false),
     [error, setError] = useState('');
@@ -207,17 +214,30 @@ export function AgentForm({ onSubmit }: { onSubmit: (data: unknown) => Promise<v
     >
       <label>
         {tr('Agent name')}
-        <input name="name" required minLength={2} maxLength={80} placeholder={tr('e.g. Atlas')} />
+        <input
+          name="name"
+          defaultValue={initial?.name}
+          required
+          minLength={2}
+          maxLength={80}
+          placeholder={tr('e.g. Atlas')}
+        />
       </label>
       <label>
         {tr('Description')}
-        <textarea name="description" maxLength={1000} rows={3} />
+        <textarea
+          name="description"
+          defaultValue={initial?.description}
+          maxLength={1000}
+          rows={3}
+        />
       </label>
       <div className="form-grid">
         <label>
           {tr('Application / client')}
           <input
             name="client"
+            defaultValue={initial?.client}
             required
             minLength={2}
             maxLength={80}
@@ -226,12 +246,17 @@ export function AgentForm({ onSubmit }: { onSubmit: (data: unknown) => Promise<v
         </label>
         <label>
           {tr('Self-declared model (optional)')}
-          <input name="model" maxLength={100} />
+          <input name="model" defaultValue={initial?.model} maxLength={100} />
         </label>
       </div>
       <label>
         {tr('Interests')}
-        <input name="interests" placeholder="Python, TypeScript" maxLength={329} />
+        <input
+          name="interests"
+          defaultValue={initial?.interests.join(', ')}
+          placeholder="Python, TypeScript"
+          maxLength={329}
+        />
       </label>
       <div className="info-note">
         {tr('Model identity is declared by the owner and is not verified by the platform.')}
@@ -242,7 +267,78 @@ export function AgentForm({ onSubmit }: { onSubmit: (data: unknown) => Promise<v
         </p>
       ) : null}
       <button disabled={busy} className="button primary full">
-        {busy ? tr('Saving\u2026') : tr('Create agent')}
+        {busy ? tr('Saving\u2026') : tr(initial ? 'Save profile' : 'Create agent')}
+      </button>
+    </form>
+  );
+}
+export function TokenForm({
+  agents,
+  onCreate,
+}: {
+  agents: Agent[];
+  onCreate: (d: unknown) => Promise<void>;
+}) {
+  const { t: tr } = useI18n();
+  const [busy, setBusy] = useState(false),
+    [error, setError] = useState('');
+  return (
+    <form
+      onSubmit={async (e) => {
+        e.preventDefault();
+        setBusy(true);
+        setError('');
+        const f = new FormData(e.currentTarget);
+        try {
+          await onCreate({
+            agent_id: f.get('agent'),
+            days: Number(f.get('days')),
+            scopes: f.getAll('scope'),
+          });
+        } catch (e) {
+          setError((e as Error).message);
+        } finally {
+          setBusy(false);
+        }
+      }}
+    >
+      <label>
+        Agent
+        <select name="agent">
+          {agents.map((a) => (
+            <option value={a.id} key={a.id}>
+              {a.name}
+            </option>
+          ))}
+        </select>
+      </label>
+      <fieldset>
+        <legend>{tr('Token permissions')}</legend>
+        {[
+          ['read', tr('Read')],
+          ['publish', tr('Questions')],
+          ['reply', tr('Replies')],
+          ['test', tr('Tests')],
+          ['resolve', tr('Resolve')],
+        ].map(([value, label]) => (
+          <label className="checkbox" key={value}>
+            <input type="checkbox" name="scope" value={value} defaultChecked={value === 'read'} />
+            {label}
+          </label>
+        ))}
+      </fieldset>
+      <label>
+        {tr('Valid for (days)')}
+        <input type="number" name="days" min={1} max={30} defaultValue={7} />
+      </label>
+      {error ? (
+        <p role="alert" className="form-error">
+          {tr(error)}
+        </p>
+      ) : null}
+      <button className="button primary" disabled={busy}>
+        <KeyRound size={16} />
+        {busy ? tr('Creating…') : tr('Create token')}
       </button>
     </form>
   );

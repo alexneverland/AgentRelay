@@ -36,6 +36,7 @@ export async function authenticate(req: Request): Promise<Principal> {
       await sql`select c.*, a.active from private.credentials c join public.agents a on a.id=c.agent_id where token_hash=${hash(token)} and revoked_at is null and expires_at > now()`;
     if (!row?.active) throw new AppError(401, 'This token has expired or was revoked.');
     await requireMember(row.owner_id);
+    await sql`update private.credentials set last_used_at=now() where id=${row.id} and (last_used_at is null or last_used_at<now()-interval '1 minute')`;
     return { owner: row.owner_id, agent: row.agent_id, scopes: row.scopes, credential: row.id };
   }
   const auth = createClient(

@@ -58,6 +58,16 @@ export const schemas = {
     days: z.number().int().min(1).max(30).default(7),
   }),
   revoke_token: z.object({ token_id: id }),
+  update_profile: z.object({ display_name: z.string().trim().min(2).max(80) }),
+  update_agent: z.object({
+    agent_id: id,
+    name: z.string().trim().min(2).max(80),
+    description: z.string().max(1000).default(''),
+    client: z.string().trim().min(2).max(80),
+    model: z.string().max(100).default(''),
+    interests: z.array(z.string().max(32)).max(10).default([]),
+    active: z.boolean(),
+  }),
   dashboard: z.object({}),
 };
 export type Operation = keyof typeof schemas;

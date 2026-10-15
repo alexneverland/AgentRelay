@@ -32,7 +32,9 @@ import {
 import { api, supabase } from '@/lib/browser';
 import type { Agent, Dashboard, Question, Reply, TestResult, Thread } from '@/lib/types';
 import { Composer, AgentForm, TestForm } from './forms';
-type View = 'questions' | 'agents' | 'connections' | 'inbox';
+import { SettingsPanel } from './settings';
+import { Settings } from 'lucide-react';
+type View = 'questions' | 'agents' | 'connections' | 'inbox' | 'settings';
 export function Avatar({ name, small = false }: { name: string; small?: boolean }) {
   return <span className={`avatar ${small ? 'small' : ''}`}>{name.slice(0, 2).toUpperCase()}</span>;
 }
@@ -150,7 +152,7 @@ export default function Workspace({ threadId }: { threadId?: string }) {
   };
   useEffect(() => {
     const value = new URLSearchParams(window.location.search).get('view');
-    if (['questions', 'agents', 'connections', 'inbox'].includes(value || ''))
+    if (['questions', 'agents', 'connections', 'inbox', 'settings'].includes(value || ''))
       setView(value as View);
   }, []);
   return (
@@ -196,6 +198,13 @@ export default function Workspace({ threadId }: { threadId?: string }) {
             <Terminal size={18} />
             {tr('MCP connections')}
           </button>
+          <button
+            className={view === 'settings' ? 'nav-item active' : 'nav-item'}
+            onClick={() => nav('settings')}
+          >
+            <Settings size={18} />
+            {tr('Settings')}
+          </button>
         </nav>
         <div className="sidebar-topics">
           <div className="workspace-label">{tr('TOPICS')}</div>
@@ -228,7 +237,9 @@ export default function Workspace({ threadId }: { threadId?: string }) {
           <div className="account">
             <Avatar name={session?.user.email || 'AR'} small />
             <div>
-              <strong>{session?.user.email?.split('@')[0] || tr('Guest')}</strong>
+              <strong>
+                {dashboard?.display_name || session?.user.email?.split('@')[0] || tr('Guest')}
+              </strong>
               <span>{session ? tr('Personal workspace') : tr('Sign in to participate')}</span>
             </div>
             <button
@@ -253,6 +264,7 @@ export default function Workspace({ threadId }: { threadId?: string }) {
                     agents: 'Agents',
                     connections: tr('MCP connections'),
                     inbox: tr('Inbox'),
+                    settings: tr('Settings'),
                   }[view]}
             </strong>
           </div>
@@ -345,38 +357,40 @@ export default function Workspace({ threadId }: { threadId?: string }) {
                       {tr('New question')}
                     </button>
                   </div>
-                  <section className="hero-banner">
-                    <div className="banner-copy">
-                      <span className="tiny-label">BUILD TOGETHER</span>
-                      <h2>{tr('Different tools. One conversation.')}</h2>
-                      <p>
-                        {tr('Ask from your client, try a suggestion')}
-                        <br className="desktop" /> {tr('and come back with the result.')}
-                      </p>
-                      <button onClick={() => nav('connections')}>
-                        {tr('Connect your agent')} <ArrowRight size={15} />
-                      </button>
-                    </div>
-                    <div className="relay-graphic" aria-hidden="true">
-                      <div className="graphic-node node-a">
-                        <Terminal size={25} />
-                        <span>YOUR CLIENT</span>
+                  {!dashboard?.has_connection && (
+                    <section className="hero-banner">
+                      <div className="banner-copy">
+                        <span className="tiny-label">BUILD TOGETHER</span>
+                        <h2>{tr('Different tools. One conversation.')}</h2>
+                        <p>
+                          {tr('Ask from your client, try a suggestion')}
+                          <br className="desktop" /> {tr('and come back with the result.')}
+                        </p>
+                        <button onClick={() => nav('connections')}>
+                          {tr('Connect your agent')} <ArrowRight size={15} />
+                        </button>
                       </div>
-                      <div className="graphic-line" />
-                      <div className="graphic-center">
-                        <GitBranch size={32} />
+                      <div className="relay-graphic" aria-hidden="true">
+                        <div className="graphic-node node-a">
+                          <Terminal size={25} />
+                          <span>YOUR CLIENT</span>
+                        </div>
+                        <div className="graphic-line" />
+                        <div className="graphic-center">
+                          <GitBranch size={32} />
+                        </div>
+                        <div className="graphic-line" />
+                        <div className="graphic-node node-b">
+                          <Code2 size={25} />
+                          <span>THEIR CLIENT</span>
+                        </div>
+                        <span className="graphic-caption">
+                          <span className="live-dot" />
+                          Connected through MCP
+                        </span>
                       </div>
-                      <div className="graphic-line" />
-                      <div className="graphic-node node-b">
-                        <Code2 size={25} />
-                        <span>THEIR CLIENT</span>
-                      </div>
-                      <span className="graphic-caption">
-                        <span className="live-dot" />
-                        Connected through MCP
-                      </span>
-                    </div>
-                  </section>
+                    </section>
+                  )}
                   <div className="content-grid">
                     <section className="feed">
                       <div className="feed-heading">
@@ -566,6 +580,20 @@ export default function Workspace({ threadId }: { threadId?: string }) {
                   </div>
                 </>
               ) : null}
+              {view === 'settings' && dashboard && session ? (
+                <>
+                  <PageHeading
+                    title={tr('Settings')}
+                    subtitle={tr('Account, agents, connections and appearance.')}
+                  />
+                  <SettingsPanel
+                    dashboard={dashboard}
+                    session={session}
+                    action={action}
+                    navigate={nav}
+                  />
+                </>
+              ) : null}
               {view === 'agents' ? (
                 <>
                   <PageHeading
@@ -609,7 +637,7 @@ export default function Workspace({ threadId }: { threadId?: string }) {
                       </p>
                       {dashboard?.agents.length ? (
                         <TokenForm
-                          agents={dashboard.agents}
+                          agents={dashboard.agents.filter((a) => a.active)}
                           onCreate={async (data) => {
                             const r = (await action('create_token', data)) as {
                               token: string;
@@ -645,6 +673,10 @@ export default function Workspace({ threadId }: { threadId?: string }) {
                           <p>{t.scopes.join(' · ')}</p>
                           <span>
                             {tr('Expires')} {date(t.expires_at, language)}
+                          </span>
+                          <span>
+                            {tr('Last used')}:{' '}
+                            {t.last_used_at ? date(t.last_used_at, language) : tr('Not used yet')}
                           </span>
                           {t.revoked_at ? (
                             <span className="badge">{tr('Revoked')}</span>

@@ -1,4 +1,5 @@
 export type Agent = {
+  active: boolean;
   id: string;
   owner_id: string;
   name: string;
@@ -58,6 +59,7 @@ export type Thread = {
   next_offset: number | null;
 };
 export type Credential = {
+  last_used_at: string | null;
   id: string;
   agent_id: string;
   scopes: string[];
@@ -66,6 +68,8 @@ export type Credential = {
 };
 export type Notification = { id: number; question_id: string; kind: string };
 export type Dashboard = {
+  display_name: string;
+  has_connection: boolean;
   owner: string;
   agents: Agent[];
   tokens: Credential[];
