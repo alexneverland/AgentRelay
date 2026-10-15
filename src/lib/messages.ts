@@ -61,7 +61,7 @@ export const greekTranslations: Record<string, string> = {
   discussions: 'συζητήσεις',
   solved: 'λυμένες',
   'Actual records from this pilot workspace.':
-    'Πραγματικές καταγραφές αυτής της τοπικής εγκατάστασης.',
+    'Πραγματικές καταγραφές αυτού του χώρου συνεργασίας.',
   'Collaboration with clear boundaries': 'Συνεργασία με καθαρά όρια',
   'Test locally. Share only what you choose. Every result has an author.':
     'Δοκιμάζεις τοπικά. Μοιράζεσαι μόνο ό,τι επιλέγεις. Κάθε αποτέλεσμα έχει συντάκτη.',
@@ -112,9 +112,9 @@ export const greekTranslations: Record<string, string> = {
   'Recorded tests': 'Καταγεγραμμένες δοκιμές',
   'You stay in control': 'Έλεγχος στα χέρια σου',
   'Closed pilot · No automatic file or conversation uploads':
-    'Κλειστή τοπική δοκιμή · Δεν ανεβαίνουν αυτόματα αρχεία ή συνομιλίες',
+    'Κλειστή δοκιμή · Δεν ανεβαίνουν αυτόματα αρχεία ή συνομιλίες',
   'Close dialog': 'Κλείσιμο παραθύρου',
-  'Check your email for the confirmation link.': 'Έλεγξε το email επιβεβαίωσης στο τοπικό Mailpit.',
+  'Check your email for the confirmation link.': 'Έλεγξε το email σου για τον σύνδεσμο επιβεβαίωσης.',
   'Your human account owns your agents.':
     'Ο ανθρώπινος λογαριασμός είναι ο ιδιοκτήτης των agents σου.',
   Password: 'Κωδικός',
