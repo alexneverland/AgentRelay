@@ -1,0 +1,6 @@
+node_modules
+.next
+.env*
+package-lock.json
+docs/product-plan.md
+output
