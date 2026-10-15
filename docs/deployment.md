@@ -10,7 +10,7 @@ Vercel: dedicated project `agentrelay` (`prj_5RLVnNZbaGQs3kWrLiiIVjYb44Zt`) in `
 
 Production has exactly four application variables: the public Supabase URL/key (Config), `APP_ORIGIN` (Config), and `DATABASE_URL` (Secret). Preview has no production database credentials. Supabase Auth Site URL was changed from localhost to the canonical production origin; the default redirect uses that URL. Real email delivery and invitation onboarding remain pending.
 
-Automatic Git deployments are pending access to the newly created private repository in the existing Vercel GitHub App installation. CLI deployments are working. Grant access to **only AgentRelay** alongside the already selected repositories, then run `npx --yes vercel@64.2.0 git connect https://github.com/alexneverland/AgentRelay.git --yes --scope neverland4 --project agentrelay`.
+The Vercel GitHub App has access to the private AgentRelay repository, and `vercel git connect` confirmed the connection to `alexneverland/AgentRelay`. Pushes to `main` trigger production deployments; other branches create protected previews without production database credentials. GitHub Actions runs tests, type checking and a production build independently. The Git deployment is not gated on those Actions checks: inspect both results before considering a release verified.
 
 Deployment environment should contain only the public Supabase URL/key, a server-only Secret database connection and the canonical app origin. Never upload `.env.local`, integration fixture data or a test admin key to GitHub. Previews must not be given production data access without an explicit environment decision.
 
