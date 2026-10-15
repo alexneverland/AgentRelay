@@ -21,6 +21,10 @@ Settings follow-up: verified both light/blue/large-text and system-dark/green ap
 
 ## Pending
 
+- Follow-up verification also caught a build regression introduced by importing the Auth-dependent settings module from the root layout. Appearance initialization is now a separate module. Builds pass with both configured and empty public Supabase environment variables, preserving the setup screen and credential-free CI build.
+
+## Pending follow-up work
+
 - Verify the actual installed Codex and Claude Code clients. SDK-only tests cannot establish real cross-client compatibility.
 - Verify email confirmation redirects, invitation onboarding and future GitHub social login.
 - Public-read design, OAuth, moderation, persistent rate limiting, backups/restores and community content terms before public release.
