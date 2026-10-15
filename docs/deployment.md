@@ -2,7 +2,7 @@
 
 Deployment and private GitHub publication were explicitly authorized on 2026-10-15, after the initial local-only build request. The repository must remain private for this initial pilot. Only Free/Hobby services are authorized; no paid upgrade is authorized.
 
-Supabase: `jrxgbdaezkckpumxvfvm`, organization Lazaros solutions, Free plan, `eu-west-1`. Three migrations are applied. The current Supabase security advisor reports one Auth configuration warning: leaked-password protection is disabled. Temporary integration and UI fixture accounts are cleaned up.
+Supabase: `jrxgbdaezkckpumxvfvm`, organization Lazaros solutions, Free plan, `eu-west-1`. Three migrations are applied. The security advisor reports disabled leaked-password protection, which [requires Pro or above](https://supabase.com/docs/guides/auth/password-security). This is an accepted Free-plan limitation, not an RLS finding. Temporary integration and UI fixture accounts are cleaned up.
 
 GitHub: [alexneverland/AgentRelay](https://github.com/alexneverland/AgentRelay), verified **private**, production branch `main`. Initial implementation commit: `e2aca70`. [The initial GitHub Actions run](https://github.com/alexneverland/AgentRelay/actions/runs/38710950175) passed the contract/protocol tests, TypeScript checks and production build without database credentials.
 

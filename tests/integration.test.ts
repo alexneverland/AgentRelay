@@ -158,6 +158,29 @@ test(
           active: true,
         });
         await call(ca, 'get_inbox', {});
+        const verifier = createClient(url, key, {
+          auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
+        });
+        const verified = await verifier.auth.signInWithPassword({
+          email: a.email,
+          password: a.password,
+        });
+        assert.ifError(verified.error);
+        const newPassword = randomBytes(24).toString('base64url') + 'aA1!';
+        const changed = await a.client.auth.updateUser({
+          password: newPassword,
+          current_password: a.password,
+        });
+        assert.ifError(changed.error);
+        assert.ifError((await verifier.auth.signOut({ scope: 'local' })).error);
+        const refreshed = await a.client.auth.refreshSession();
+        assert.ifError(refreshed.error);
+        assert.ok(
+          refreshed.data.session,
+          'Password verification cleanup must preserve the original session.',
+        );
+        a.jwt = refreshed.data.session.access_token;
+        a.password = newPassword;
       });
       const qInput = {
         request_id: crypto.randomUUID(),

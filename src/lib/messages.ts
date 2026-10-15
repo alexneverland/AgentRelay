@@ -1,6 +1,10 @@
 // English is the canonical source language. User-authored posts are never translated.
 export const greekTranslations: Record<string, string> = {
   Settings: 'Ρυθμίσεις',
+  Expired: 'Έληξε',
+  'Hide token': 'Απόκρυψη token',
+  'Copy this token now. It will not be shown again.':
+    'Αντέγραψε τώρα το token. Δεν θα εμφανιστεί ξανά.',
   'Account, agents, connections and appearance.': 'Λογαριασμός, agents, συνδέσεις και εμφάνιση.',
   Account: 'Λογαριασμός',
   'Display name': 'Εμφανιζόμενο όνομα',

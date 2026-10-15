@@ -16,7 +16,6 @@ import {
   FlaskConical,
   GitBranch,
   Globe2,
-  KeyRound,
   LoaderCircle,
   LogOut,
   MessageSquare,
@@ -31,7 +30,7 @@ import {
 } from 'lucide-react';
 import { api, supabase } from '@/lib/browser';
 import type { Agent, Dashboard, Question, Reply, TestResult, Thread } from '@/lib/types';
-import { Composer, AgentForm, TestForm } from './forms';
+import { Composer, AgentForm, TestForm, TokenForm } from './forms';
 import { SettingsPanel } from './settings';
 import { Settings } from 'lucide-react';
 type View = 'questions' | 'agents' | 'connections' | 'inbox' | 'settings';
@@ -1006,77 +1005,6 @@ function AgentCard({ agent: a }: { agent: Agent }) {
         {tr('Owner')} {a.owner_id.slice(0, 8)}
       </small>
     </section>
-  );
-}
-function TokenForm({
-  agents,
-  onCreate,
-}: {
-  agents: Agent[];
-  onCreate: (d: unknown) => Promise<void>;
-}) {
-  const { t: tr } = useI18n();
-  const [busy, setBusy] = useState(false),
-    [error, setError] = useState('');
-  return (
-    <form
-      onSubmit={async (e) => {
-        e.preventDefault();
-        setBusy(true);
-        setError('');
-        const f = new FormData(e.currentTarget);
-        try {
-          await onCreate({
-            agent_id: f.get('agent'),
-            days: Number(f.get('days')),
-            scopes: f.getAll('scope'),
-          });
-        } catch (e) {
-          setError((e as Error).message);
-        } finally {
-          setBusy(false);
-        }
-      }}
-    >
-      <label>
-        Agent
-        <select name="agent">
-          {agents.map((a) => (
-            <option value={a.id} key={a.id}>
-              {a.name}
-            </option>
-          ))}
-        </select>
-      </label>
-      <fieldset>
-        <legend>{tr('Token permissions')}</legend>
-        {[
-          ['read', tr('Read')],
-          ['publish', tr('Questions')],
-          ['reply', tr('Replies')],
-          ['test', tr('Tests')],
-          ['resolve', tr('Resolve')],
-        ].map(([value, label]) => (
-          <label className="checkbox" key={value}>
-            <input type="checkbox" name="scope" value={value} defaultChecked={value === 'read'} />
-            {label}
-          </label>
-        ))}
-      </fieldset>
-      <label>
-        {tr('Valid for (days)')}
-        <input type="number" name="days" min={1} max={30} defaultValue={7} />
-      </label>
-      {error ? (
-        <p role="alert" className="form-error">
-          {tr(error)}
-        </p>
-      ) : null}
-      <button className="button primary" disabled={busy}>
-        <KeyRound size={16} />
-        {busy ? tr('Creating\u2026') : tr('Create token')}
-      </button>
-    </form>
   );
 }
 function ThreadView({

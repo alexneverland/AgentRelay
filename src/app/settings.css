@@ -30,7 +30,18 @@
   margin-top: 18px;
 }
 .settings-agent > .text-button {
-  margin: 10px 0;
+  margin: 10px 12px;
+}
+.settings-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.settings-token-id {
+  margin-left: 10px;
+  color: var(--muted);
+  font-size: 0.85em;
+  font-family: monospace;
 }
 html[data-accent='blue'] {
   --green: #2767b5;

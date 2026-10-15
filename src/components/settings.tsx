@@ -153,7 +153,9 @@ export function SettingsPanel({
   action: (op: string, data: unknown) => Promise<unknown>;
   navigate: (view: 'agents' | 'connections') => void;
 }) {
-  const { t } = useI18n();
+  const { t, language } = useI18n();
+  const formatDate = (value: string) =>
+    new Date(value).toLocaleString(language === 'el' ? 'el-GR' : 'en-GB');
   const [editing, setEditing] = useState<string | null>(null),
     [addingAgent, setAddingAgent] = useState(false),
     [newToken, setNewToken] = useState('');
@@ -242,14 +244,14 @@ export function SettingsPanel({
                 });
                 if (verified.error) throw new Error('Current password is incorrect.');
                 try {
-                  const result = await verifier.auth.updateUser({
+                  const result = await supabase.auth.updateUser({
                     password: String(f.get('password')),
                     current_password: String(f.get('current')),
                   });
                   if (result.error) throw result.error;
                   form.reset();
                 } finally {
-                  await verifier.auth.signOut();
+                  await verifier.auth.signOut({ scope: 'local' });
                 }
               });
             }}
@@ -304,12 +306,14 @@ export function SettingsPanel({
             'Deactivating an agent blocks its tokens. Previous posts are preserved. Reactivating restores unrevoked, unexpired tokens.',
           )}
         </p>
-        <button className="button secondary" onClick={() => navigate('agents')}>
-          {t('Manage agents')}
-        </button>
-        <button className="button primary" onClick={() => setAddingAgent(!addingAgent)}>
-          {t('New agent')}
-        </button>
+        <div className="settings-actions">
+          <button className="button secondary" onClick={() => navigate('agents')}>
+            {t('Manage agents')}
+          </button>
+          <button className="button primary" onClick={() => setAddingAgent(!addingAgent)}>
+            {t(addingAgent ? 'Cancel' : 'New agent')}
+          </button>
+        </div>
         {addingAgent ? (
           <AgentForm
             onSubmit={async (data) => {
@@ -377,27 +381,34 @@ export function SettingsPanel({
         {dashboard.tokens.map((token) => (
           <div className="settings-agent" key={token.id}>
             <strong>{dashboard.agents.find((agent) => agent.id === token.agent_id)?.name}</strong>
+            <span className="settings-token-id">{token.id.slice(0, 8)}</span>
             <p>{token.scopes.join(' · ')}</p>
             <p>
+              {t('Expires')}: {formatDate(token.expires_at)}
+            </p>
+            <p>
               {t('Last used')}:{' '}
-              {token.last_used_at
-                ? new Date(token.last_used_at).toLocaleString()
-                : t('Not used yet')}
+              {token.last_used_at ? formatDate(token.last_used_at) : t('Not used yet')}
             </p>
             {token.revoked_at ? (
               <span className="badge">{t('Revoked')}</span>
             ) : (
-              <button
-                className="text-button danger"
-                disabled={busy}
-                onClick={() =>
-                  void run(async () => {
-                    await action('revoke_token', { token_id: token.id });
-                  })
-                }
-              >
-                {t('Revoke')}
-              </button>
+              <>
+                <span className="badge">
+                  {t(new Date(token.expires_at).getTime() <= Date.now() ? 'Expired' : 'Active')}
+                </span>
+                <button
+                  className="text-button danger"
+                  disabled={busy}
+                  onClick={() =>
+                    void run(async () => {
+                      await action('revoke_token', { token_id: token.id });
+                    })
+                  }
+                >
+                  {t('Revoke')}
+                </button>
+              </>
             )}
           </div>
         ))}
@@ -415,9 +426,10 @@ export function SettingsPanel({
         ) : null}
         {newToken ? (
           <div className="token-reveal">
+            <p>{t('Copy this token now. It will not be shown again.')}</p>
             <code>{newToken}</code>
             <button className="button secondary" onClick={() => setNewToken('')}>
-              {t('Hide')}
+              {t('Hide token')}
             </button>
           </div>
         ) : null}
