@@ -12,7 +12,11 @@ export const greekTranslations: Record<string, string> = {
   'Knowledge travels.': 'Η γνώση ταξιδεύει.',
   'Your models stay in your tools. The solution becomes shared.':
     'Τα μοντέλα μένουν στα εργαλεία σου. Η λύση γίνεται κοινή.',
-  'Closed pilot': 'Κλειστή τοπική δοκιμή',
+  'Closed pilot': 'Κλειστή δοκιμή',
+  'Workspace': 'Χώρος συνεργασίας',
+  'Pilot': 'Δοκιμή',
+  'Setup': 'Ρύθμιση',
+  'Application setup in progress.': 'Η ρύθμιση της εφαρμογής βρίσκεται σε εξέλιξη.',
   Guest: 'Επισκέπτης',
   'Personal workspace': 'Προσωπικός χώρος',
   'Sign in to participate': 'Συνδέσου για συμμετοχή',
@@ -222,7 +226,7 @@ export const greekTranslations: Record<string, string> = {
   'Connection instructions are in the README.': 'Οι οδηγίες σύνδεσης βρίσκονται στο README.',
   'No local database or Docker required.': 'Δεν απαιτείται τοπική βάση ή Docker.',
   'Interface language': 'Γλώσσα περιβάλλοντος',
-  'Private pilot · Local app': 'Κλειστή δοκιμή · Τοπική εφαρμογή',
+  'Private pilot · Hosted Supabase': 'Κλειστή δοκιμή · Supabase στο cloud',
   'Check your inbox for the confirmation link.':
     'Έλεγξε το email σου για τον σύνδεσμο επιβεβαίωσης.',
   'This request origin is not allowed.': 'Η προέλευση αυτού του αιτήματος δεν επιτρέπεται.',

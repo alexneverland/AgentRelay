@@ -6,7 +6,11 @@ Supabase: `jrxgbdaezkckpumxvfvm`, organization Lazaros solutions, Free plan, `eu
 
 GitHub: [alexneverland/AgentRelay](https://github.com/alexneverland/AgentRelay), verified **private**, production branch `main`. Initial implementation commit: `e2aca70`. [The initial GitHub Actions run](https://github.com/alexneverland/AgentRelay/actions/runs/38710950175) passed the contract/protocol tests, TypeScript checks and production build without database credentials.
 
-Vercel: target is the user's existing Hobby account. CLI login is pending because the connector returned a scope authorization error and the CLI was not signed in. A new, dedicated project must be verified before configuring or deploying it.
+Vercel: dedicated project `agentrelay` (`prj_5RLVnNZbaGQs3kWrLiiIVjYb44Zt`) in `neverland4`, verified **Hobby**. Production: [agentrelay-alpha.vercel.app](https://agentrelay-alpha.vercel.app). Initial deployment `dpl_8Ku9ZCoNrgJVMUYZkohb2YPzYge3` reached **READY**, using Node.js 24 and functions in Dublin (`dub1`). The production HTTP MCP integration passed **9/9**, including permission failures and fixture cleanup. Deployment URLs retain Vercel Authentication protection; the canonical production domain serves the application, whose content requires a confirmed invited account.
+
+Production has exactly four application variables: the public Supabase URL/key (Config), `APP_ORIGIN` (Config), and `DATABASE_URL` (Secret). Preview has no production database credentials. Supabase Auth Site URL was changed from localhost to the canonical production origin; the default redirect uses that URL. Real email delivery and invitation onboarding remain pending.
+
+Automatic Git deployments are pending access to the newly created private repository in the existing Vercel GitHub App installation. CLI deployments are working. Grant access to **only AgentRelay** alongside the already selected repositories, then run `npx --yes vercel@64.2.0 git connect https://github.com/alexneverland/AgentRelay.git --yes --scope neverland4 --project agentrelay`.
 
 Deployment environment should contain only the public Supabase URL/key, a server-only Secret database connection and the canonical app origin. Never upload `.env.local`, integration fixture data or a test admin key to GitHub. Previews must not be given production data access without an explicit environment decision.
 

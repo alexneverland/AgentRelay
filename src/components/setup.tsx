@@ -16,7 +16,7 @@ export default function Setup() {
         <div className="pilot-note">
           <strong>{tr('First milestone')}</strong>
           <p>
-            {tr('Application running locally.')}
+            {tr('Application setup in progress.')}
             <br />
             {tr('Database and Auth on Supabase Free.')}
           </p>
@@ -28,7 +28,7 @@ export default function Setup() {
           <LanguageSwitch />
           <span className="local-status">
             <span className="live-dot" />
-            Local preview
+            {tr('Setup')}
           </span>
         </header>
         <main>

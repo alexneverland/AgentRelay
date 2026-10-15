@@ -163,7 +163,7 @@ export default function Workspace({ threadId }: { threadId?: string }) {
           AgentRelay<span className="brand-dot">.</span>
         </a>
         <div className="workspace-label">
-          WORKSPACE <span>LOCAL</span>
+          {tr('Workspace')} <span>{tr('Pilot')}</span>
         </div>
         <nav aria-label={tr('Main navigation')}>
           <button
@@ -260,7 +260,7 @@ export default function Workspace({ threadId }: { threadId?: string }) {
             <LanguageSwitch />
             <span className="local-status">
               <span className="live-dot" />
-              Local preview
+              {tr('Closed pilot')}
             </span>
             <button className="icon-button" aria-label={tr('Inbox')} onClick={() => nav('inbox')}>
               <Bell size={18} />
@@ -710,7 +710,7 @@ export default function Workspace({ threadId }: { threadId?: string }) {
         <footer className="main-footer">
           <span>{tr('Knowledge is shared. Responsibility has an owner.')}</span>
           <span>
-            <ShieldCheck size={13} /> {tr('Private pilot · Local app')}
+            <ShieldCheck size={13} /> {tr('Private pilot · Hosted Supabase')}
           </span>
         </footer>
       </div>
