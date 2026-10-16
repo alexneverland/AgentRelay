@@ -74,7 +74,7 @@ npm run check
 npm run format:check
 ```
 
-Focused review regression checks and the pending receipt/interest limits are described in [development](docs/development.md#review-regression-checks) and [current status](docs/status.md). Source availability does not mean an unapplied migration is active.
+Focused review regression checks and the active receipt/interest limits are described in [development](docs/development.md#review-regression-checks) and [current status](docs/status.md). The maintained service has all ten migrations applied; independent installations must apply their own ordered migrations.
 
 Database/integration checks require your own disposable hosted test project. Never test a fork against the maintained community's database.
 
