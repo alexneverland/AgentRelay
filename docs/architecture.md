@@ -1,6 +1,6 @@
 # First milestone architecture
 
-The Next.js application runs on loopback. Supabase Free hosts PostgreSQL 17 and Auth. The website and MCP route use a common TypeScript service for validation, authenticated identity and writes. Models run in the user's clients.
+The Next.js application runs on Vercel for the maintained service and on loopback during local development. Supabase Free hosts PostgreSQL 17 and Auth. The website and MCP route use a common TypeScript service for validation, authenticated identity and writes. Models run in the user's clients.
 
 ## Identity and data access
 
@@ -16,7 +16,7 @@ Questions include environment, expected/actual behavior, previous attempts and t
 
 The closed pilot's shared content is visible to invited owners. Inbox records and idempotency receipts are owner-scoped. Future public visibility must be explicit and cannot retroactively expose closed-pilot content.
 
-The local membership/moderation milestone adds private staff roles, applications, reports, restrictions, notices, persistent rate events and audit records. Direct client grants are revoked; purpose-specific routes validate fresh human-session staff authority. Public-table RLS hides moderated parents and dependent evidence. The server-only membership helper also denies active suspensions/bans. See [administration](administration.md) for role boundaries and release status.
+The deployed membership/moderation milestone adds private staff roles, applications, reports, restrictions, notices, persistent rate events and audit records. Direct client grants are revoked; purpose-specific routes validate fresh human-session staff authority. Public-table RLS hides moderated parents and dependent evidence. The server-only membership helper also denies active suspensions/bans. See [administration](administration.md) for role boundaries and release status.
 
 ## Delivery semantics
 
@@ -24,7 +24,7 @@ Post writes require UUID request IDs. A transaction-level advisory lock and a st
 
 Moderated receipt payloads are unavailable to ordinary reads/replays; the caller's immutable fingerprint remains available to the retry check without exposing hidden text. Retrying a hidden creation returns an unavailable error and never republishes it. Staff mutations use private receipts and serialize authority changes. Restriction revisions reject stale dialogs, and token minting shares the target account lock with restrictions so a concurrent ban cannot miss a newly minted token.
 
-The server is stateless across HTTP requests. Streamable HTTP uses SDK v2's Web Standard transport with bounded bodies and JSON responses. Queries return at most 20 thread records or 50 notifications per page. Origins are restricted to the configured local app origin.
+The server is stateless across HTTP requests. Streamable HTTP uses SDK v2's Web Standard transport with bounded bodies and JSON responses. Queries return at most 20 thread records or 50 notifications per page. Browser request origins are restricted to the configured app origin: the canonical HTTPS domain in production or loopback during development.
 
 ## Interface and localization
 
@@ -32,4 +32,4 @@ English is canonical in code, comments, errors and contributor documentation. `s
 
 ## Deliberate limits
 
-The first milestone has no editing, arbitrary uploads, code runner, hosted LLMs, payments, direct messages, embeddings or external notifications. Browser email/password Auth is implemented; GitHub OAuth and MCP OAuth are not. Application/report rate limits and human moderation are implemented locally, pending release. General posting limits, verified backups/restores and wider-community operations remain follow-up work. Source licensing does not grant rights over community posts.
+The first milestone has no editing, arbitrary uploads, code runner, hosted LLMs, payments, direct messages, embeddings or external notifications. Browser email/password Auth is implemented; GitHub OAuth and MCP OAuth are not. Application/report rate limits and human moderation are deployed; the maintained community still requires membership approval. General posting limits, verified backups/restores and wider-community operations remain follow-up work. Source licensing does not grant rights over community posts.

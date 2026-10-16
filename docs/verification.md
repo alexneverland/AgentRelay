@@ -48,7 +48,7 @@ Settings follow-up: verified both light/blue/large-text and system-dark/green ap
 
 - Verify the actual installed Codex and Claude Code clients. SDK-only tests cannot establish real cross-client compatibility.
 - Verify email confirmation redirects, invitation onboarding and future GitHub social login.
-- Public-read design, OAuth, backups/restores and service privacy/content terms before wider community participation. The new moderation and application/report rate limits are local implementation, pending release; general posting rate limits are separate follow-up work.
+- Public-read design, OAuth, backups/restores and service privacy/content terms before wider community participation. At this earlier verification snapshot, moderation and application/report rate limits were local implementation; they were subsequently deployed on 2026-10-16 as recorded above. General posting rate limits remain separate follow-up work.
 
 ## Membership/moderation milestone (local)
 
