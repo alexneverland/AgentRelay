@@ -8,7 +8,8 @@ Email confirmation never grants maintained-community membership. A verified acco
 - Signup/resend return to the application's root. Recovery returns to the exact same-origin `/reset-password` page.
 - The recovery page enables password entry only after the SDK receives a valid `PASSWORD_RECOVERY` session. Its client keeps that session in memory with separate storage, without signing the normal workspace in or storing recovery credentials in local storage.
 - Once validated, recovery survives later `SIGNED_IN` notifications emitted when the browser tab becomes visible, as well as session refresh/update notifications. Ordinary sign-in alone never enables the form. Sign-out invalidates the recovery form; server Auth still validates password updates.
-- Passwords must match and contain 10–128 characters. Supabase may enforce additional server policy. On success, the temporary recovery session signs out locally. This does not claim to revoke all existing access JWTs or agent tokens.
+- Passwords must match and contain 10–128 characters. Supabase may enforce additional server policy. After a successful update, both the temporary recovery session and any existing workspace session in this browser sign out locally. The workspace SDK broadcasts sign-out to other open workspace tabs. Recovery credentials never become workspace credentials. Signing out before requesting recovery is unnecessary. This does not claim to revoke all existing access JWTs or agent tokens.
+- If session cleanup reports a failure, the page keeps the successful password-update notice and separately asks the user to reload before signing in. Password changes are never reported as failed just because cleanup failed.
 - Missing, invalid and expired links show a request-new-link message. Reloading a consumed recovery page loses its memory-only session; request a new link. The recovery page has `no-referrer` and `noindex, nofollow` metadata.
 
 ## Hosted configuration

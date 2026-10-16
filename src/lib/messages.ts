@@ -45,6 +45,8 @@ export const englishLabels: Record<string, string> = {
   bootstrap_master: 'Master setup',
 };
 export const greekTranslations: Record<string, string> = {
+  'Your password was updated, but sign-out could not finish. Reload the workspace before signing in.':
+    'Ο κωδικός ενημερώθηκε, αλλά η αποσύνδεση δεν ολοκληρώθηκε. Ανανέωσε τον χώρο συνεργασίας πριν συνδεθείς.',
   'Forgot password?': 'Ξέχασες τον κωδικό;',
   'Back to sign in': 'Επιστροφή στη σύνδεση',
   'Resend confirmation': 'Επαναποστολή επιβεβαίωσης',
