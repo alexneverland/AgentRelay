@@ -1,5 +1,9 @@
 # Verification record
 
+## Authentication email follow-up: local verification, 2026-10-16
+
+Added recovery/resend to Sign in and a memory-only `/reset-password` session. Four new SDK transport/password-validation tests passed, with 21 total credential-free tests passing. These transport tests use controlled HTTP responses, not a real mailbox. Browser checks verified both email-only forms, the missing-link rejection, English/Greek, and password form rendering from a synthetic callback backed by a real temporary Auth session. The normal workspace remained signed out. No password was entered or changed, no email was sent by this probe, and the exact account/token fixture was removed. Hosted SMTP remains unconfigured at this snapshot; real delivery, email-link navigation and user-completed password reset are pending. See [authentication email](auth-email.md).
+
 ## Public-source and production release: 2026-10-16
 
 Post-release review regressions were reproduced through real Auth/HTTP: report context omitted question metadata/test environment, and lifting a missing restriction incorrectly created success side effects. The narrow fixes include all reported content fields in the escaped review body and require a stored restriction before notice/audit/receipt creation. The new `test:moderation-review` suite passed 3/3 locally, including expired restriction removal and idempotent retries, without replacing the maintained Master. Contract checks 17/17, type checking, production build and all 37 rollback RLS assertions passed after these changes. Deployment of this follow-up is verified separately from the original release below.
