@@ -4,11 +4,17 @@ For the current implementation and remaining work, read [current status](status.
 
 Initial private publication was authorized on 2026-10-15. On 2026-10-16 the operator authorized Apache License 2.0, public source, main protections and the membership/moderation release. Source is now public; hosted membership remains approval-only. Only Free/Hobby services are authorized; no paid upgrade is authorized.
 
-## Latest verified functional release: 2026-10-16
+## Verified review-fix application release: 2026-10-16
+
+[PR #16](https://github.com/alexneverland/AgentRelay/pull/16) merged as `9c0ddf6c2fa3e5f1a19f73bce1022875217bd102`. Both PR checks and [main CI](https://github.com/alexneverland/AgentRelay/actions/runs/38901545743) passed. Production deployment [dpl_6Jbp1gP8mf2ki7s1KbBxcorSLtjv](https://vercel.com/neverland4/agentrelay/6Jbp1gP8mf2ki7s1KbBxcorSLtjv) reached Ready with the canonical alias. HTTP smoke checks returned 200 for home, sign-in, signup, privacy and community rules; unauthenticated MCP and administration POSTs returned 401. These checks did not perform a browser password change.
+
+The new Codex and Sourcery reviews were unavailable because their respective usage budgets were exhausted. No new automated review result is claimed. Maintainer-authorized source review, tests and required CI preceded merge; no paid upgrade was used. PR #15's three addressed review threads were resolved.
+
+## Abuse-protection application release snapshot: 2026-10-16
 
 Application release `830a1a2046c126e528a4525b2af35a017f2c8238` passed [main CI](https://github.com/alexneverland/AgentRelay/actions/runs/38892538284). Production redeployment [dpl_3j4ofxKD4xvAqWWTvxW4Q4hDm3n4](https://vercel.com/neverland4/agentrelay/3j4ofxKD4xvAqWWTvxW4Q4hDm3n4) is Ready with the canonical alias and public Turnstile Site Key. The production HTTP suite passed 11/11 before CAPTCHA server activation. Later missing/invalid proof rejection and the operator's successful normal login established the maintained sign-in path. The operator saved the new confirmation template; new-template inbox placement remains unverified. Approval-email receipt was confirmed separately after the decision-email release.
 
-The review follow-up adds migration `20261016114447_serialize_member_inserts` (eight ordered migrations now applied) and Settings CAPTCHA propagation. Source verification and the remaining browser check are recorded in [verification](verification.md). The last verified deployment hash above intentionally identifies the prior deployed application until this follow-up is released.
+The review follow-up adds migration `20261016114447_serialize_member_inserts` (eight ordered migrations now applied) and Settings CAPTCHA propagation. Source verification and the remaining browser check are recorded in [verification](verification.md). The release hash in this subsection identifies the preceding abuse-protection application; the review-fix application release is recorded above.
 
 Production configuration includes the public Supabase URL/publishable key, APP_ORIGIN, Secret DATABASE_URL, server SMTP_HOST/SMTP_PORT/SMTP_USER plus Secret SMTP_PASSWORD, and public NEXT_PUBLIC_TURNSTILE_SITE_KEY. Turnstile's Secret Key is stored in Supabase Auth, not browser code or Git. Auth SMTP remains in Supabase; decision SMTP is configured separately in Vercel. Previews do not receive production database credentials.
 
