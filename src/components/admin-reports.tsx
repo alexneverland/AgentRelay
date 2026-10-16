@@ -141,7 +141,7 @@ export function AdminReports({
                       'warn',
                       ...(context.data.restriction_kind === 'ban' ? [] : ['suspend']),
                       'ban',
-                      'lift_restriction',
+                      ...(context.data.restriction_revision ? ['lift_restriction'] : []),
                     ].map((action) => (
                       <button
                         className="button secondary"
