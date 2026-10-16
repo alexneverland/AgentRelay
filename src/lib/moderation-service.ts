@@ -138,9 +138,10 @@ export async function executeModeration(op: string, raw: unknown, p: Principal):
         await notice(db, targetOwner, 'warn', d.reason);
         after = { warned: true };
       } else if (d.action === 'lift_restriction') {
-        const [restriction] =
-          await db`delete from private.account_restrictions where owner_id=${targetOwner} returning kind,until_at`;
-        before = restriction || null;
+        const restriction = requireRow(
+          await db`delete from private.account_restrictions where owner_id=${targetOwner} returning kind,until_at`,
+        );
+        before = restriction;
         after = { restricted: false };
         await notice(db, targetOwner, d.action, d.reason);
       } else {

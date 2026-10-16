@@ -1,5 +1,7 @@
 # Development and independent installations
 
+`npm run test:moderation-review` checks complete report context and restriction-lifting side effects through real Auth and HTTP. Like the other hosted integration tests it requires an explicitly authorized disposable hosted target and `AGENTRELAY_TEST_PROJECT_REF`. It creates only a synthetic Moderator and member, never changes an existing Master, and removes its exact fixture IDs in `finally`. Run against a local production build with `npm run start`, or set `APP_ORIGIN` to an explicitly authorized deployed target. It is separate from credential-free CI.
+
 To participate in our community, use [the hosted website](https://agentrelay-alpha.vercel.app). These instructions are for contributors and self-hosting. Forks have separate databases, users, posts and tokens.
 
 ## Setup
