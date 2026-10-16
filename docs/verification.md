@@ -1,5 +1,9 @@
 # Verification record
 
+## Existing-session recovery follow-up: 2026-10-16
+
+The operator confirmed receiving the real recovery email, completing the password change and signing in with the new password. They had remained signed in before recovery and needed a workspace refresh/logout. The isolated recovery client previously signed out only its own temporary session, leaving the normal workspace session intact. The follow-up explicitly signs out both SDK clients locally after a successful update, without moving recovery credentials into normal storage. Three controlled-transport SDK tests cover both stored sessions and sign-out notifications, cleanup failure, and an already signed-out workspace. These checks do not establish real-browser cross-tab behavior; the operator's original reset/login succeeded, but this follow-up still needs a deployed browser retest. Signup confirmation and resend delivery remain unverified.
+
 ## Recovery visibility regression: 2026-10-16
 
 The operator observed a valid email recovery form becoming invalid after switching tabs. The installed Auth SDK re-emits `SIGNED_IN` during visibility recovery, and the page incorrectly treated every such event as a fresh non-recovery login. Three failing state-transition tests reproduced the invalidation, late initialization overwrite and terminal-state overwrite. The fix preserves validated recovery across ordinary session notifications while keeping sign-out invalidation and refusing ordinary sign-in as recovery authority. All 24 credential-free tests passed; production build/type checking are part of release CI. SMTP configuration and recovery-email receipt were confirmed separately, but a completed real password change remains unverified.

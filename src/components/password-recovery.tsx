@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from 'react';
 import { LanguageSwitch, useI18n } from './i18n';
 import { validateRecoveryPassword } from '@/lib/auth-email';
 import { recoveryState, type RecoveryState } from '@/lib/recovery-state';
+import { signOutAfterRecovery } from '@/lib/recovery-sign-out';
 
 export function PasswordRecovery() {
   const { t } = useI18n();
@@ -92,8 +93,12 @@ export function PasswordRecovery() {
                     'Unable to update your password. Request a new link or try again.',
                   );
                 form.reset();
-                await client.current.auth.signOut({ scope: 'local' });
                 setState('done');
+                const { supabase } = await import('@/lib/browser');
+                if (!(await signOutAfterRecovery(client.current, supabase)))
+                  setError(
+                    'Your password was updated, but sign-out could not finish. Reload the workspace before signing in.',
+                  );
               } catch (cause) {
                 setError((cause as Error).message);
               } finally {
@@ -123,18 +128,25 @@ export function PasswordRecovery() {
                 maxLength={128}
               />
             </label>
-            {error && (
-              <p role="alert" className="form-error">
-                {t(error)}
-              </p>
-            )}
             <button className="button primary" disabled={busy}>
               {t(busy ? 'Please wait…' : 'Update password')}
             </button>
           </form>
         )}
+        {error && (
+          <p role="alert" className="form-error">
+            {t(error)}
+          </p>
+        )}
         <p>
-          <a className="text-button" href="/">
+          <a
+            className="text-button"
+            href="/"
+            aria-disabled={busy}
+            onClick={(event) => {
+              if (busy) event.preventDefault();
+            }}
+          >
             {t('Back to workspace')}
           </a>
         </p>
