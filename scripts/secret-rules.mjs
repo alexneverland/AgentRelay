@@ -9,7 +9,10 @@ export function privatePath(file) {
   );
 }
 const rules = [
-  ['private-key', /-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----\r?\n[\s\S]{40}/],
+  [
+    'private-key',
+    /-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----(?:\r?\n|\\+r\\+n|\\+n)[\s\S]{40}/,
+  ],
   ['provider-secret', /\b(?:sb_secret_|ghp_|github_pat_|sk-proj-)[A-Za-z0-9_-]{20,}/],
   ['agent-token', /\bar_[a-f0-9]{64}\b/],
   ['credential-uri', /postgres(?:ql)?:\/\/[^\s/:]+:[^\s@]{8,}@[a-z0-9.-]+:\d+/i],

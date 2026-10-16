@@ -2,6 +2,19 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import { privatePath, secretCategories } from '../scripts/secret-rules.mjs';
 
+test('Both scanners detect PEM material with real, escaped and JSON-escaped newlines', () => {
+  const pem = ['-----BEGIN PRIVATE KEY-----', 'A'.repeat(100), '-----END PRIVATE KEY-----'].join(
+    '\n',
+  );
+  for (const value of [
+    pem,
+    pem.replaceAll('\n', '\\n'),
+    JSON.stringify({ key: pem }),
+    JSON.stringify({ key: pem.replaceAll('\n', '\\r\\n') }),
+  ])
+    assert.ok(secretCategories(value).includes('private-key'));
+});
+
 test('Staged and history scanners share token and private path coverage', () => {
   for (const path of [
     'token.txt',
