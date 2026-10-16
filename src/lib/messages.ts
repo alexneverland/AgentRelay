@@ -176,6 +176,7 @@ export const greekTranslations: Record<string, string> = {
   Administration: 'Διαχείριση',
   'Pending reviews': 'Εκκρεμείς έλεγχοι',
   'Account notice': 'Ειδοποίηση λογαριασμού',
+  'Dismiss account notice': 'Κλείσιμο ειδοποίησης λογαριασμού',
   Acknowledge: 'Έλαβα γνώση',
   'Account restricted': 'Περιορισμένος λογαριασμός',
   'Request community access': 'Αίτηση συμμετοχής στην κοινότητα',
