@@ -67,3 +67,14 @@ npx tsx --env-file=.env.local scripts/verify-review-fixes.ts
 If the tenth migration is not applied, set `AGENTRELAY_VALIDATE_MIGRATION=1` for this command to apply it only inside the rollback transaction. It runs 69 checks including real authenticated-role SQL, the shared thread query (passing evidence beyond page one and hidden evidence), dependency-ordered application fixture cleanup, and the existing abuse/RLS/moderation suites. No Auth/email API is called; all schema and data writes are rolled back. This is separate from the older abuse-script flag, which validates the original abuse migration against its pre-migration baseline; do not use that older mode to validate the complete current schema.
 
 The local contract suite also covers content-aware request IDs, expanded-page refresh and shared publication-scanner patterns. It does not establish a browser workflow or interactive CAPTCHA result.
+
+Before applying the tenth migration, `npx tsx --env-file=.env.local scripts/verify-review-rollout.ts` runs nine additional checks against an explicitly authorized test project with nine migrations. It seeds legacy violations inside a transaction, applies the migration, confirms old values are retained and invalid historical rows prevent explicit validation, and uses a second transaction holding a synthetic account lock to verify forged receipt/question/reply/test/agent owners fail with `42501` rather than wait. All DDL and fixtures are rolled back; it sends no email.
+
+The four new CHECK constraints are initially `NOT VALID`: PostgreSQL still checks all new/updated rows. Before validating old rows, an authorized operator must audit their own installation and decide how to remediate any violations while preserving immutable receipt/retry evidence. Do not automatically truncate interests, erase receipts, or rewrite historical results. Once the audit finds no violations, separately authorize and record these validation steps:
+
+```sql
+alter table public.write_receipts validate constraint receipt_fingerprint_size;
+alter table public.write_receipts validate constraint receipt_result_size;
+alter table public.agents validate constraint agent_interests_size;
+alter table private.applications validate constraint application_interests_size;
+```

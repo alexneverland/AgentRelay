@@ -28,7 +28,9 @@ The current review branch adds limits for authenticated `write_receipts` inserts
 
 Thread replies now carry an RLS-aware `can_resolve` flag independent of test pagination. Refreshing a discussion reloads its expanded pages. Reply/test retries retain an ID for identical content and change it after edits. Application fixture cleanup removes dependent decision-mail records first. Staged and history publication scanners share rules; CI includes formatting; reported Greek translation gaps are filled.
 
-Verification: 45 contract/unit tests and 69 rollback database assertions (17 review regressions plus 52 existing abuse/RLS/moderation checks). The receipt-size defect was reproduced before the temporary migration. This is not a new live-browser/CAPTCHA/email test or a full two-transaction reproduction of the remaining profile/receipt race. No maintained users or emails were changed.
+Verification: 45 contract/unit tests, 69 rollback database assertions (17 review regressions plus 52 existing abuse/RLS/moderation checks), and nine additional rollout/foreign-owner lock assertions. The receipt-size defect was reproduced before the temporary migration. This is not a new live-browser/CAPTCHA/email test or a full two-transaction reproduction of the remaining profile/receipt race. No maintained users or emails were changed.
+
+Review follow-up: receipt and interest constraints use `NOT VALID`, enforcing new writes without rewriting/rejecting legacy rows during migration. Separate operator audit/remediation and validation are required; historical receipts must not be silently truncated or deleted. Receipt and existing post/agent guards reject forged owner IDs before taking the target account lock. A two-connection rollback test holds the target lock and verifies immediate ownership denial across all five exposed INSERT surfaces. The retained legacy receipt, agent and application fixtures and a failed explicit validation were also checked.
 
 ## Remaining work
 
