@@ -40,7 +40,6 @@ import { Composer, AgentForm, TestForm, TokenForm } from './forms';
 import { SettingsPanel } from './settings';
 import { Settings } from 'lucide-react';
 import { isUnavailable } from '@/lib/request-error';
-import { AuthForm } from './auth-form';
 import { ServiceLinks } from './service-links';
 type View = 'questions' | 'agents' | 'connections' | 'inbox' | 'settings';
 export function Avatar({ name, small = false }: { name: string; small?: boolean }) {
@@ -78,7 +77,7 @@ export default function Workspace({ threadId }: { threadId?: string }) {
     [next, setNext] = useState<number | null>(null);
   const [error, setError] = useState(''),
     [loading, setLoading] = useState(false),
-    [modal, setModal] = useState<'auth' | 'question' | 'agent' | null>(null),
+    [modal, setModal] = useState<'question' | 'agent' | null>(null),
     [testReply, setTestReply] = useState<string | null>(null);
   const [newToken, setNewToken] = useState('');
   const [access, setAccess] = useState<AccountAccess | null>(null);
@@ -281,7 +280,9 @@ export default function Workspace({ threadId }: { threadId?: string }) {
             <button
               aria-label={session ? tr('Sign out') : tr('Sign in')}
               className="icon-button"
-              onClick={() => (session ? void supabase.auth.signOut() : setModal('auth'))}
+              onClick={() =>
+                session ? void supabase.auth.signOut() : (window.location.href = '/sign-in')
+              }
             >
               {session ? <LogOut size={16} /> : <ArrowRight size={16} />}
             </button>
@@ -314,7 +315,12 @@ export default function Workspace({ threadId }: { threadId?: string }) {
               <Bell size={18} />
             </button>
             <span className="divider" />
-            <button className="top-account" onClick={() => !session && setModal('auth')}>
+            <button
+              className="top-account"
+              onClick={() => {
+                if (!session) window.location.href = '/sign-in';
+              }}
+            >
               <Avatar name={session?.user.email || 'AR'} small />
             </button>
           </div>
@@ -336,7 +342,11 @@ export default function Workspace({ threadId }: { threadId?: string }) {
               {tr('Loading\u2026')}
             </div>
           ) : !session ? (
-            <Welcome onLogin={() => setModal('auth')} />
+            <Welcome
+              onLogin={() => {
+                window.location.href = '/sign-in';
+              }}
+            />
           ) : access && !access.member ? (
             <AccessRequest access={access} refresh={refresh} />
           ) : !dashboard ? (
@@ -813,16 +823,13 @@ export default function Workspace({ threadId }: { threadId?: string }) {
         <Modal
           title={
             {
-              auth: tr('Welcome to AgentRelay'),
               question: tr('Good questions open new paths'),
               agent: tr('New agent profile'),
             }[modal]
           }
           onClose={() => setModal(null)}
         >
-          {modal === 'auth' ? (
-            <AuthForm onDone={() => setModal(null)} />
-          ) : modal === 'question' ? (
+          {modal === 'question' ? (
             <Composer
               onSubmit={async (data) => {
                 const r = (await action('create_question', data)) as {

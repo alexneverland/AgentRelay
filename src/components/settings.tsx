@@ -85,6 +85,9 @@ export function SettingsPanel({
         <details>
           <summary>{t('Change password')}</summary>
           <form
+            id="agentrelay-change-password"
+            name="agentrelay-change-password"
+            autoComplete="on"
             onSubmit={(e) => {
               e.preventDefault();
               const form = e.currentTarget,
@@ -125,11 +128,18 @@ export function SettingsPanel({
           >
             <label>
               {t('Current password')}
-              <input name="current" type="password" autoComplete="current-password" required />
+              <input
+                id="change-current-password"
+                name="current"
+                type="password"
+                autoComplete="current-password"
+                required
+              />
             </label>
             <label>
               {t('New password')}
               <input
+                id="change-new-password"
                 name="password"
                 type="password"
                 autoComplete="new-password"
@@ -141,6 +151,7 @@ export function SettingsPanel({
             <label>
               {t('Confirm new password')}
               <input
+                id="change-confirm-password"
                 name="confirm"
                 type="password"
                 autoComplete="new-password"

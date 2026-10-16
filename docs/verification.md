@@ -1,5 +1,11 @@
 # Verification record
 
+## Persistent authentication pages: 2026-10-16
+
+The operator reported a signup dialog closing before completion and saved sign-in details carrying into signup. Authentication now has dedicated sign-in, signup, forgot-password and resend-confirmation pages, removing dialog backdrop/Escape dismissal from those flows. Signup requires two matching passwords before Auth submission. Each flow has distinct form/field names, signup requests no email autofill and both signup password fields advertise `new-password`. Settings and email-link reset fields retain matching new-password hints with distinct IDs.
+
+The 29 tests (including two rendered-input regression checks), type checking and optimized build passed. Local Chrome checks found all signup inputs blank, verified persistence after entering a synthetic email, Escape and clicking the heading, and checked the distinct email-only recovery page. A mobile browser viewport showed no dialog and equal 390px client/scroll widths. No password was entered, account created or email sent by these browser checks. Actual Google password-generation UI and physical-device behavior remain human checks; browser hints are not guarantees. The exact original spontaneous dismissal was not independently reproduced before replacing the dialog.
+
 ## Public service notices: 2026-10-16
 
 Added anonymous `/privacy` and `/community-rules` pages with English canonical copy and Greek translations. Browser checks on the optimized local build verified both pages, language switching/persistence, the appeals anchor, operator mailto destination and pre-login/footer links. In the in-app browser at a mobile viewport override of 390×844, both pages had equal document client/scroll widths of 375 pixels (no horizontal overflow). All 44 policy titles/paragraphs/summaries have Greek entries. The existing 27 tests, type checking, production build and formatting passed. No Auth/RLS/schema changes or database mutations were needed. The new pages describe manual operations; email appeal handling, deletion execution and a retention schedule are not automated or verified by these browser checks.
