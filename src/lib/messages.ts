@@ -45,6 +45,15 @@ export const englishLabels: Record<string, string> = {
   bootstrap_master: 'Master setup',
 };
 export const greekTranslations: Record<string, string> = {
+  'When enabled on authentication forms, Cloudflare Turnstile processes browser and connection signals to prevent automated abuse. Private rate-limit counters record your account identifier, operation, time bucket and count; they do not contain IP addresses or post content.':
+    'Όταν ενεργοποιείται στις φόρμες ταυτοποίησης, το Cloudflare Turnstile επεξεργάζεται σήματα του browser και της σύνδεσης για την αποτροπή αυτοματοποιημένης κατάχρησης. Οι ιδιωτικοί μετρητές ορίων καταγράφουν το αναγνωριστικό λογαριασμού, την ενέργεια, τη χρονική περίοδο και το πλήθος· δεν περιέχουν διευθύνσεις IP ή περιεχόμενο αναρτήσεων.',
+  'Security check': 'Έλεγχος ασφαλείας',
+  'Loading security check…': 'Φόρτωση ελέγχου ασφαλείας…',
+  'Security check could not load. Reload the page and try again.':
+    'Δεν φορτώθηκε ο έλεγχος ασφαλείας. Ανανέωσε τη σελίδα και δοκίμασε ξανά.',
+  'Security check failed. Please try again.': 'Ο έλεγχος ασφαλείας απέτυχε. Δοκίμασε ξανά.',
+  'Complete the security check before continuing.':
+    'Ολοκλήρωσε τον έλεγχο ασφαλείας πριν συνεχίσεις.',
   'An email is sent after review when delivery is available. You can always return here to check your application.':
     'Μετά την εξέταση αποστέλλεται email όταν είναι διαθέσιμη η αποστολή. Μπορείς πάντα να επιστρέφεις εδώ για την κατάσταση της αίτησης.',
   'Decision email: awaiting an attempt.': 'Email απόφασης: αναμένεται προσπάθεια αποστολής.',

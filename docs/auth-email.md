@@ -27,6 +27,10 @@ For a small operator-approved pilot, Gmail SMTP may be used with `smtp.gmail.com
 
 References: [Supabase SMTP](https://supabase.com/docs/guides/auth/auth-smtp), [Google SMTP with Supabase](https://supabase.com/docs/guides/troubleshooting/using-google-smtp-with-supabase-custom-smtp-ZZzU4Y), [Google app passwords](https://support.google.com/mail/answer/185833), [Gmail sending limits](https://support.google.com/mail/answer/22839).
 
+## Confirmation template and bot protection
+
+The versioned confirmation template and coordinated Turnstile activation instructions are in [abuse protection](abuse-protection.md). Changing HTML does not establish improved inbox placement. Keep the verification URL placeholder unchanged.
+
 ## Verification boundaries
 
 The SDK transport contract tests use controlled HTTP responses to check callback paths, input rejection, account-neutral errors and password validation. They do not establish email delivery. A browser probe with a temporary real Auth account and a synthetic valid-session recovery callback verified that the password form appears, URL credentials are consumed and the normal workspace remains signed out. No email was sent and no password was changed in that probe; its exact fixture account and token file were removed. Real email delivery and user-completed password reset remain separate checks.

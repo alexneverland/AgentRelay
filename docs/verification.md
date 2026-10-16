@@ -1,5 +1,13 @@
 # Verification record
 
+## Abuse budgets and Auth protection preparation: 2026-10-16
+
+Added shared owner HTTP/tool budgets and database insert quotas for posts, agents and credentials. The additive migration is applied to the operator-authorized hosted target. All 15 new rollback SQL assertions plus 17 existing RLS and 20 moderation assertions passed before and after migration, without changing the Master or persisting fixtures. Credential-free checks passed 37 tests, type checking and production build. New SDK contracts verify CAPTCHA proof on signup, sign-in, recovery and confirmation resend, plus sanitized 429/retry metadata.
+
+The versioned confirmation HTML preserves the existing verification URL and contains one action. The operator previously confirmed real activation and approval email receipt; activation consistently entered spam. The inspected sample had passing SPF/DKIM/DMARC at Yahoo before reaching the connected Gmail account. No new template delivery or inbox-placement improvement is claimed.
+
+Cloudflare Turnstile UI is conditional on its public site key. Its secret and server enforcement require coordinated external configuration; neither a rendered widget nor mocked SDK requests prove live verification. Browser access is disabled in the current Work environment. Automatic execution review also rejected a localhost server start; therefore the added full HTTP rate-limit regression is authored but not yet executed at this preparation snapshot. See [activation and limits](abuse-protection.md). No new email was sent by these checks.
+
 ## Applicant decision emails: local verification, 2026-10-16
 
 Added applicant-only approval/decline notifications, a private per-version delivery ledger, Master-only delivery status and audited manual retries. Decisions commit before SMTP; uncertain outcomes cannot be resent through the UI. No owner notification or historical backfill is implemented.

@@ -415,6 +415,47 @@ test(
           assert.equal(r.status, 403);
         },
       );
+      await t.test(
+        'Owner budgets cover MCP tools, HTTP and direct writes without breaking replay',
+        async () => {
+          const fill = async (kind: string, limit: number, seconds: number) => {
+            // Seed only this run's disposable owner, including the adjacent bucket to avoid timing races.
+            await sql`insert into private.request_budgets(owner_id,kind,bucket,hits)
+            select ${a.id}::uuid,${kind},to_timestamp((floor(extract(epoch from now())/${seconds})+n)*${seconds}),${limit}
+            from generate_series(0,1) n
+            on conflict(owner_id,kind,bucket) do update set hits=excluded.hits`;
+          };
+          await fill('insert:questions', 20, 3600);
+          const replay = await call<{ id: string }>(ca, 'create_question', qInput);
+          assert.equal(replay.id, q.id);
+          const blocked = await call<{ retry_after_seconds: number }>(
+            ca,
+            'create_question',
+            { ...qInput, request_id: crypto.randomUUID() },
+            true,
+          );
+          assert.ok(blocked.retry_after_seconds > 0 && blocked.retry_after_seconds <= 3600);
+          const direct = await a.client.from('questions').insert({
+            owner_id: a.id,
+            request_id: crypto.randomUUID(),
+            title: 'Synthetic rate-limited direct API question',
+            body: 'Disposable test data',
+          });
+          assert.equal(direct.error?.code, 'PT429');
+          await fill('operations', 120, 60);
+          const tool = await call<{ retry_after_seconds: number }>(ca, 'get_inbox', {}, true);
+          assert.ok(tool.retry_after_seconds > 0 && tool.retry_after_seconds <= 60);
+          await call(cb, 'get_inbox', {});
+          await fill('http', 120, 60);
+          const response = await fetch(`${origin}/api/relay/dashboard`, {
+            method: 'POST',
+            headers: { Authorization: `Bearer ${a.jwt}`, 'content-type': 'application/json' },
+            body: '{}',
+          });
+          assert.equal(response.status, 429);
+          assert.ok(Number(response.headers.get('retry-after')) > 0);
+        },
+      );
     } finally {
       for (const c of clients) await c.close().catch(() => {});
       const ids = users.map((u) => u.id),
