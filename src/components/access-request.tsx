@@ -6,6 +6,7 @@ import { authenticatedRequest } from '@/lib/browser';
 import type { AccountAccess } from '@/lib/community-types';
 import { useI18n } from './i18n';
 import { ServiceLinks } from './service-links';
+import { X } from 'lucide-react';
 
 export function AccountNotices({
   access,
@@ -14,32 +15,51 @@ export function AccountNotices({
   access: AccountAccess;
   refresh: () => Promise<void>;
 }) {
-  const { t } = useI18n();
+  const { t, language } = useI18n();
   const [error, setError] = useState('');
+  const [pending, setPending] = useState<string | null>(null);
+  const [dismissed, setDismissed] = useState<Set<string>>(() => new Set());
   return (
     <>
       {access.notices
-        .filter((n) => !n.acknowledged)
+        .filter((n) => !n.acknowledged && !dismissed.has(n.id))
         .map((n) => (
           <section className="panel account-notice" key={n.id}>
-            <strong>{t('Account notice')}</strong>
+            <div className="account-notice-heading">
+              <strong>{t('Account notice')}</strong>
+              <button
+                type="button"
+                className="icon-button"
+                aria-label={t('Dismiss account notice')}
+                title={t('Dismiss account notice')}
+                disabled={pending !== null}
+                aria-busy={pending === n.id}
+                onClick={async () => {
+                  setPending(n.id);
+                  setError('');
+                  try {
+                    await authenticatedRequest('/api/account/acknowledge_notice', {
+                      notice_id: n.id,
+                    });
+                    setDismissed((current) => new Set([...current, n.id]));
+                    await refresh();
+                  } catch (e) {
+                    setError((e as Error).message);
+                  } finally {
+                    setPending(null);
+                  }
+                }}
+              >
+                <X size={18} aria-hidden="true" />
+              </button>
+            </div>
             <p>{n.reason}</p>
-            <small>{new Date(n.created_at).toLocaleString()}</small>
-            <button
-              className="text-button"
-              onClick={async () => {
-                try {
-                  await authenticatedRequest('/api/account/acknowledge_notice', {
-                    notice_id: n.id,
-                  });
-                  await refresh();
-                } catch (e) {
-                  setError((e as Error).message);
-                }
-              }}
-            >
-              {t('Acknowledge')}
-            </button>
+            <time dateTime={n.created_at}>
+              {new Intl.DateTimeFormat(language === 'el' ? 'el-GR' : 'en-GB', {
+                dateStyle: 'medium',
+                timeStyle: 'short',
+              }).format(new Date(n.created_at))}
+            </time>
           </section>
         ))}
       {error && <p role="alert">{t(error)}</p>}

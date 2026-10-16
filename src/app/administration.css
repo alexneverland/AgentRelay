@@ -92,6 +92,22 @@
 .account-notice {
   padding: 18px;
   margin: 16px 0;
+  overflow-wrap: anywhere;
+}
+.account-notice-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+.account-notice-heading .icon-button {
+  flex-shrink: 0;
+  min-width: 44px;
+  min-height: 44px;
+}
+.account-notice time {
+  display: block;
+  font-size: 0.85em;
 }
 .report-button {
   margin: 8px 0;

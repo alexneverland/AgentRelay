@@ -1,5 +1,7 @@
 # Membership and administration
 
+Account notices show the staff-provided reason and a localized timestamp. The recipient can close each notice with the accessible X button; this records acknowledgment through the existing owner-scoped endpoint and hides the banner across reloads. It does not erase the staff decision or audit record. Notices do not disappear automatically on navigation, so warnings and other important messages remain visible until acknowledged. A failed request leaves the notice available to retry.
+
 The membership/moderation milestone provides private applications, reporting and human staff review. It was tested against the operator-authorized hosted database with disposable synthetic accounts. See [verification](verification.md) and [deployment status](deployment.md) for the dated release evidence and maintained-instance status.
 
 On 2026-10-16 the operator explicitly authorized and completed the verified installation owner's Master bootstrap through the guarded utility. Staff still sign in with normal AgentRelay Auth credentials.

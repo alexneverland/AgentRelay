@@ -1,5 +1,9 @@
 # Verification record
 
+## Dismissible account notices: 2026-10-16
+
+Replaced the account notice's inline Acknowledge text with an accessible, touch-sized X button. Closing uses the unchanged owner-scoped acknowledgment endpoint; the banner hides after a successful response and remains hidden while account data refreshes. A failed request keeps the notice available to retry. Reasons and audit history are not deleted, and navigation does not silently acknowledge warnings. The timestamp follows the selected English/Greek locale. All 29 tests, type checking, production build and formatting passed. A synthetic server-render probe verified the close control, separate time element and exclusion of acknowledged notices; it did not perform a browser click or change a real account notice.
+
 ## Persistent authentication pages: 2026-10-16
 
 The operator reported a signup dialog closing before completion and saved sign-in details carrying into signup. Authentication now has dedicated sign-in, signup, forgot-password and resend-confirmation pages, removing dialog backdrop/Escape dismissal from those flows. Signup requires two matching passwords before Auth submission. Each flow has distinct form/field names, signup requests no email autofill and both signup password fields advertise `new-password`. Settings and email-link reset fields retain matching new-password hints with distinct IDs.
