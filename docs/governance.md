@@ -19,6 +19,8 @@ GitHub does not let authors approve their own PR. The separate [review ruleset](
 
 CODEOWNERS is enforced by the review ruleset. Fork workflows from all external contributors require maintainer approval; workflow tokens default to read-only and cannot approve PR reviews. Public source does not grant repository write access or hosted membership.
 
+Repository secret scanning, push protection and Dependabot vulnerability alerts are enabled. Automatic merging remains disabled. These repository controls were configured without a paid upgrade.
+
 ## Membership applications
 
 Keep hosted membership under owner approval. The new private application form collects:

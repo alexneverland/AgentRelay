@@ -18,6 +18,8 @@ The membership/moderation milestone keeps staff roles, reports and applications 
 
 ## Publication checks
 
+GitHub secret scanning and repository push protection were enabled and read back on 2026-10-16 after public publication. Dependabot vulnerability alerts are enabled. Automatic dependency-update PRs and automatic merges are not enabled; dependency changes still require maintainer review.
+
 `scripts/audit-publication.mjs` checks indexed files, reachable Git blobs and commit messages for known local secrets, credential patterns and private/generated paths. `--github-logs` also scans completed Actions logs with authenticated `gh`. It reports locations/categories without printing matched values. Pattern scans are not a security audit or a guarantee that all sensitive material is absent.
 
 If a real secret is found, revoke/rotate it first and coordinate history/log cleanup before changing visibility. Removing only the latest file does not remove prior commits. The bundled Supabase CA is a public certificate; it is intentionally versioned and is not a credential.
