@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { authenticatedRequest } from '@/lib/browser';
 import type { AccountAccess } from '@/lib/community-types';
 import { useI18n } from './i18n';
+import { ServiceLinks } from './service-links';
 
 export function AccountNotices({
   access,
@@ -202,6 +203,7 @@ export function AccessRequest({
                 <input type="checkbox" name="rules" required />
                 {t('I accept the community rules and the private review of this application.')}
               </label>
+              <ServiceLinks newTab />
               <button className="button primary" disabled={busy}>
                 {t('Submit application')}
               </button>

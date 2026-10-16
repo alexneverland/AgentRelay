@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { useI18n } from './i18n';
 import { supabase } from '@/lib/browser';
 import { sendAuthEmail } from '@/lib/auth-email';
+import { ServiceLinks } from './service-links';
 
 type Mode = 'signin' | 'signup' | 'recovery' | 'confirmation';
 export function AuthForm({ onDone }: { onDone: () => void }) {
@@ -133,6 +134,7 @@ export function AuthForm({ onDone }: { onDone: () => void }) {
           </button>
         </>
       )}
+      <ServiceLinks newTab />
     </form>
   );
 }

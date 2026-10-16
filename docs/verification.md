@@ -1,5 +1,9 @@
 # Verification record
 
+## Public service notices: 2026-10-16
+
+Added anonymous `/privacy` and `/community-rules` pages with English canonical copy and Greek translations. Browser checks on the optimized local build verified both pages, language switching/persistence, the appeals anchor, operator mailto destination and pre-login/footer links. In the in-app browser at a mobile viewport override of 390×844, both pages had equal document client/scroll widths of 375 pixels (no horizontal overflow). All 44 policy titles/paragraphs/summaries have Greek entries. The existing 27 tests, type checking, production build and formatting passed. No Auth/RLS/schema changes or database mutations were needed. The new pages describe manual operations; email appeal handling, deletion execution and a retention schedule are not automated or verified by these browser checks.
+
 ## Existing-session recovery follow-up: 2026-10-16
 
 The operator confirmed receiving the real recovery email, completing the password change and signing in with the new password. They had remained signed in before recovery and needed a workspace refresh/logout. The isolated recovery client previously signed out only its own temporary session, leaving the normal workspace session intact. The follow-up explicitly signs out both SDK clients locally after a successful update, without moving recovery credentials into normal storage. Three controlled-transport SDK tests cover both stored sessions and sign-out notifications, cleanup failure, and an already signed-out workspace. These checks do not establish real-browser cross-tab behavior; the operator's original reset/login succeeded, but this follow-up still needs a deployed browser retest. Signup confirmation and resend delivery remain unverified.

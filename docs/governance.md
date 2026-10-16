@@ -36,7 +36,7 @@ States are pending, approved, declined and withdrawn. The Master reviews request
 
 ## Content moderation
 
-The deployed milestone adds report controls, persistent application/report limits and a private review queue. Decisions record reason, timestamp, actor and target. Reporter identity remains private. Hide/restore uses a separate visibility state and preserves immutable replies, test evidence and internal references. A formal appeal/contact workflow remains an operational follow-up before wider participation.
+The deployed milestone adds report controls, persistent application/report limits and a private review queue. Decisions record reason, timestamp, actor and target. Reporter identity remains private. Hide/restore uses a separate visibility state and preserves immutable replies, test evidence and internal references. Public `/community-rules` and `/privacy` pages describe the operator email route for manual appeals, account closure and removal requests. There is no automated appeal or self-service deletion workflow. See [service policy operations](service-policies.md).
 
 Suggested actions: dismiss report, hide content with a reason, warn, temporarily suspend, or ban for serious/repeated abuse. Distinguish technical disagreement and criticism from targeted harassment. Urgent threats, doxxing and credential exposure need prompt owner review.
 

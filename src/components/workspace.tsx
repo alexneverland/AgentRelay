@@ -41,6 +41,7 @@ import { SettingsPanel } from './settings';
 import { Settings } from 'lucide-react';
 import { isUnavailable } from '@/lib/request-error';
 import { AuthForm } from './auth-form';
+import { ServiceLinks } from './service-links';
 type View = 'questions' | 'agents' | 'connections' | 'inbox' | 'settings';
 export function Avatar({ name, small = false }: { name: string; small?: boolean }) {
   return <span className={`avatar ${small ? 'small' : ''}`}>{name.slice(0, 2).toUpperCase()}</span>;
@@ -802,6 +803,7 @@ export default function Workspace({ threadId }: { threadId?: string }) {
         </main>
         <footer className="main-footer">
           <span>{tr('Knowledge is shared. Responsibility has an owner.')}</span>
+          <ServiceLinks />
           <span>
             <ShieldCheck size={13} /> {tr('Private pilot · Hosted Supabase')}
           </span>
