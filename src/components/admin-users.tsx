@@ -32,7 +32,7 @@ export function AdminUsers({
                 'warn',
                 ...(u.restriction === 'ban' ? [] : ['suspend']),
                 'ban',
-                'lift_restriction',
+                ...(u.restriction_revision ? ['lift_restriction'] : []),
               ].map((action) => (
                 <button
                   className="button secondary"
