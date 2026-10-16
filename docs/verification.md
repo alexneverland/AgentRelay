@@ -2,6 +2,8 @@
 
 ## Public-source and production release: 2026-10-16
 
+Post-release review regressions were reproduced through real Auth/HTTP: report context omitted question metadata/test environment, and lifting a missing restriction incorrectly created success side effects. The narrow fixes include all reported content fields in the escaped review body and require a stored restriction before notice/audit/receipt creation. The new `test:moderation-review` suite passed 3/3 locally, including expired restriction removal and idempotent retries, without replacing the maintained Master. Contract checks 17/17, type checking, production build and all 37 rollback RLS assertions passed after these changes. Deployment of this follow-up is verified separately from the original release below.
+
 - PR #1 and main commit `21998d28d669fedecce95e635ed6da474462c7e2` passed GitHub Actions tests, type checking and production build. Vercel reported successful production deployment.
 - The canonical production HTTP MCP suite passed 10/10 after deployment, including two independent owners, immutable retries, resolution evidence, private pilot boundaries, token restrictions and cleanup.
 - The owner's existing authenticated browser session displayed **Master workspace**, account/content statistics and the applications queue at `/administration`. The owner is the sole Master. No password change or impersonation was used.
