@@ -14,6 +14,14 @@ export function failure(error: unknown) {
       { status: 400 },
     );
   const code = (error as { code?: string })?.code;
+  if (code === 'PT429') {
+    const seconds = Number((error as { detail?: string }).detail);
+    const retry = Number.isFinite(seconds) ? Math.max(1, Math.min(3600, Math.ceil(seconds))) : 60;
+    return Response.json(
+      { error: 'Too many requests. Please try again later.', retry_after_seconds: retry },
+      { status: 429, headers: { 'Retry-After': String(retry), 'Cache-Control': 'no-store' } },
+    );
+  }
   if (code === '23514')
     return Response.json(
       {

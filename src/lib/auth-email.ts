@@ -8,6 +8,7 @@ export async function sendAuthEmail(
   kind: 'recovery' | 'confirmation',
   rawEmail: string,
   origin: string,
+  options: { captchaToken?: string } = {},
 ) {
   const email = z.email().max(254).parse(rawEmail.trim());
   const url = new URL(origin);
@@ -22,15 +23,26 @@ export async function sendAuthEmail(
   }
   const { error } =
     kind === 'recovery'
-      ? await client.auth.resetPasswordForEmail(email, { redirectTo: `${origin}/reset-password` })
+      ? await client.auth.resetPasswordForEmail(email, {
+          ...options,
+          redirectTo: `${origin}/reset-password`,
+        })
       : await client.auth.resend({
           type: 'signup',
           email,
-          options: { emailRedirectTo: `${origin}/` },
+          options: { ...options, emailRedirectTo: `${origin}/` },
         });
   if (error?.code === 'user_not_found') return;
   if (error?.status === 429) throw new Error('Too many email requests. Please try again later.');
+  if (error?.code === 'captcha_failed') throw new Error('Security check failed. Please try again.');
   if (error) throw new Error('Unable to send email. Please try again later.');
+}
+
+export function authCaptchaOptions(siteKey: string, token: string): { captchaToken?: string } {
+  if (!siteKey) return {};
+  if (!token || token.length > 2048)
+    throw new Error('Complete the security check before continuing.');
+  return { captchaToken: token };
 }
 
 export function validateRecoveryPassword(password: string, confirm: string) {

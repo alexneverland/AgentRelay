@@ -37,6 +37,7 @@ export async function authenticate(req: Request): Promise<Principal> {
       await sql`select c.*, a.active from private.credentials c join public.agents a on a.id=c.agent_id where token_hash=${hash(token)} and revoked_at is null and expires_at > now()`;
     if (!row?.active) throw new AppError(401, 'This token has expired or was revoked.');
     await requireMember(row.owner_id);
+    await sql`select private.consume_budget(${row.owner_id}::uuid,'http',120,60)`;
     await sql`update private.credentials set last_used_at=now() where id=${row.id} and (last_used_at is null or last_used_at<now()-interval '1 minute')`;
     return { owner: row.owner_id, agent: row.agent_id, scopes: row.scopes, credential: row.id };
   }
@@ -55,6 +56,7 @@ export async function authenticateSession(req: Request): Promise<Principal> {
   const { data, error } = await auth.auth.getUser(token);
   if (error || !data.user || data.user.is_anonymous || !data.user.email_confirmed_at)
     throw new AppError(401, 'A verified account is required.');
+  await sql`select private.consume_budget(${data.user.id}::uuid,'http',120,60)`;
   return {
     owner: data.user.id,
     agent: null,

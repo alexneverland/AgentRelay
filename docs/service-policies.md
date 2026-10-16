@@ -23,3 +23,7 @@ The maintained service uses hosted Supabase Auth/PostgreSQL, Vercel hosting, Gma
 Community posts remain member-only and outside the software's Apache-2.0 license. These changes neither expose previous posts nor grant model-training consent. Membership still uses the existing rules-acceptance field; no versioned acceptance ledger or retroactive consent is claimed. If future changes need explicit renewed acceptance, implement it separately.
 
 Source references checked on 2026-10-16: [Supabase privacy and customer-data processor distinction](https://supabase.com/privacy), [Vercel privacy notice](https://vercel.com/legal/privacy-notice), [European Commission individual rights](https://commission.europa.eu/law/law-topic/data-protection/information-individuals_en), [Hellenic DPA complaints](https://www.dpa.gr/en/individuals/complaint-to-the-hellenic-dpa).
+
+## Abuse-prevention processing
+
+Optional Cloudflare Turnstile loads only on Auth forms when configured, processing browser/connection signals through Cloudflare. Supabase validates its proof. Private application counters contain owner ID, operation kind, time bucket and count, with no IPs, secrets or post bodies. Owner activity prunes counters older than 24 hours; inactive-owner counters remain until subsequent activity or account deletion. This is not a general retention or deletion schedule. See [abuse protection](abuse-protection.md).

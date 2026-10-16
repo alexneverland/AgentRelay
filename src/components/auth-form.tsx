@@ -4,12 +4,16 @@
 import { useState } from 'react';
 import { useI18n } from './i18n';
 import { supabase } from '@/lib/browser';
-import { sendAuthEmail, validateRecoveryPassword } from '@/lib/auth-email';
+import { authCaptchaOptions, sendAuthEmail, validateRecoveryPassword } from '@/lib/auth-email';
+import { AuthCaptcha } from './auth-captcha';
 import { ServiceLinks } from './service-links';
 import { AuthFields, type AuthMode } from './auth-fields';
 
 export function AuthForm({ mode, onDone }: { mode: AuthMode; onDone: () => void }) {
   const { t } = useI18n();
+  const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || '';
+  const [captchaToken, setCaptchaToken] = useState('');
+  const [captchaVersion, setCaptchaVersion] = useState(0);
   const [busy, setBusy] = useState(false),
     [error, setError] = useState(''),
     [notice, setNotice] = useState('');
@@ -26,8 +30,9 @@ export function AuthForm({ mode, onDone }: { mode: AuthMode; onDone: () => void 
         const values = new FormData(event.currentTarget);
         const email = String(values.get(`${mode}_email`)).trim();
         try {
+          const captcha = authCaptchaOptions(siteKey, captchaToken);
           if (mode === 'recovery' || mode === 'confirmation') {
-            await sendAuthEmail(supabase, mode, email, window.location.origin);
+            await sendAuthEmail(supabase, mode, email, window.location.origin, captcha);
             setNotice(
               mode === 'recovery'
                 ? 'If an account can receive a reset email, a recovery link has been sent. Check your inbox and spam folder.'
@@ -41,16 +46,21 @@ export function AuthForm({ mode, onDone }: { mode: AuthMode; onDone: () => void 
               mode === 'signup'
                 ? await supabase.auth.signUp({
                     ...credentials,
-                    options: { emailRedirectTo: `${window.location.origin}/` },
+                    options: { ...captcha, emailRedirectTo: `${window.location.origin}/` },
                   })
-                : await supabase.auth.signInWithPassword(credentials);
-            if (failure) throw failure;
+                : await supabase.auth.signInWithPassword({ ...credentials, options: captcha });
+            if (failure)
+              throw failure.code === 'captcha_failed'
+                ? new Error('Security check failed. Please try again.')
+                : failure;
             if (data.session) onDone();
             else setNotice('Check your inbox for the confirmation link.');
           }
         } catch (cause) {
           setError((cause as Error).message);
         } finally {
+          setCaptchaToken('');
+          setCaptchaVersion((v) => v + 1);
           setBusy(false);
         }
       }}
@@ -65,6 +75,7 @@ export function AuthForm({ mode, onDone }: { mode: AuthMode; onDone: () => void 
         )}
       </p>
       <AuthFields mode={mode} />
+      {siteKey && <AuthCaptcha key={captchaVersion} siteKey={siteKey} onToken={setCaptchaToken} />}
       {notice && (
         <p role="status" className="info-note">
           {t(notice)}
@@ -75,7 +86,7 @@ export function AuthForm({ mode, onDone }: { mode: AuthMode; onDone: () => void 
           {t(error)}
         </p>
       )}
-      <button className="button primary full" disabled={busy}>
+      <button className="button primary full" disabled={busy || Boolean(siteKey && !captchaToken)}>
         {t(
           busy
             ? 'Please wait…'
