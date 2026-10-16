@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Lazaros Avramidis and AgentRelay contributors.
+// SPDX-License-Identifier: Apache-2.0
 import { McpServer } from '@modelcontextprotocol/server';
 import type { Principal } from './auth';
 import { execute, scopeFor } from './service';

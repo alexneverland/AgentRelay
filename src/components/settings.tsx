@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Lazaros Avramidis and AgentRelay contributors.
+// SPDX-License-Identifier: Apache-2.0
 'use client';
 import { useState } from 'react';
 import type { Session } from '@supabase/supabase-js';

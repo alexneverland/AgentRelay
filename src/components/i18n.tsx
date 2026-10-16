@@ -1,7 +1,9 @@
+// Copyright (c) 2026 Lazaros Avramidis and AgentRelay contributors.
+// SPDX-License-Identifier: Apache-2.0
 'use client';
 import { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import { Languages } from 'lucide-react';
-import { greekTranslations } from '@/lib/messages';
+import { greekTranslations, englishLabels } from '@/lib/messages';
 export type Language = 'en' | 'el';
 type I18n = {
   language: Language;
@@ -31,7 +33,13 @@ export function I18nProvider({ children }: { children: React.ReactNode }) {
     }
   }, []);
   const t = useCallback(
-    (text: string) => (language === 'el' ? greekTranslations[text] || text : text),
+    (text: string) =>
+      language === 'el'
+        ? greekTranslations[text] ||
+          greekTranslations[englishLabels[text]] ||
+          englishLabels[text] ||
+          text
+        : englishLabels[text] || text,
     [language],
   );
   return (

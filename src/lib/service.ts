@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Lazaros Avramidis and AgentRelay contributors.
+// SPDX-License-Identifier: Apache-2.0
 import { randomBytes } from 'node:crypto';
 import { asOwner, sql, type DB } from './db';
 import { AppError, hash, requireScope, type Principal } from './auth';
@@ -37,11 +39,14 @@ async function dedupe(
   // Transaction-scoped lock serializes duplicate requests across processes.
   await db`select pg_advisory_xact_lock(hashtextextended(${p.owner + ':' + data.request_id},0))`;
   const fingerprint = hash(JSON.stringify({ op, agent: p.agent, data }));
-  const [previous] =
-    await db`select * from public.write_receipts where owner_id=${p.owner} and request_id=${data.request_id}`;
-  if (previous) {
-    if (previous.fingerprint !== fingerprint)
+  const [receipt] =
+    await db`select private.receipt_fingerprint(${data.request_id}::uuid) fingerprint`;
+  if (receipt.fingerprint) {
+    if (receipt.fingerprint !== fingerprint)
       throw new AppError(409, 'This request_id was already used with different content.');
+    const [previous] =
+      await db`select result from public.write_receipts where owner_id=${p.owner} and request_id=${data.request_id}`;
+    if (!previous) throw new AppError(404, 'This record is unavailable.');
     return previous.result;
   }
   const result = await work();
@@ -55,16 +60,22 @@ export async function execute(op: Operation, raw: unknown, p: Principal): Promis
   if (['create_question', 'post_reply', 'record_test_result'].includes(op)) rejectSecrets(data);
   if (op === 'create_token') {
     const d = schemas.create_token.parse(data);
-    const [agent] = await asOwner(
-      p.owner,
-      async (db) =>
-        db`select id from public.agents where id=${d.agent_id} and owner_id=${p.owner} and active`,
-    );
-    if (!agent) throw new AppError(403, 'This agent does not belong to you.');
-    const token = 'ar_' + randomBytes(32).toString('hex');
-    const [credential] =
-      await sql`insert into private.credentials(owner_id,agent_id,token_hash,scopes,expires_at) values(${p.owner},${d.agent_id},${hash(token)},${d.scopes},now()+${d.days}*interval '1 day') returning id,agent_id,scopes,expires_at`;
-    return { ...credential, token };
+    return sql.begin(async (db) => {
+      await db`select pg_advisory_xact_lock(hashtextextended(${'agentrelay:account:' + p.owner},0))`;
+      const [member] = await db`select private.member_allowed(${p.owner}::uuid) allowed`;
+      if (!member.allowed)
+        throw new AppError(
+          403,
+          'This account is not invited to the pilot or its email is not verified.',
+        );
+      const [agent] =
+        await db`select id from public.agents where id=${d.agent_id} and owner_id=${p.owner} and active for share`;
+      if (!agent) throw new AppError(403, 'This agent does not belong to you.');
+      const token = 'ar_' + randomBytes(32).toString('hex');
+      const [credential] =
+        await db`insert into private.credentials(owner_id,agent_id,token_hash,scopes,expires_at) values(${p.owner},${d.agent_id},${hash(token)},${d.scopes},now()+${d.days}*interval '1 day') returning id,agent_id,scopes,expires_at`;
+      return { ...credential, token };
+    });
   }
   if (op === 'revoke_token') {
     const d = schemas.revoke_token.parse(data);

@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Lazaros Avramidis and AgentRelay contributors.
+// SPDX-License-Identifier: Apache-2.0
 import Workspace from '@/components/workspace';
 import Setup from '@/components/setup';
 export default async function Thread({ params }: { params: Promise<{ id: string }> }) {

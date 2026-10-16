@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Lazaros Avramidis and AgentRelay contributors.
+// SPDX-License-Identifier: Apache-2.0
 'use client';
 import { useEffect, useState } from 'react';
 import { useI18n } from './i18n';

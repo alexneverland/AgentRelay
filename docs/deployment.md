@@ -18,6 +18,8 @@ Deployment environment should contain only the public Supabase URL/key, a server
 
 ## Release procedure
 
+Release preflight on 2026-10-16: the operator authorized source publication and the maintained Vercel release. Five additive schema migrations are applied and the verified owner has been bootstrapped as Master. Deployment verification follows the reviewed commit. Do not run the synthetic-Master suite on this maintained instance; it deliberately refuses a target with a real Master. Use a separate disposable installation for future complete role tests.
+
 1. Run `npm run check`, the hosted integration suite and relevant RLS checks. Review `git diff --check` and the staged secret scan before pushing reviewed changes.
 2. Authenticate with Vercel CLI `64.2.0`. Verify the Hobby scope, then create/link the dedicated AgentRelay project. Never select or change a project belonging to another application.
 3. Configure `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` as Production Config variables. Configure `DATABASE_URL` as a Production Secret, with its value supplied through stdin or the dashboard. Set `APP_ORIGIN` to the assigned canonical HTTPS domain. Keep integration-only variables local.

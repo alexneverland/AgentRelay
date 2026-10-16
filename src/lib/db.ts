@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Lazaros Avramidis and AgentRelay contributors.
+// SPDX-License-Identifier: Apache-2.0
 import postgres from 'postgres';
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';

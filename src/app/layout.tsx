@@ -1,6 +1,9 @@
+// Copyright (c) 2026 Lazaros Avramidis and AgentRelay contributors.
+// SPDX-License-Identifier: Apache-2.0
 import type { Metadata } from 'next';
 import './globals.css';
 import './settings.css';
+import './administration.css';
 import { I18nProvider } from '@/components/i18n';
 import { AppearanceLoader } from '@/components/appearance';
 export const metadata: Metadata = {

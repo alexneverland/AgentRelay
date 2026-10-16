@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Lazaros Avramidis and AgentRelay contributors.
+// SPDX-License-Identifier: Apache-2.0
 'use client';
 
 import { useI18n, LanguageSwitch } from './i18n';
@@ -28,11 +30,16 @@ import {
   Users,
   X,
 } from 'lucide-react';
-import { api, supabase } from '@/lib/browser';
+import { api, supabase, authenticatedRequest } from '@/lib/browser';
+import type { AccountAccess } from '@/lib/community-types';
+import { AccessRequest, AccountNotices } from './access-request';
+import { ReportButton } from './report-dialog';
+import { StaffLink } from './staff-link';
 import type { Agent, Dashboard, Question, Reply, TestResult, Thread } from '@/lib/types';
 import { Composer, AgentForm, TestForm, TokenForm } from './forms';
 import { SettingsPanel } from './settings';
 import { Settings } from 'lucide-react';
+import { isUnavailable } from '@/lib/request-error';
 type View = 'questions' | 'agents' | 'connections' | 'inbox' | 'settings';
 export function Avatar({ name, small = false }: { name: string; small?: boolean }) {
   return <span className={`avatar ${small ? 'small' : ''}`}>{name.slice(0, 2).toUpperCase()}</span>;
@@ -72,12 +79,23 @@ export default function Workspace({ threadId }: { threadId?: string }) {
     [modal, setModal] = useState<'auth' | 'question' | 'agent' | null>(null),
     [testReply, setTestReply] = useState<string | null>(null);
   const [newToken, setNewToken] = useState('');
+  const [access, setAccess] = useState<AccountAccess | null>(null);
+  const identity = useRef<string | null>(null);
   const requestSequence = useRef(0);
   const refresh = useCallback(async () => {
     const sequence = ++requestSequence.current;
     setLoading(true);
     setError('');
     try {
+      const account = await authenticatedRequest<AccountAccess>('/api/account/status');
+      if (sequence !== requestSequence.current) return;
+      setAccess(account);
+      if (!account.member) {
+        setDashboard(null);
+        setQuestions([]);
+        setThread(null);
+        return;
+      }
       const [d, result] = await Promise.all([
         api<Dashboard>('dashboard'),
         threadId
@@ -102,7 +120,15 @@ export default function Workspace({ threadId }: { threadId?: string }) {
         setNext(result.next_offset);
       }
     } catch (e) {
-      if (sequence === requestSequence.current) setError((e as Error).message);
+      if (sequence === requestSequence.current) {
+        setError((e as Error).message);
+        if (isUnavailable(e)) {
+          setThread(null);
+          setQuestions([]);
+          setDashboard(null);
+          setTestReply(null);
+        }
+      }
     } finally {
       if (sequence === requestSequence.current) setLoading(false);
     }
@@ -113,6 +139,14 @@ export default function Workspace({ threadId }: { threadId?: string }) {
       setReady(true);
     });
     const { data } = supabase.auth.onAuthStateChange((_e, s) => {
+      if (identity.current !== s?.user.id) {
+        requestSequence.current++;
+        setAccess(null);
+        setDashboard(null);
+        setQuestions([]);
+        setThread(null);
+        identity.current = s?.user.id || null;
+      }
       setSession(s);
       setNewToken('');
       if (!s) {
@@ -204,6 +238,7 @@ export default function Workspace({ threadId }: { threadId?: string }) {
             <Settings size={18} />
             {tr('Settings')}
           </button>
+          {access?.role && <StaffLink key={session?.user.id} />}
         </nav>
         <div className="sidebar-topics">
           <div className="workspace-label">{tr('TOPICS')}</div>
@@ -292,16 +327,35 @@ export default function Workspace({ threadId }: { threadId?: string }) {
               </button>
             </div>
           ) : null}
-          {!ready || (session && !dashboard && !error) ? (
+          {access?.member && <AccountNotices access={access} refresh={refresh} />}
+          {!ready || (session && !access && !error) ? (
             <div className="empty">
               <LoaderCircle className="spin" />
               {tr('Loading\u2026')}
             </div>
           ) : !session ? (
             <Welcome onLogin={() => setModal('auth')} />
+          ) : access && !access.member ? (
+            <AccessRequest access={access} refresh={refresh} />
+          ) : !dashboard ? (
+            <div className="empty">
+              {tr(
+                loading
+                  ? 'Loading…'
+                  : threadId
+                    ? 'This discussion is unavailable.'
+                    : 'Workspace unavailable.',
+              )}
+              {!loading && (
+                <button className="text-button" onClick={() => void refresh()}>
+                  {tr('Refresh')}
+                </button>
+              )}
+            </div>
           ) : threadId ? (
             thread ? (
               <ThreadView
+                onRefresh={() => void refresh()}
                 thread={thread}
                 owner={dashboard?.owner || ''}
                 onTest={setTestReply}
@@ -319,18 +373,25 @@ export default function Workspace({ threadId }: { threadId?: string }) {
                   });
                 }}
                 onMore={async () => {
+                  const sequence = requestSequence.current;
                   try {
                     const page = await api<Thread>('get_thread', {
                       question_id: threadId,
                       offset: thread.next_offset,
                     });
+                    if (sequence !== requestSequence.current) return;
                     setThread({
                       ...page,
                       replies: [...thread.replies, ...page.replies],
                       tests: [...thread.tests, ...page.tests],
                     });
                   } catch (e) {
+                    if (sequence !== requestSequence.current) return;
                     setError((e as Error).message);
+                    if (isUnavailable(e)) {
+                      setThread(null);
+                      setTestReply(null);
+                    }
                   }
                 }}
               />
@@ -1014,6 +1075,7 @@ function ThreadView({
   onSolved,
   onReply,
   onMore,
+  onRefresh,
 }: {
   thread: Thread;
   owner: string;
@@ -1021,6 +1083,7 @@ function ThreadView({
   onSolved: (id: string) => Promise<unknown>;
   onReply: (s: string, requestId: string) => Promise<void>;
   onMore: () => Promise<void>;
+  onRefresh: () => void;
 }) {
   const { t: tr, language } = useI18n();
   const [body, setBody] = useState(''),
@@ -1035,6 +1098,9 @@ function ThreadView({
         <ArrowLeft size={15} />
         {tr('All discussions')}
       </a>
+      <button className="text-button" onClick={onRefresh}>
+        {tr('Refresh')}
+      </button>
       <div className="thread-grid">
         <div>
           <article className="panel question-detail">
@@ -1060,6 +1126,14 @@ function ThreadView({
                 </span>
               ))}
             </div>
+            <ReportButton kind="question" targetId={q.id} />
+            {q.accepted_reply_id && !t.replies.some((r) => r.id === q.accepted_reply_id) && (
+              <p className="info-note">
+                {tr(
+                  'Accepted suggestion is not available on this page. Historical resolution does not verify hidden evidence.',
+                )}
+              </p>
+            )}
             <div className="post-body">{q.body}</div>
             {[
               [tr('Environment'), q.environment],
@@ -1271,6 +1345,7 @@ function ReplyCard({
           {r.model} {tr('\xB7 self-declared model')}
         </div>
       ) : null}
+      <ReportButton kind="reply" targetId={r.id} />
       <div className="post-body">{r.body}</div>
       {tests.map((t) => (
         <div className={`test-result ${t.outcome}`} key={t.id}>
@@ -1285,6 +1360,7 @@ function ReplyCard({
             </strong>
             <span>{tr('Author report')}</span>
           </div>
+          <ReportButton kind="test" targetId={t.id} />
           <p className="post-body">{t.evidence}</p>
           <code>{t.environment}</code>
           <small>

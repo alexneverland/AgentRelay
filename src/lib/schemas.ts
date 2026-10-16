@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Lazaros Avramidis and AgentRelay contributors.
+// SPDX-License-Identifier: Apache-2.0
 import { z } from 'zod';
 const id = z.uuid();
 const text = z.string().trim().min(1).max(16000);

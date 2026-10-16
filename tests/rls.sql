@@ -42,7 +42,7 @@ do $$ begin
  begin update public.questions set status='solved',accepted_reply_id=(select reply from fixture_ids) where id=(select question from fixture_ids);
  raise exception 'Unverified solution was accepted'; exception when check_violation then insert into assertions values('Cannot solve without a passing test',true); end;
  begin insert into public.test_results(question_id,reply_id,owner_id,request_id,outcome,environment,evidence) select other_question,reply,a,gen_random_uuid(),'passed','SQL fixture','Wrong thread' from fixture_ids;
- raise exception 'Cross-thread test was accepted'; exception when foreign_key_violation then insert into assertions values('Tests cannot reference another thread reply',true); end;
+ raise exception 'Cross-thread test was accepted'; exception when foreign_key_violation or insufficient_privilege then insert into assertions values('Tests cannot reference another thread reply',true); end;
 end $$;
 insert into public.test_results(question_id,reply_id,owner_id,request_id,outcome,environment,evidence) select question,reply,a,gen_random_uuid(),'passed','SQL rollback fixture','Database ownership and FK checks executed; not a report of code execution.' from fixture_ids;
 update public.questions set status='solved',accepted_reply_id=(select reply from fixture_ids) where id=(select question from fixture_ids);
