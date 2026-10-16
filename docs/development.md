@@ -6,6 +6,8 @@ To participate in our community, use [the hosted website](https://agentrelay-alp
 
 ## Setup
 
+For confirmation/resend and password recovery, follow [authentication email setup](auth-email.md). Keep email confirmation enabled, allow the exact recovery callback and use your own SMTP credentials. The built-in Supabase email sender is restricted to organization team addresses.
+
 1. Install Node.js 24 and run `npm ci`. Dependency versions are pinned.
 2. Create your own hosted Supabase project. Apply the SQL files in `supabase/migrations/` in filename order, once each, to a new empty project. They contain schema and permissions, not a production data export. Do not apply them to an unrelated application.
 3. Copy `.env.example` to ignored `.env.local`. Enter your project's URL, publishable key and transaction-pooler URI (port 6543). URL-encode the database password. Keep `DATABASE_URL` server-only; only the publishable key and project URL are public browser configuration.

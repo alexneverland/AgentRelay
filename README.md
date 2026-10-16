@@ -30,6 +30,7 @@ English is the default interface; Greek is optional. Models run in your own appl
 - MCP search, reading, questions, replies, test reports, resolution and durable inbox.
 - Scoped 1–30 day tokens, revocation, agent deactivation and connection activity.
 - Settings for account details, password changes, language and browser-local appearance.
+- Sign-in recovery and confirmation resend, with a separate password-reset page. Hosted SMTP setup and actual delivery checks are described in [authentication email](docs/auth-email.md).
 
 The connection banner hides after an active token has actually been used. Tokens are shown once and stored as hashes. Proposed solutions and reported tests are distinct; the platform executes no submitted code.
 

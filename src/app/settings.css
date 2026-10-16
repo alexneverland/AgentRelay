@@ -5,6 +5,11 @@
   gap: 22px;
   max-width: 900px;
 }
+.recovery-panel {
+  width: calc(100% - 32px);
+  max-width: 520px;
+  margin: 48px auto;
+}
 .settings-panel {
   padding: 26px;
 }

@@ -45,6 +45,34 @@ export const englishLabels: Record<string, string> = {
   bootstrap_master: 'Master setup',
 };
 export const greekTranslations: Record<string, string> = {
+  'Forgot password?': 'Ξέχασες τον κωδικό;',
+  'Back to sign in': 'Επιστροφή στη σύνδεση',
+  'Resend confirmation': 'Επαναποστολή επιβεβαίωσης',
+  'Send recovery link': 'Αποστολή συνδέσμου επαναφοράς',
+  'Enter your email to request a password reset link.':
+    'Γράψε το email σου για να ζητήσεις σύνδεσμο επαναφοράς κωδικού.',
+  'Enter your email to request a new confirmation link.':
+    'Γράψε το email σου για να ζητήσεις νέο σύνδεσμο επιβεβαίωσης.',
+  'If an account can receive a reset email, a recovery link has been sent. Check your inbox and spam folder.':
+    'Αν ο λογαριασμός μπορεί να λάβει email επαναφοράς, στάλθηκε σύνδεσμος. Έλεγξε τα εισερχόμενα και τα ανεπιθύμητα.',
+  'If this account needs confirmation, a new link has been sent. Check your inbox and spam folder.':
+    'Αν ο λογαριασμός χρειάζεται επιβεβαίωση, στάλθηκε νέος σύνδεσμος. Έλεγξε τα εισερχόμενα και τα ανεπιθύμητα.',
+  'Reset your password': 'Επαναφορά κωδικού',
+  'Checking your recovery link…': 'Έλεγχος συνδέσμου επαναφοράς…',
+  'This recovery link is missing, invalid or expired. Request a new link from Sign in → Forgot password.':
+    'Ο σύνδεσμος επαναφοράς λείπει, δεν είναι έγκυρος ή έχει λήξει. Ζήτησε νέο από Σύνδεση → Ξέχασες τον κωδικό;',
+  'Your password has been updated. You can sign in with your new password.':
+    'Ο κωδικός ενημερώθηκε. Μπορείς να συνδεθείς με τον νέο κωδικό.',
+  'This recovery session is unavailable. Request a new link.':
+    'Η συνεδρία επαναφοράς δεν είναι διαθέσιμη. Ζήτησε νέο σύνδεσμο.',
+  'Unable to update your password. Request a new link or try again.':
+    'Δεν ήταν δυνατή η ενημέρωση κωδικού. Ζήτησε νέο σύνδεσμο ή δοκίμασε ξανά.',
+  'Too many email requests. Please try again later.':
+    'Έγιναν πολλές αιτήσεις email. Δοκίμασε ξανά αργότερα.',
+  'Unable to send email. Please try again later.':
+    'Δεν ήταν δυνατή η αποστολή email. Δοκίμασε ξανά αργότερα.',
+  'Use a password between 10 and 128 characters.':
+    'Χρησιμοποίησε κωδικό από 10 έως 128 χαρακτήρες.',
   'Workspace unavailable.': 'Ο χώρος συνεργασίας δεν είναι διαθέσιμος.',
   'Hidden by a parent. Review and restore the parent first.':
     'Το περιεχόμενο κρύβεται από γονική ανάρτηση. Εξέτασε και επανάφερε πρώτα εκείνη.',

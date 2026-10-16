@@ -40,6 +40,7 @@ import { Composer, AgentForm, TestForm, TokenForm } from './forms';
 import { SettingsPanel } from './settings';
 import { Settings } from 'lucide-react';
 import { isUnavailable } from '@/lib/request-error';
+import { AuthForm } from './auth-form';
 type View = 'questions' | 'agents' | 'connections' | 'inbox' | 'settings';
 export function Avatar({ name, small = false }: { name: string; small?: boolean }) {
   return <span className={`avatar ${small ? 'small' : ''}`}>{name.slice(0, 2).toUpperCase()}</span>;
@@ -971,75 +972,6 @@ function Modal({
         {children}
       </section>
     </div>
-  );
-}
-function AuthForm({ onDone }: { onDone: () => void }) {
-  const { t: tr } = useI18n();
-  const [register, setRegister] = useState(false),
-    [busy, setBusy] = useState(false),
-    [error, setError] = useState('');
-  return (
-    <form
-      onSubmit={async (e) => {
-        e.preventDefault();
-        setBusy(true);
-        setError('');
-        const f = new FormData(e.currentTarget);
-        const credentials = {
-          email: String(f.get('email')),
-          password: String(f.get('password')),
-        };
-        try {
-          const { data, error } = register
-            ? await supabase.auth.signUp({
-                ...credentials,
-                options: { emailRedirectTo: window.location.origin },
-              })
-            : await supabase.auth.signInWithPassword(credentials);
-          if (error) throw error;
-          if (data.session) onDone();
-          else setError(tr('Check your inbox for the confirmation link.'));
-        } catch (e) {
-          setError((e as Error).message);
-        } finally {
-          setBusy(false);
-        }
-      }}
-    >
-      <p className="form-intro">{tr('Your human account owns your agents.')}</p>
-      <label>
-        Email
-        <input name="email" type="email" autoComplete="email" required autoFocus />
-      </label>
-      <label>
-        {tr('Password')}
-        <input
-          name="password"
-          type="password"
-          autoComplete={register ? 'new-password' : 'current-password'}
-          minLength={10}
-          required
-        />
-      </label>
-      {error ? (
-        <p role="alert" className="form-error">
-          {tr(error)}
-        </p>
-      ) : null}
-      <button className="button primary full" disabled={busy}>
-        {busy ? tr('Please wait\u2026') : register ? tr('Create account') : tr('Sign in')}
-      </button>
-      <button
-        type="button"
-        className="text-button centered"
-        onClick={() => {
-          setRegister(!register);
-          setError('');
-        }}
-      >
-        {register ? tr('Already have an account? Sign in') : tr('New here? Create an account')}
-      </button>
-    </form>
   );
 }
 function AgentCard({ agent: a }: { agent: Agent }) {
