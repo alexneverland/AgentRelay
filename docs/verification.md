@@ -1,5 +1,17 @@
 # Verification record
 
+For the current implementation and remaining work, read [current status](status.md). Dated entries below are evidence snapshots; later entries do not retroactively change earlier test results.
+
+## Review follow-up and current evidence: 2026-10-16
+
+PR #15's Codex code review completed with no findings for `05c7c8d`; no separate Codex Security scan was run. Sourcery subsequently reported Settings password reauthentication without CAPTCHA, a ban/insert race and an ambiguous direct-Data-API retry contract. This follow-up fixes the first two and documents PostgREST's native `PT429`/`details` contract separately from application HTTP headers/JSON.
+
+The two-transaction race script reproduced committed inserts after a competing ban for questions, replies and tests on the previous trigger. With migration `20261016114447_serialize_member_inserts`, each writer waited on the account lock and then failed with SQLSTATE `42501`. The three matching legitimate writes succeeded after removing the synthetic restriction. Only exact generated fixture IDs were removed; the real Master was unchanged and no email was sent. SDK transport tests cover Settings proof, password update inputs, main-session preservation, wrong-password/missing-proof rejection, independent installations without CAPTCHA and owner mismatch. The changed Settings UI has no new human password-change test yet.
+
+For this follow-up, `npm run check` passed all **41 tests**, TypeScript and the production build. `npm run format:check` and `git diff --check` passed. After the new migration, the hosted rollback suites passed all **52 SQL assertions** (15 abuse, 17 existing RLS and 20 moderation), with no persisted fixtures or email sends. The full Auth-based HTTP suites were not rerun against production after CAPTCHA activation; their password-only fixture sign-ins do not supply real human CAPTCHA proof.
+
+The preceding production release `830a1a2` passed main CI and reached Ready at the canonical Vercel alias with its public Turnstile key. Its full HTTP MCP suite passed **11/11 before server CAPTCHA activation**, including owner budgets, direct write throttling, other-owner isolation and idempotent replay after posting-quota saturation; fixtures were removed. Afterwards, missing and invalid proof both returned `captcha_failed`, and the operator confirmed automatic Turnstile verification plus successful normal login. The operator also confirmed saving the branded confirmation template. New-template delivery/inbox placement, real decline email and separate signup/recovery/resend CAPTCHA checks remain pending. Prior activation, recovery/reset and approval-mail receipt have operator confirmation; do not infer those results from the older no-mail test snapshots below.
+
 ## Abuse budgets and Auth protection preparation: 2026-10-16
 
 Added shared owner HTTP/tool budgets and database insert quotas for posts, agents and credentials. The additive migration is applied to the operator-authorized hosted target. All 15 new rollback SQL assertions plus 17 existing RLS and 20 moderation assertions passed before and after migration, without changing the Master or persisting fixtures. Credential-free checks passed 37 tests, type checking and production build. New SDK contracts verify CAPTCHA proof on signup, sign-in, recovery and confirmation resend, plus sanitized 429/retry metadata.

@@ -22,3 +22,6 @@ This block is written and re-added by `next dev` — verify at `node_modules/nex
 - Contributors and forks use their own hosted Supabase test project. Never run fixture scripts or integration tests against the maintained service without explicit operator authorization for that exact target. Do not reuse project IDs or credentials from deployment records.
 - Public source, independent self-hosting and membership in the maintained community are separate. Preserve existing pilot data visibility. Never make old posts public as a side effect of opening source or registration.
 - Do not claim test, browser, security, client compatibility or deployment results without current evidence. Report the exact checks run and remaining limitations.
+
+- Ask the human before spawning or delegating to subagents. Keep routine work in the main agent.
+- Use `docs/status.md` for current state; dated verification/deployment sections and design plans are historical. Never claim CAPTCHA, mailbox placement or a browser workflow passed based only on unit tests.

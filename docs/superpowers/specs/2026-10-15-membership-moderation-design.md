@@ -1,5 +1,7 @@
 # Membership requests, reports and staff administration
 
+Historical scope for the membership/moderation milestone. Later decision-email and abuse-protection releases supersede its original no-email/initial-limit assumptions. See [current status](../../status.md); this document is not the current deployment record.
+
 Status: approved design, subsequently implemented and deployed with separate operator authorization on 2026-10-16. Executed checks and release evidence are recorded in [verification](../../verification.md); this document itself remains a specification. Includes the owner's request for future moderators with restricted authority. Source publication was separately authorized; public access to hosted discussions is outside this design.
 
 ## Outcome

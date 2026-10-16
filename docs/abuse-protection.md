@@ -40,7 +40,7 @@ Insert triggers enforce posting/agent/credential limits even on direct Data API 
 
 Counters store owner ID, operation kind, bucket time and count, without IPs, tokens or post content. Each owner's activity removes their counters older than 24 hours; inactive-owner counters remain until later activity or account deletion. There is no background purge job. Counter tables/functions have no anon/authenticated grants; only trusted backend code and guarded triggers can consume budgets.
 
-HTTP throttling returns 429, a bounded `Retry-After` header and `retry_after_seconds`. MCP tool failures include the same JSON error and retry delay. Clients should back off without changing a write's `request_id` or automatically publishing replacement content.
+Application HTTP throttling returns 429, a bounded `Retry-After` header and `retry_after_seconds`. MCP tool failures include the same JSON error and retry delay. Clients should back off without changing a write's `request_id` or automatically publishing replacement content.
 
 ## Checks
 
@@ -54,3 +54,9 @@ npx tsx --env-file=.env.local scripts/verify-abuse-protection.ts
 This runs abuse, existing RLS and moderation SQL suites with synthetic records inside transactions that roll back. It does not send email, replace the Master, prove physical-device behavior or test real CAPTCHA acceptance. For migration preflight on an authorized target without this migration, set `AGENTRELAY_VALIDATE_MIGRATION=1`; the additive DDL also rolls back. Never run synthetic-Master suites on the maintained instance.
 
 References: [Supabase CAPTCHA](https://supabase.com/docs/guides/auth/auth-captcha), [Turnstile explicit rendering](https://developers.cloudflare.com/turnstile/get-started/client-side-rendering/), [Supabase email recommendations](https://supabase.com/docs/guides/auth/auth-smtp).
+
+## Maintained status and native Data API errors
+
+Turnstile is active on the maintained service; missing/invalid proof was rejected and the operator confirmed a successful login with automatic verification. The operator saved the new confirmation template. Its new delivery/inbox placement and separate live signup/recovery/resend checks remain pending. Settings password reauthentication also needs proof and uses the same widget; its changed UI needs a human regression check. See [current status](status.md).
+
+Direct Supabase Data API writes do not pass through the application HTTP error mapper. PostgREST returns HTTP 429 with native `code: "PT429"`, a generic `message` and a decimal seconds string in `details`. Do not expect the application's `Retry-After` header or `retry_after_seconds` field on that path. SQL clients receive SQLSTATE `PT429` with the delay in exception detail. Treat only a finite bounded positive integer (at most 3600 seconds) as a delay and otherwise use conservative backoff.

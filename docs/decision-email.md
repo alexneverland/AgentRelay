@@ -40,4 +40,4 @@ $env:AGENTRELAY_TEST_PROJECT_REF = 'YOUR_TEST_PROJECT_REF'
 npx tsx --env-file=.env.local scripts/verify-decision-email.ts
 ```
 
-The script checks permissions and delivery state transitions with transactional fixtures that roll back; it sends no email and never replaces the real Master. A controlled real-mailbox test after secret configuration is still required to establish actual delivery. Never use real pending applicants as test fixtures without operator authorization.
+The script checks permissions and delivery state transitions with transactional fixtures that roll back; it sends no email and never replaces the real Master. The maintained operator confirmed real approval-email receipt after release. A separate real decline-email check remains pending. Independent installations still require their own controlled mailbox test after configuration. Never use real pending applicants as test fixtures without operator authorization.

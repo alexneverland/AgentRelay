@@ -11,7 +11,7 @@ The owner `@alexneverland` is the code owner for every path, including CODEOWNER
 - Pull requests required, with one approving review and required code-owner review.
 - Dismiss approvals when new changes arrive, require resolved review conversations, and require the trusted Checks workflow's `check` status to pass on an up-to-date branch.
 - Block force pushes and branch deletion. Do not grant outside contributors write/admin access merely to accept a contribution.
-- Merge only after the owner reviews the final diff and checks. No automatic merging by agents, public users or automation accounts.
+- Merge only after the owner reviews the final diff and checks. No unattended auto-merge. Agents, public users and automation accounts cannot grant maintainer authorization; owner-authorized maintenance may use the owner's CLI exception only after required checks pass.
 
 The [integrity ruleset](https://github.com/alexneverland/AgentRelay/rules/25218679) requires the trusted GitHub Actions `check` on an up-to-date branch and blocks force pushes and deletion. It has no bypass actors, including the owner.
 

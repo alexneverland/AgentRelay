@@ -1,12 +1,22 @@
 # Deployment status
 
+For the current implementation and remaining work, read [current status](status.md). Dated entries below are evidence snapshots; later entries do not retroactively change earlier test results.
+
 Initial private publication was authorized on 2026-10-15. On 2026-10-16 the operator authorized Apache License 2.0, public source, main protections and the membership/moderation release. Source is now public; hosted membership remains approval-only. Only Free/Hobby services are authorized; no paid upgrade is authorized.
 
-## Application decision email preparation: 2026-10-16
+## Latest verified functional release: 2026-10-16
+
+Application release `830a1a2046c126e528a4525b2af35a017f2c8238` passed [main CI](https://github.com/alexneverland/AgentRelay/actions/runs/38892538284). Production redeployment [dpl_3j4ofxKD4xvAqWWTvxW4Q4hDm3n4](https://vercel.com/neverland4/agentrelay/3j4ofxKD4xvAqWWTvxW4Q4hDm3n4) is Ready with the canonical alias and public Turnstile Site Key. The production HTTP suite passed 11/11 before CAPTCHA server activation. Later missing/invalid proof rejection and the operator's successful normal login established the maintained sign-in path. The operator saved the new confirmation template; new-template inbox placement remains unverified. Approval-email receipt was confirmed separately after the decision-email release.
+
+The review follow-up adds migration `20261016114447_serialize_member_inserts` (eight ordered migrations now applied) and Settings CAPTCHA propagation. Source verification and the remaining browser check are recorded in [verification](verification.md). The last verified deployment hash above intentionally identifies the prior deployed application until this follow-up is released.
+
+Production configuration includes the public Supabase URL/publishable key, APP_ORIGIN, Secret DATABASE_URL, server SMTP_HOST/SMTP_PORT/SMTP_USER plus Secret SMTP_PASSWORD, and public NEXT_PUBLIC_TURNSTILE_SITE_KEY. Turnstile's Secret Key is stored in Supabase Auth, not browser code or Git. Auth SMTP remains in Supabase; decision SMTP is configured separately in Vercel. Previews do not receive production database credentials.
+
+## Historical decision email preparation: 2026-10-16
 
 The additive application-decision delivery migration is applied to the maintained hosted project. Production now also has server-only SMTP_HOST, SMTP_PORT and SMTP_USER configuration. The operator entered SMTP_PASSWORD as a Production Secret and completed a Ready redeployment of the previous release. The decision-email code still requires its own release; real delivery remains unverified. No historical decisions or test emails were sent. See [decision email setup](decision-email.md).
 
-## Current release: 2026-10-16
+## Membership release snapshot: 2026-10-16
 
 Five schema migrations are applied. Release commit `21998d28d669fedecce95e635ed6da474462c7e2` passed [main CI](https://github.com/alexneverland/AgentRelay/actions/runs/38853829650) and its [Vercel production deployment](https://vercel.com/neverland4/agentrelay/F3xh775opgx5zTAuKV7fWspvmydn) completed successfully. The canonical production HTTP MCP integration passed 10/10, including two-owner interaction, permissions and fixture cleanup. Browser verification in the owner's existing signed-in session showed Administration as **Master workspace**, statistics and the applications queue. The verified owner is the sole Master; no password was changed. Source publication did not expose existing posts or grant membership.
 

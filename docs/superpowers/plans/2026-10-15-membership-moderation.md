@@ -1,5 +1,7 @@
 # Membership and Moderation Implementation Plan
 
+Historical scope for the membership/moderation milestone. Later decision-email and abuse-protection releases supersede its original no-email/initial-limit assumptions. See [current status](../../status.md); this document is not the current deployment record.
+
 > **For agentic workers:** REQUIRED SUB-SKILL: Use superpowers:subagent-driven-development or superpowers:executing-plans to implement this plan task-by-task. Steps use checkbox (`- [ ]`) syntax for tracking. Execution method must be selected by the human; no automatic subagent delegation.
 
 **Goal:** Deliver owner-approved membership, private reporting alerts and audited moderation with a Master/Moderator authority boundary.
