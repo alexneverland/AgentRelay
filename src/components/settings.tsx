@@ -8,6 +8,8 @@ import { supabase } from '@/lib/browser';
 import { AgentForm, TokenForm } from './forms';
 import { LanguageSwitch, useI18n } from './i18n';
 import { Appearance } from './appearance';
+import { AuthCaptcha } from './auth-captcha';
+import { changeAccountPassword } from '@/lib/change-password';
 
 export function SettingsPanel({
   dashboard,
@@ -21,6 +23,10 @@ export function SettingsPanel({
   navigate: (view: 'agents' | 'connections') => void;
 }) {
   const { t, language } = useI18n();
+  const siteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || '';
+  const [passwordOpen, setPasswordOpen] = useState(false),
+    [captchaToken, setCaptchaToken] = useState(''),
+    [captchaVersion, setCaptchaVersion] = useState(0);
   const formatDate = (value: string) =>
     new Date(value).toLocaleString(language === 'el' ? 'el-GR' : 'en-GB');
   const [editing, setEditing] = useState<string | null>(null),
@@ -82,7 +88,7 @@ export function SettingsPanel({
           </button>
         </form>
         <LanguageSwitch />
-        <details>
+        <details onToggle={(e) => setPasswordOpen(e.currentTarget.open)}>
           <summary>{t('Change password')}</summary>
           <form
             id="agentrelay-change-password"
@@ -93,8 +99,6 @@ export function SettingsPanel({
               const form = e.currentTarget,
                 f = new FormData(form);
               void run(async () => {
-                if (f.get('password') !== f.get('confirm'))
-                  throw new Error('Passwords do not match.');
                 // Reauthenticate through an isolated client so a wrong password cannot change this session.
                 const { createClient } = await import('@supabase/supabase-js');
                 const verifier = createClient(
@@ -108,20 +112,20 @@ export function SettingsPanel({
                     },
                   },
                 );
-                const verified = await verifier.auth.signInWithPassword({
-                  email: session.user.email!,
-                  password: String(f.get('current')),
-                });
-                if (verified.error) throw new Error('Current password is incorrect.');
                 try {
-                  const result = await supabase.auth.updateUser({
+                  await changeAccountPassword(supabase, verifier, {
+                    owner: session.user.id,
+                    email: session.user.email!,
+                    current: String(f.get('current')),
                     password: String(f.get('password')),
-                    current_password: String(f.get('current')),
+                    confirm: String(f.get('confirm')),
+                    siteKey,
+                    captchaToken,
                   });
-                  if (result.error) throw result.error;
                   form.reset();
                 } finally {
-                  await verifier.auth.signOut({ scope: 'local' });
+                  setCaptchaToken('');
+                  setCaptchaVersion((v) => v + 1);
                 }
               });
             }}
@@ -160,7 +164,10 @@ export function SettingsPanel({
                 maxLength={128}
               />
             </label>
-            <button className="button primary" disabled={busy}>
+            {siteKey && passwordOpen && (
+              <AuthCaptcha key={captchaVersion} siteKey={siteKey} onToken={setCaptchaToken} />
+            )}
+            <button className="button primary" disabled={busy || Boolean(siteKey && !captchaToken)}>
               {t('Update password')}
             </button>
           </form>

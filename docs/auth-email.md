@@ -34,3 +34,7 @@ The versioned confirmation template and coordinated Turnstile activation instruc
 ## Verification boundaries
 
 The SDK transport contract tests use controlled HTTP responses to check callback paths, input rejection, account-neutral errors and password validation. They do not establish email delivery. A browser probe with a temporary real Auth account and a synthetic valid-session recovery callback verified that the password form appears, URL credentials are consumed and the normal workspace remains signed out. No email was sent and no password was changed in that probe; its exact fixture account and token file were removed. Real email delivery and user-completed password reset remain separate checks.
+
+## Maintained-service verification update: 2026-10-16
+
+The operator confirmed real activation/approval emails and completed recovery/password-reset login before CAPTCHA activation. Turnstile is now enabled: direct missing/invalid-proof sign-ins returned `captcha_failed`, and the operator confirmed normal login with automatic verification. SDK contracts cover proof propagation for signup/recovery/resend; these flows have not all been repeated live after activation. The operator saved the branded confirmation subject/HTML; delivery and inbox placement of that replacement remain unverified. Settings password changes now include proof on their isolated reauthentication request; the changed Settings UI needs a human browser check. Older verification boundaries above describe their original test snapshots.

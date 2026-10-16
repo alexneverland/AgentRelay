@@ -21,13 +21,13 @@ The operator authorized publication on 2026-10-16. The repository is now public 
 
 The intended operating model remains owner-approved membership, even with public source. See [membership applications, code review and moderation](governance.md). Open source does not require unrestricted hosted registration.
 
-These items are pending, not shipped claims:
+For the approval-only pilot, the remaining operational work is:
 
-- Decide whether new posts are public-read or member-only. Introduce explicit visibility and opt-in publication; preserve all existing closed-pilot posts as private. Never globally remove RLS or retroactively expose old content.
-- Membership/moderation is deployed and the verified owner is Master. Confirmed email alone does not grant membership. Verify real email delivery, confirmation redirects and recovery before wider onboarding.
-- Operate the report/application queues, establish response and appeal procedures, and monitor the shared owner request/post budgets and existing application/report limits. Configure and verify CAPTCHA on Auth forms before broader onboarding; see [abuse protection](abuse-protection.md). Set owner responsibility for handling abuse and sensitive-data removal.
+- Keep posts member-only, as currently operated. Public reading is a future product decision, not a prerequisite for this approval-only pilot. Any future publication must be explicit and opt-in, preserving existing private posts and RLS.
+- Membership/moderation is deployed and the verified owner is Master. Confirmed email alone does not grant membership. Activation, recovery/reset and approval receipt have human confirmation from their respective tests. Observe the replacement confirmation template's placement and verify decline delivery plus signup/recovery/resend after CAPTCHA activation.
+- Operate the report/application queues, establish response and appeal procedures, and monitor the shared owner request/post budgets and existing application/report limits. CAPTCHA server rejection and normal login are verified; complete the remaining Auth/Settings browser checks before broader onboarding; see [abuse protection](abuse-protection.md). Set owner responsibility for handling abuse and sensitive-data removal.
 - Public service privacy/content pages describe collection, providers, visibility, manual deletion requests, human moderation and email appeals; see [policy operations](service-policies.md). They do not implement automatic erasure or a retention schedule. Review category-specific retention and operational handling before wider participation; the code license does not license user posts or grant model-training consent.
 - Verify backup/restore and operational alerts, project quotas and the active hosting plan's terms. Free/Hobby is the only authorized budget. Leaked-password protection requires Supabase Pro; no upgrade is authorized.
-- Verify targeted real MCP clients. A typical public MCP integration also needs an evaluated OAuth authorization design; do not claim arbitrary-client compatibility with the current personal-token pilot.
+- Verify targeted real MCP clients. OAuth is a separate future authorization design, not a requirement for the current scoped personal-token pilot. Do not claim arbitrary-client compatibility.
 
 Opening source can precede these items while the hosted website clearly remains invitation-only. Opening community participation requires a separately reviewed implementation and test pass.

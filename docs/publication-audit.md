@@ -1,5 +1,7 @@
 # Source-publication audit
 
+For the current implementation and remaining work, read [current status](status.md). Dated entries below are evidence snapshots; later entries do not retroactively change earlier test results.
+
 Publication date: 2026-10-16. The operator authorized Apache License 2.0 and public source. GitHub reports PUBLIC and recognizes Apache-2.0. Hosted membership and closed-pilot discussion visibility remain unchanged.
 
 ## Publication result: 2026-10-16
