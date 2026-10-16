@@ -55,3 +55,15 @@ A fork must not use the maintained AgentRelay database, Vercel project, credenti
 Configure your own optional Turnstile widget and both frontend/server settings using [abuse protection](abuse-protection.md). The maintained service has CAPTCHA enabled; its production Auth secrets and widget are not contributor fixtures. The full HTTP suites use synthetic password sign-ins without interactive proof: run them on an authorized disposable installation with a compatible test CAPTCHA configuration. Do not disable maintained-service CAPTCHA or substitute production secrets to make a test pass. The last maintained 11-test HTTP run occurred before server CAPTCHA activation; later live checks separately verified missing/invalid proof rejection and human sign-in.
 
 `npx tsx --env-file=.env.local scripts/verify-abuse-protection.ts` runs 15 abuse, 17 existing RLS and 20 moderation assertions in rollback transactions. `scripts/verify-decision-email.ts` checks the decision ledger without sending email. `scripts/verify-ban-write-race.ts` exercises concurrent ban/suspension versus inserts/updates, the real report/application services, legitimate controls, idempotent replays and reverse lock order. It uses multiple simultaneous transactions and briefly persisted synthetic Auth/content records, then removes only its exact fixture IDs in `finally`; it does not change the Master or send email. All hosted scripts require the exact authorized `AGENTRELAY_TEST_PROJECT_REF`. The concurrency script requires privileges to observe its own backend locks.
+
+## Review regression checks
+
+On your explicitly authorized hosted test project with the first nine migrations applied, run:
+
+```sh
+npx tsx --env-file=.env.local scripts/verify-review-fixes.ts
+```
+
+If the tenth migration is not applied, set `AGENTRELAY_VALIDATE_MIGRATION=1` for this command to apply it only inside the rollback transaction. It runs 69 checks including real authenticated-role SQL, the shared thread query (passing evidence beyond page one and hidden evidence), dependency-ordered application fixture cleanup, and the existing abuse/RLS/moderation suites. No Auth/email API is called; all schema and data writes are rolled back. This is separate from the older abuse-script flag, which validates the original abuse migration against its pre-migration baseline; do not use that older mode to validate the complete current schema.
+
+The local contract suite also covers content-aware request IDs, expanded-page refresh and shared publication-scanner patterns. It does not establish a browser workflow or interactive CAPTCHA result.

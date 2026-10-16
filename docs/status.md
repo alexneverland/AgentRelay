@@ -20,7 +20,15 @@ Updated 2026-10-16. This page describes the current implementation and maintaine
 2. New member inserts must serialize with moderation restrictions. The insert trigger now takes the existing account lock before checking membership. A two-transaction reproducer demonstrated the old race for questions, replies and test reports, then verified all three are rejected after a competing ban commits; legitimate writes still succeed after removing the synthetic restriction.
 3. Direct Supabase errors use PostgREST's native shape. Application HTTP responses have `Retry-After` and `retry_after_seconds`; direct Data API responses have `code: PT429` and the delay in `details`. These are separate documented contracts.
 
-A subsequent focused review reproduced a remaining ban race for member UPDATEs and privileged report/application writes. The ninth migration, `20261016162014_serialize_member_updates`, is applied to the operator-authorized maintained database. The source follow-up adds statement-level update guards and an account lock for non-staff community transactions. It is being prepared together with the translated Settings password-success notice; source publication does not itself establish deployment. See [verification](verification.md).
+A subsequent focused review reproduced a remaining ban race for member UPDATEs and privileged report/application writes. The ninth migration, `20261016162014_serialize_member_updates`, is applied to the operator-authorized maintained database. The source follow-up adds statement-level update guards and an account lock for non-staff community transactions. The source and translated Settings password-success notice were merged in PR #18; the dated deployment record is separate from human verification of the new notice. See [verification](verification.md).
+
+## Additional review fixes awaiting release
+
+The current review branch adds limits for authenticated `write_receipts` inserts (260/hour, 30/minute, 128-character fingerprint and 256 KiB logical JSON), a profile INSERT moderation guard, and database interest-array constraints (at most 10 non-null strings, each at most 32 characters). The tenth migration, `20261016182448_bound_member_storage`, has only been tested inside a rolled-back transaction; it is **not applied** to the maintained database.
+
+Thread replies now carry an RLS-aware `can_resolve` flag independent of test pagination. Refreshing a discussion reloads its expanded pages. Reply/test retries retain an ID for identical content and change it after edits. Application fixture cleanup removes dependent decision-mail records first. Staged and history publication scanners share rules; CI includes formatting; reported Greek translation gaps are filled.
+
+Verification: 45 contract/unit tests and 69 rollback database assertions (17 review regressions plus 52 existing abuse/RLS/moderation checks). The receipt-size defect was reproduced before the temporary migration. This is not a new live-browser/CAPTCHA/email test or a full two-transaction reproduction of the remaining profile/receipt race. No maintained users or emails were changed.
 
 ## Remaining work
 

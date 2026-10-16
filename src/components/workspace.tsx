@@ -40,6 +40,8 @@ import { Composer, AgentForm, TestForm, TokenForm } from './forms';
 import { SettingsPanel } from './settings';
 import { Settings } from 'lucide-react';
 import { isUnavailable } from '@/lib/request-error';
+import { nextWriteRequest, type WriteRequest } from '@/lib/write-request';
+import { loadThreadPages } from '@/lib/thread-pages';
 import { ServiceLinks } from './service-links';
 type View = 'questions' | 'agents' | 'connections' | 'inbox' | 'settings';
 export function Avatar({ name, small = false }: { name: string; small?: boolean }) {
@@ -83,7 +85,9 @@ export default function Workspace({ threadId }: { threadId?: string }) {
   const [access, setAccess] = useState<AccountAccess | null>(null);
   const identity = useRef<string | null>(null);
   const requestSequence = useRef(0);
+  const expandedThread = useRef({ id: threadId, pages: 1 });
   const refresh = useCallback(async () => {
+    if (expandedThread.current.id !== threadId) expandedThread.current = { id: threadId, pages: 1 };
     const sequence = ++requestSequence.current;
     setLoading(true);
     setError('');
@@ -100,9 +104,10 @@ export default function Workspace({ threadId }: { threadId?: string }) {
       const [d, result] = await Promise.all([
         api<Dashboard>('dashboard'),
         threadId
-          ? api<Thread>('get_thread', {
-              question_id: threadId,
-            })
+          ? loadThreadPages(
+              (offset) => api<Thread>('get_thread', { question_id: threadId, offset }),
+              expandedThread.current.pages,
+            )
           : api<{
               questions: Question[];
               next_offset: number | null;
@@ -215,7 +220,7 @@ export default function Workspace({ threadId }: { threadId?: string }) {
             onClick={() => nav('agents')}
           >
             <Users size={18} />
-            Agents
+            {tr('Agents')}
           </button>
           <button
             className={view === 'inbox' ? 'nav-item active' : 'nav-item'}
@@ -392,6 +397,7 @@ export default function Workspace({ threadId }: { threadId?: string }) {
                       offset: thread.next_offset,
                     });
                     if (sequence !== requestSequence.current) return;
+                    expandedThread.current.pages++;
                     setThread({
                       ...page,
                       replies: [...thread.replies, ...page.replies],
@@ -852,6 +858,7 @@ export default function Workspace({ threadId }: { threadId?: string }) {
       {testReply && threadId ? (
         <Modal title={tr('Record a local test')} onClose={() => setTestReply(null)}>
           <TestForm
+            key={testReply}
             onSubmit={async (data) => {
               await action('record_test_result', {
                 ...data,
@@ -1026,9 +1033,9 @@ function ThreadView({
   onMore: () => Promise<void>;
   onRefresh: () => void;
 }) {
+  const retry = useRef<WriteRequest | null>(null);
   const { t: tr, language } = useI18n();
   const [body, setBody] = useState(''),
-    [requestId, setRequestId] = useState(() => crypto.randomUUID()),
     [preview, setPreview] = useState(false),
     [busy, setBusy] = useState(false),
     [error, setError] = useState('');
@@ -1102,13 +1109,7 @@ function ThreadView({
               reply={r}
               tests={t.tests.filter((x) => x.reply_id === r.id)}
               accepted={q.accepted_reply_id === r.id}
-              canResolve={
-                owner === q.owner_id &&
-                q.status !== 'solved' &&
-                t.tests.some(
-                  (x) => x.reply_id === r.id && x.owner_id === owner && x.outcome === 'passed',
-                )
-              }
+              canResolve={owner === q.owner_id && q.status !== 'solved' && r.can_resolve}
               onTest={() => onTest(r.id)}
               onSolved={() => onSolved(r.id)}
             />
@@ -1137,8 +1138,9 @@ function ThreadView({
                 setBusy(true);
                 setError('');
                 try {
-                  await onReply(body, requestId);
-                  setRequestId(crypto.randomUUID());
+                  retry.current = nextWriteRequest(retry.current, { question_id: q.id, body });
+                  await onReply(body, retry.current.id);
+                  retry.current = null;
                   setBody('');
                   setPreview(false);
                 } catch (e) {

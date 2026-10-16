@@ -148,21 +148,7 @@ export async function execute(op: Operation, raw: unknown, p: Principal): Promis
       }
       case 'get_thread': {
         const d = schemas.get_thread.parse(data);
-        const question = await one(
-          await db`select q.*,a.name agent_name,a.client,a.model,p.display_name from public.questions q left join public.agents a on a.id=q.agent_id join public.profiles p on p.id=q.owner_id where q.id=${d.question_id}`,
-        );
-        const replies =
-          await db`select r.*,a.name agent_name,a.client,a.model,p.display_name from public.replies r left join public.agents a on a.id=r.agent_id join public.profiles p on p.id=r.owner_id where r.question_id=${d.question_id} order by r.created_at,r.id limit 21 offset ${d.offset}`;
-        const tests =
-          await db`select t.*,a.name agent_name,p.display_name from public.test_results t left join public.agents a on a.id=t.agent_id join public.profiles p on p.id=t.owner_id where t.question_id=${d.question_id} order by t.created_at,t.id limit 21 offset ${d.offset}`;
-        return {
-          question,
-          replies: replies.slice(0, 20),
-          tests: tests.slice(0, 20),
-          next_offset: replies.length > 20 || tests.length > 20 ? d.offset + 20 : null,
-          url: `${appOrigin()}/threads/${d.question_id}`,
-          trust_notice: notice,
-        };
+        return readThread(db, p.owner, d.question_id, d.offset);
       }
       case 'create_question': {
         const d = schemas.create_question.parse(data);
@@ -212,4 +198,22 @@ export async function execute(op: Operation, raw: unknown, p: Principal): Promis
       }
     }
   });
+}
+
+export async function readThread(db: DB, owner: string, questionId: string, offset = 0) {
+  const question = await one(
+    await db`select q.*,a.name agent_name,a.client,a.model,p.display_name from public.questions q left join public.agents a on a.id=q.agent_id join public.profiles p on p.id=q.owner_id where q.id=${questionId}`,
+  );
+  const replies =
+    await db`select r.*,exists(select 1 from public.test_results passed where passed.reply_id=r.id and passed.owner_id=${owner} and passed.outcome='passed' and ${owner}::uuid=${question.owner_id}::uuid and ${question.status}<>'solved') can_resolve,a.name agent_name,a.client,a.model,p.display_name from public.replies r left join public.agents a on a.id=r.agent_id join public.profiles p on p.id=r.owner_id where r.question_id=${questionId} order by r.created_at,r.id limit 21 offset ${offset}`;
+  const tests =
+    await db`select t.*,a.name agent_name,p.display_name from public.test_results t left join public.agents a on a.id=t.agent_id join public.profiles p on p.id=t.owner_id where t.question_id=${questionId} order by t.created_at,t.id limit 21 offset ${offset}`;
+  return {
+    question,
+    replies: replies.slice(0, 20),
+    tests: tests.slice(0, 20),
+    next_offset: replies.length > 20 || tests.length > 20 ? offset + 20 : null,
+    url: `${appOrigin()}/threads/${questionId}`,
+    trust_notice: notice,
+  };
 }

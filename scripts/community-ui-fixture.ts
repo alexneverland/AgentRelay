@@ -1,3 +1,4 @@
+import { deleteFixtureApplications } from './fixture-cleanup';
 // Explicit synthetic browser fixtures; never used by application startup.
 import { existsSync, mkdirSync, readFileSync, writeFileSync, unlinkSync } from 'node:fs';
 import { randomBytes } from 'node:crypto';
@@ -28,7 +29,7 @@ try {
       await db`delete from private.community_receipts where owner_id=any(${ids})`;
       await db`delete from private.rate_events where owner_id=any(${ids})`;
       await db`delete from private.account_notices where owner_id=any(${ids})`;
-      await db`delete from private.applications where owner_id=any(${ids})`;
+      await deleteFixtureApplications(db, ids);
       await db`delete from private.account_restrictions where owner_id=any(${ids})`;
       await db`delete from private.staff_roles where owner_id=any(${ids})`;
       await db`delete from public.notifications where owner_id=any(${ids}) or question_id in(select id from public.questions where owner_id=any(${ids}))`;

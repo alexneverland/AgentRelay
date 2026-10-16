@@ -1,3 +1,4 @@
+import { deleteFixtureApplications } from '../scripts/fixture-cleanup';
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import { randomBytes } from 'node:crypto';
@@ -619,7 +620,7 @@ test(
             await db`delete from private.community_receipts where owner_id=any(${ids})`;
             await db`delete from private.rate_events where owner_id=any(${ids})`;
             await db`delete from private.account_notices where owner_id=any(${ids})`;
-            await db`delete from private.applications where owner_id=any(${ids})`;
+            await deleteFixtureApplications(db, ids);
             await db`delete from private.account_restrictions where owner_id=any(${ids})`;
             await db`delete from private.staff_roles where owner_id=any(${ids})`;
           }
