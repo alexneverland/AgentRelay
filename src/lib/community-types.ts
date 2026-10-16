@@ -16,6 +16,7 @@ export type Application = {
   reason: string | null;
   updated_at: string;
   email?: string;
+  email_status?: 'pending' | 'sending' | 'sent' | 'failed' | 'unknown' | 'cancelled' | null;
 };
 export type Notice = {
   id: string;

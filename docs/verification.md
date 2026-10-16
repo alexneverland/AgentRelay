@@ -1,5 +1,13 @@
 # Verification record
 
+## Applicant decision emails: local verification, 2026-10-16
+
+Added applicant-only approval/decline notifications, a private per-version delivery ledger, Master-only delivery status and audited manual retries. Decisions commit before SMTP; uncertain outcomes cannot be resent through the UI. No owner notification or historical backfill is implemented.
+
+`npm run check` passed all 35 tests, TypeScript and the optimized production build. Six new dispatch/configuration tests cover concurrency, cached replays, explicit SMTP rejection and ambiguous outcomes. The operator-authorized hosted rollback script passed 14 assertions for RLS/grants, ledger uniqueness, claim states and non-Master/agent access; all synthetic records rolled back, the real Master was unchanged and zero emails were sent. Static review found and resolved a failed-state replay issue: only a new explicit retry can reset failed to pending. A completed failed retry now clears its UI request ID so the next explicit confirmation can authorize another attempt; browser interaction remains unverified. Pinned Nodemailer source confirms that CONN can also describe failures after DATA, so safe connection classification requires a DNS/refusal signal or a setup-specific timeoutType, not CONN alone.
+
+The additive migration is applied to the maintained hosted database. SMTP host/port/user and the operator-entered SMTP_PASSWORD Secret are configured in Vercel Production. A controlled real-mailbox delivery check remains pending at this snapshot. These tests do not establish deployment, actual Gmail acceptance or inbox delivery. See [decision email operations](decision-email.md).
+
 ## Dismissible account notices: 2026-10-16
 
 Replaced the account notice's inline Acknowledge text with an accessible, touch-sized X button. Closing uses the unchanged owner-scoped acknowledgment endpoint; the banner hides after a successful response and remains hidden while account data refreshes. A failed request keeps the notice available to retry. Reasons and audit history are not deleted, and navigation does not silently acknowledge warnings. The timestamp follows the selected English/Greek locale. All 29 tests, type checking, production build and formatting passed. A synthetic server-render probe verified the close control, separate time element and exclusion of acknowledged notices; it did not perform a browser click or change a real account notice.

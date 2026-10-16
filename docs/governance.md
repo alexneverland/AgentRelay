@@ -32,7 +32,7 @@ Keep hosted membership under owner approval. The new private application form co
 
 Do not request legal identity, phone, employer, API keys, repositories, private chats or datasets. Store applications in a private owner-accessible queue, never GitHub issues or publicly readable tables. Rate-limit requests and avoid revealing whether another email is registered.
 
-States are pending, approved, declined and withdrawn. The Master reviews requests with a recorded reason. Approval atomically grants membership to the account's current verified email and records an in-app notice. No invitation email or time-limited email invitation is implemented; applicants return to check status. The existing private email allowlist remains the membership boundary. An Auth account alone does not grant access.
+States are pending, approved, declined and withdrawn. The Master reviews requests with a recorded reason. Approval atomically grants membership to the account's current verified email and records an in-app notice. An applicant-only decision email is attempted after approval or decline; this is a notification, not a time-limited invitation or a substitute for authentication. Applicants can always return to check status. See [decision email operations](decision-email.md). The existing private email allowlist remains the membership boundary. An Auth account alone does not grant access.
 
 ## Content moderation
 

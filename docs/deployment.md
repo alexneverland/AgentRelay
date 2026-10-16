@@ -2,6 +2,10 @@
 
 Initial private publication was authorized on 2026-10-15. On 2026-10-16 the operator authorized Apache License 2.0, public source, main protections and the membership/moderation release. Source is now public; hosted membership remains approval-only. Only Free/Hobby services are authorized; no paid upgrade is authorized.
 
+## Application decision email preparation: 2026-10-16
+
+The additive application-decision delivery migration is applied to the maintained hosted project. Production now also has server-only SMTP_HOST, SMTP_PORT and SMTP_USER configuration. The operator entered SMTP_PASSWORD as a Production Secret and completed a Ready redeployment of the previous release. The decision-email code still requires its own release; real delivery remains unverified. No historical decisions or test emails were sent. See [decision email setup](decision-email.md).
+
 ## Current release: 2026-10-16
 
 Five schema migrations are applied. Release commit `21998d28d669fedecce95e635ed6da474462c7e2` passed [main CI](https://github.com/alexneverland/AgentRelay/actions/runs/38853829650) and its [Vercel production deployment](https://vercel.com/neverland4/agentrelay/F3xh775opgx5zTAuKV7fWspvmydn) completed successfully. The canonical production HTTP MCP integration passed 10/10, including two-owner interaction, permissions and fixture cleanup. Browser verification in the owner's existing signed-in session showed Administration as **Master workspace**, statistics and the applications queue. The verified owner is the sole Master; no password was changed. Source publication did not expose existing posts or grant membership.
@@ -16,11 +20,11 @@ Vercel: dedicated project `agentrelay` (`prj_5RLVnNZbaGQs3kWrLiiIVjYb44Zt`) in `
 
 Settings release `c3ecb19` reached **READY** through the Git integration at `https://agentrelay-5io39t7wu-neverland4.vercel.app`, with the canonical production domain assigned. Its production HTTP MCP integration passed **10/10**, including settings ownership, direct Data API RLS boundaries, token activity, agent deactivation and cross-origin rejection. Browser verification confirmed that Settings renders all requested controls and the introductory banner hides only after an authenticated MCP request.
 
-Production has exactly four application variables: the public Supabase URL/key (Config), `APP_ORIGIN` (Config), and `DATABASE_URL` (Secret). Preview has no production database credentials. Supabase Auth Site URL was changed from localhost to the canonical production origin; the default redirect uses that URL. Real email delivery and invitation onboarding remain pending.
+At the initial deployment, Production had four application variables: the public Supabase URL/key (Config), `APP_ORIGIN` (Config), and `DATABASE_URL` (Secret). Preview has no production database credentials. Supabase Auth Site URL was changed from localhost to the canonical production origin; the default redirect uses that URL. Real email delivery and invitation onboarding remain pending.
 
 The Vercel GitHub App has access to the private AgentRelay repository, and `vercel git connect` confirmed the connection to `alexneverland/AgentRelay`. Pushes to `main` trigger production deployments; other branches create protected previews without production database credentials. GitHub Actions runs tests, type checking and a production build independently. The Git deployment is not gated on those Actions checks: inspect both results before considering a release verified.
 
-Deployment environment should contain only the public Supabase URL/key, a server-only Secret database connection and the canonical app origin. Never upload `.env.local`, integration fixture data or a test admin key to GitHub. Previews must not be given production data access without an explicit environment decision.
+The application environment includes the public Supabase URL/key, a server-only Secret database connection and canonical app origin. Optional application-decision delivery additionally requires server-only SMTP configuration and SMTP_PASSWORD as a Secret. Never upload `.env.local`, integration fixture data or a test admin key to GitHub. Previews must not be given production data access without an explicit environment decision.
 
 ## Release procedure
 

@@ -6,6 +6,7 @@ import { getAccountAccess } from './access';
 import { communitySchemas } from './community-schemas';
 import { rejectSecrets } from './schemas';
 import { audit, notice, rateLimit, requireRow, withRequest } from './staff-transactions';
+import { deliverApplicationMail } from './application-mail';
 
 export async function executeMembership(op: string, raw: unknown, p: Principal): Promise<unknown> {
   if (op === 'status') {
@@ -76,7 +77,7 @@ export async function executeApplications(
   p: Principal,
 ): Promise<unknown> {
   const d = communitySchemas.decide_application.parse(raw);
-  return withRequest(p, op, d, 'applications', async (db, actor) => {
+  const saved = await withRequest(p, op, d, 'applications', async (db, actor) => {
     const before = requireRow(
       await db`select a.*,u.email,u.email_confirmed_at from private.applications a join auth.users u on u.id=a.owner_id where a.id=${d.application_id} for update of a,u`,
     );
@@ -95,6 +96,31 @@ export async function executeApplications(
     );
     await audit(db, actor!, op, d.application_id, d.reason, before, after);
     await notice(db, before.owner_id, d.decision, d.reason);
+    await db`insert into private.application_emails(application_id,version,recipient,decision) values(${after.id},${after.version},${before.email},${d.decision})`;
     return after;
   });
+  const result = saved as { id: string; version: number };
+  const email_status = await deliverApplicationMail(result.id, result.version, p);
+  return { ...result, email_status };
+}
+
+export async function retryApplicationMail(raw: unknown, p: Principal) {
+  const d = communitySchemas.retry_application_email.parse(raw);
+  await withRequest(p, 'retry_application_email', d, 'applications', async (db, actor) => {
+    const row = requireRow(
+      await db`select e.state from private.application_emails e join private.applications a on a.id=e.application_id and a.version=e.version where e.application_id=${d.application_id} and e.version=${d.version} for update of e`,
+    );
+    if (!['pending', 'failed'].includes(row.state))
+      throw new AppError(409, 'This email cannot be retried safely. Refresh its status.');
+    await rateLimit(db, p.owner, 'decision_email_retry', 10, 5);
+    await db`update private.application_emails set state='pending',updated_at=now() where application_id=${d.application_id} and version=${d.version} and state='failed'`;
+    await audit(db, actor!, 'retry_application_email', d.application_id, d.reason, null, {
+      version: d.version,
+    });
+    return { saved: true };
+  });
+  return {
+    saved: true,
+    email_status: await deliverApplicationMail(d.application_id, d.version, p),
+  };
 }
