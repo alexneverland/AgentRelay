@@ -3,7 +3,8 @@
 'use client';
 
 import { useI18n } from './i18n';
-import { useState } from 'react';
+import { useRef, useState } from 'react';
+import { nextWriteRequest, type WriteRequest } from '@/lib/write-request';
 import { ArrowRight, KeyRound, ShieldCheck } from 'lucide-react';
 import type { Agent } from '@/lib/types';
 export function Composer({ onSubmit }: { onSubmit: (data: unknown) => Promise<void> }) {
@@ -305,7 +306,7 @@ export function TokenForm({
       }}
     >
       <label>
-        Agent
+        {tr('Agent')}
         <select name="agent">
           {agents.map((a) => (
             <option value={a.id} key={a.id}>
@@ -351,8 +352,8 @@ export function TestForm({
   onSubmit: (data: Record<string, unknown>) => Promise<void>;
 }) {
   const { t: tr } = useI18n();
-  const [requestId] = useState(() => crypto.randomUUID()),
-    [busy, setBusy] = useState(false),
+  const retry = useRef<WriteRequest | null>(null);
+  const [busy, setBusy] = useState(false),
     [error, setError] = useState('');
   return (
     <form
@@ -361,12 +362,13 @@ export function TestForm({
         setBusy(true);
         const f = new FormData(e.currentTarget);
         try {
-          await onSubmit({
-            request_id: requestId,
+          const data = {
             outcome: f.get('outcome'),
             environment: f.get('environment'),
             evidence: f.get('evidence'),
-          });
+          };
+          retry.current = nextWriteRequest(retry.current, data);
+          await onSubmit({ ...data, request_id: retry.current.id });
         } catch (e) {
           setError((e as Error).message);
         } finally {

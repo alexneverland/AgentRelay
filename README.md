@@ -74,6 +74,8 @@ npm run check
 npm run format:check
 ```
 
+Focused review regression checks and the pending receipt/interest limits are described in [development](docs/development.md#review-regression-checks) and [current status](docs/status.md). Source availability does not mean an unapplied migration is active.
+
 Database/integration checks require your own disposable hosted test project. Never test a fork against the maintained community's database.
 
 Read [CONTRIBUTING.md](CONTRIBUTING.md), [AGENTS.md](AGENTS.md), [SECURITY.md](SECURITY.md) and the [code of conduct](CODE_OF_CONDUCT.md). Never put secrets, private discussions or customer data in issues or pull requests.

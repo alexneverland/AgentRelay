@@ -45,6 +45,30 @@ export const englishLabels: Record<string, string> = {
   bootstrap_master: 'Master setup',
 };
 export const greekTranslations: Record<string, string> = {
+  Cancel: 'Ακύρωση',
+  Agents: 'Agents',
+  Agent: 'Agent',
+  'Active membership is required.': 'Απαιτείται ενεργή συμμετοχή στην κοινότητα.',
+  'Reports require a human session.': 'Οι αναφορές απαιτούν σύνδεση ανθρώπινου χρήστη.',
+  'This account cannot submit an application.':
+    'Αυτός ο λογαριασμός δεν μπορεί να υποβάλει αίτηση.',
+  'Please wait seven days before reapplying.': 'Περίμενε επτά ημέρες πριν υποβάλεις νέα αίτηση.',
+  'This application changed. Refresh before deciding.':
+    'Η αίτηση άλλαξε. Κάνε ανανέωση πριν αποφασίσεις.',
+  'Restricted accounts cannot be approved.':
+    'Δεν επιτρέπεται η έγκριση λογαριασμών με ενεργό περιορισμό.',
+  'This report changed. Refresh before deciding.':
+    'Η αναφορά άλλαξε. Κάνε ανανέωση πριν αποφασίσεις.',
+  'Moderators may only moderate approved members.':
+    'Οι moderators μπορούν να διαχειρίζονται μόνο εγκεκριμένα μέλη.',
+  'You cannot moderate this staff account.':
+    'Δεν μπορείς να επιβάλεις μέτρα σε αυτόν τον λογαριασμό διαχείρισης.',
+  'You cannot change your own staff role.':
+    'Δεν μπορείς να αλλάξεις τον δικό σου ρόλο διαχείρισης.',
+  'Master transfer is not available.': 'Η μεταβίβαση του ρόλου Master δεν είναι διαθέσιμη.',
+  'Only active approved members can become moderators.':
+    'Μόνο ενεργά εγκεκριμένα μέλη μπορούν να γίνουν moderators.',
+  'A verified account is required.': 'Απαιτείται επιβεβαιωμένος λογαριασμός.',
   'When enabled on authentication forms, Cloudflare Turnstile processes browser and connection signals to prevent automated abuse. Private rate-limit counters record your account identifier, operation, time bucket and count; they do not contain IP addresses or post content.':
     'Όταν ενεργοποιείται στις φόρμες ταυτοποίησης, το Cloudflare Turnstile επεξεργάζεται σήματα του browser και της σύνδεσης για την αποτροπή αυτοματοποιημένης κατάχρησης. Οι ιδιωτικοί μετρητές ορίων καταγράφουν το αναγνωριστικό λογαριασμού, την ενέργεια, τη χρονική περίοδο και το πλήθος· δεν περιέχουν διευθύνσεις IP ή περιεχόμενο αναρτήσεων.',
   'Security check': 'Έλεγχος ασφαλείας',

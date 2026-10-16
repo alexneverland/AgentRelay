@@ -1,5 +1,6 @@
 // Read-only publication audit. Report locations and categories, never secret values.
 import { execFileSync } from 'node:child_process';
+import { privatePath, secretCategories } from './secret-rules.mjs';
 
 const git = (...args) =>
   execFileSync('git', args, { encoding: 'utf8', maxBuffer: 32 * 1024 * 1024 });
@@ -10,40 +11,13 @@ if (process.env.DATABASE_URL) {
   const password = decodeURIComponent(new URL(process.env.DATABASE_URL).password);
   if (password.length >= 8) known.push(password);
 }
-const rules = [
-  ['private-key', /-----BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY-----\r?\n[\s\S]{40}/],
-  ['provider-secret', /\b(?:sb_secret_|ghp_|github_pat_|sk-proj-)[A-Za-z0-9_-]{20,}/],
-  ['agent-token', /\bar_[a-f0-9]{64}\b/],
-  ['credential-uri', /postgres(?:ql)?:\/\/[^\s/:]+:[^\s@]{8,}@[a-z0-9.-]+:\d+/i],
-  ['jwt', /\beyJ[A-Za-z0-9_-]{15,}\.[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{20,}\b/],
-];
 const findings = [];
 function scan(content, location) {
-  if (known.some((value) => content.includes(value)))
-    findings.push({ location, category: 'known-local-secret' });
-  for (const [category, pattern] of rules) {
-    for (const match of content.matchAll(new RegExp(pattern.source, pattern.flags + 'g'))) {
-      // Example connection URIs are intentionally public, with explicit placeholders.
-      if (
-        category === 'credential-uri' &&
-        /YOUR_PASSWORD|YOUR_PROJECT|<[^>]+>|\$\{|:\$taskEncoded@/.test(match[0])
-      )
-        continue;
-      findings.push({ location, category });
-    }
-  }
+  for (const category of secretCategories(content, known)) findings.push({ location, category });
 }
 const files = git('ls-files', '-z').split('\0').filter(Boolean);
 function scanPath(file, location) {
-  if (
-    (/(^|\/)\.env(?:\.|$)/.test(file) && file !== '.env.example') ||
-    /(^|\/)(?:output|node_modules|\.next|\.vercel|playwright-report|test-results)\//.test(file) ||
-    /(?:^|\/)(?:token|pass|storage-state|auth-state)\.(?:txt|json)$|\.(?:pfx|p12|dump|log)$/i.test(
-      file,
-    )
-  ) {
-    findings.push({ location, category: 'private-or-generated-path' });
-  }
+  if (privatePath(file)) findings.push({ location, category: 'private-or-generated-path' });
 }
 for (const file of files) {
   scanPath(file, `index:${file}`);

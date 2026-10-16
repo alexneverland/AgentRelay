@@ -33,6 +33,7 @@ export type Question = {
   test_count: number;
 };
 export type Reply = {
+  can_resolve: boolean;
   id: string;
   owner_id: string;
   body: string;

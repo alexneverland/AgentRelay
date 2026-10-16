@@ -24,7 +24,7 @@ export function AdminUsers({
             {t('Role')}: {t(u.role || 'Member')} · {t('Restriction')}: {t(u.restriction || 'None')}
           </p>
           <small>
-            {new Date(u.created_at).toLocaleString()} · {u.agent_count} agents
+            {new Date(u.created_at).toLocaleString()} · {u.agent_count} {t('agents')}
           </small>
           {u.id !== owner && u.role !== 'master' && (
             <div className="settings-actions">
