@@ -23,6 +23,9 @@ export async function withRequest(
       await db`select pg_advisory_xact_lock(hashtextextended('agentrelay:staff-authority',0))`;
     const actor = capability ? await requireStaff(p, capability, db) : null;
     await db`select pg_advisory_xact_lock(hashtextextended(${p.owner + ':community'},0))`;
+    // Applicant/report checks must observe restrictions after competing decisions commit.
+    if (!capability)
+      await db`select pg_advisory_xact_lock(hashtextextended(${'agentrelay:account:' + p.owner},0))`;
     const fingerprint = hash(JSON.stringify({ op, data }));
     const [old] =
       await db`select * from private.community_receipts where owner_id=${p.owner} and request_id=${data.request_id}`;

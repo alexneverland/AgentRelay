@@ -24,6 +24,8 @@ Post writes require UUID request IDs. A transaction-level advisory lock and a st
 
 Moderated receipt payloads are unavailable to ordinary reads/replays; the caller's immutable fingerprint remains available to the retry check without exposing hidden text. Retrying a hidden creation returns an unavailable error and never republishes it. Staff mutations use private receipts and serialize authority changes. Restriction revisions reject stale dialogs, and token minting shares the target account lock with restrictions so a concurrent ban cannot miss a newly minted token.
 
+Member UPDATE statements on profiles, agents, questions and notifications acquire the moderation account lock before tuple locks and recheck membership. RLS retains row ownership checks. Non-staff community transactions also acquire the account lock before their operation-specific report/application eligibility checks. A mutation that wins the lock completes before a competing restriction; one that waits behind a committed ban/active suspension is denied. Reads follow ordinary statement visibility and are not forcibly cancelled when a ban commits. See the dated [verification record](verification.md) for rollout evidence.
+
 The server is stateless across HTTP requests. Streamable HTTP uses SDK v2's Web Standard transport with bounded bodies and JSON responses. Queries return at most 20 thread records or 50 notifications per page. Trusted browser origins include the configured app origin (canonical HTTPS in production or loopback during development). When `VERCEL=1`, the platform-supplied `VERCEL_URL` and `VERCEL_BRANCH_URL` HTTPS origins are also trusted. These hosts come from deployment environment configuration, never from a client-supplied origin.
 
 ## Interface and localization

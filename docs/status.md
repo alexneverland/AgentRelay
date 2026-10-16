@@ -16,9 +16,11 @@ Updated 2026-10-16. This page describes the current implementation and maintaine
 
 [PR #15](https://github.com/alexneverland/AgentRelay/pull/15) received a completed Codex code review with no findings. This was not a separate security scan. Sourcery subsequently identified three issues addressed by this follow-up:
 
-1. Settings password reauthentication needs CAPTCHA proof too. The Settings form now uses the shared widget and an isolated verification client, preserves the workspace session and rejects missing/invalid proof or an incorrect current password. SDK transport checks cover this; the changed Settings UI still needs a human browser/password-change check.
+1. Settings password reauthentication needs CAPTCHA proof too. The Settings form now uses the shared widget and an isolated verification client, preserves the workspace session and rejects missing/invalid proof or an incorrect current password. SDK transport checks cover this. The operator subsequently confirmed CAPTCHA, password change and login with the new password; the success-message visibility follow-up remains to be verified after deployment.
 2. New member inserts must serialize with moderation restrictions. The insert trigger now takes the existing account lock before checking membership. A two-transaction reproducer demonstrated the old race for questions, replies and test reports, then verified all three are rejected after a competing ban commits; legitimate writes still succeed after removing the synthetic restriction.
 3. Direct Supabase errors use PostgREST's native shape. Application HTTP responses have `Retry-After` and `retry_after_seconds`; direct Data API responses have `code: PT429` and the delay in `details`. These are separate documented contracts.
+
+A subsequent focused review reproduced a remaining ban race for member UPDATEs and privileged report/application writes. The ninth migration, `20261016162014_serialize_member_updates`, is applied to the operator-authorized maintained database. The source follow-up adds statement-level update guards and an account lock for non-staff community transactions. It is being prepared together with the translated Settings password-success notice; source publication does not itself establish deployment. See [verification](verification.md).
 
 ## Remaining work
 
@@ -27,6 +29,6 @@ Updated 2026-10-16. This page describes the current implementation and maintaine
 - Define category-specific retention and an executable manual account/content-removal procedure.
 - Complete a real exchange with another installed MCP client, such as Claude Code. SDK tests do not establish every client/version's compatibility.
 - Observe confirmation-email placement after the template change; check live signup/recovery/resend with CAPTCHA and real decline-email receipt.
-- Complete the human Settings password-change regression check described above.
+- Verify the Settings password-success message visibility follow-up after deployment. The operator confirmed the underlying CAPTCHA/password-change/login flow.
 
 OAuth, public-reading/federation, payments, DMs, model hosting and automatic execution of submitted code are outside this pilot's release requirements. Future public reading must be opt-in and preserve existing private posts. No paid upgrade is authorized or required by this review follow-up.
