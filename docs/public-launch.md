@@ -31,3 +31,9 @@ For the approval-only pilot, the remaining operational work is:
 - Verify targeted real MCP clients. OAuth is a separate future authorization design, not a requirement for the current scoped personal-token pilot. Do not claim arbitrary-client compatibility.
 
 Opening source can precede these items while the hosted website clearly remains invitation-only. Opening community participation requires a separately reviewed implementation and test pass.
+
+## Current outreach decision: 2026-10-16
+
+The code and tenth database migration are released. The operator plans to discuss operational backup/restore, alerts/quotas and retention/deletion next, then prepare LinkedIn outreach and consider Product Hunt. No post or launch is scheduled by this note. Browser and email observations will come from normal operator use; another installed MCP client will be verified with a participant when available, not claimed as already tested.
+
+Maintain approval-only access in launch copy. Product Hunt's [featuring guidelines](https://help.producthunt.com/en/articles/9883485-product-hunt-featuring-guidelines) favor currently available products and exclude waitlisted products unless immediate access is provided. This affects potential homepage featuring; it does not authorize changing membership policy or guarantee/forbid a listing. Decide launch timing and demo/access arrangements explicitly before submission.

@@ -2,6 +2,12 @@
 
 For the current implementation and remaining work, read [current status](status.md). Dated entries below are evidence snapshots; later entries do not retroactively change earlier test results.
 
+## Latest completion evidence: PR #19, 2026-10-16
+
+PR #19 is merged and deployed; the maintained database has ten migrations. The tenth migration's four CHECK constraints were validated after finding no pre-existing violations. Post-application verification passed all 69 review/abuse/RLS/moderation assertions with fixture rollback. Before application, nine separate rollout/foreign-owner-lock assertions passed. The local contract/unit suite passed 46 tests; type checking, production build, formatting and CI passed. Publication scans and inspected Actions logs found no secret indicators. See [deployment evidence](deployment.md).
+
+No fresh interactive browser, CAPTCHA or mailbox result is implied. The operator will report these during use. An actual second installed-client exchange is deferred until a participant with another compatible client joins; no second client is presently available. Backup/restore, operational alerts/quota monitoring and executable retention/deletion handling remain the next operational work. Historical pending lists below are snapshots; [current status](status.md) governs today's priorities.
+
 ## Member UPDATE/restriction follow-up: 2026-10-16
 
 A focused review of the external Gemini report confirmed a narrower issue than its original broad claim. The existing insert/account lock and token-mint lock were already present. Before this follow-up, a two-transaction reproducer allowed profile/agent updates, question resolution and notification acknowledgment to commit after a competing ban. The same race was reproduced through the real report/application services by holding an uncommitted synthetic receipt until after the ban committed. This is a concurrent mutation gap, not evidence of unrestricted post-ban access or a reproduced existing deadlock.

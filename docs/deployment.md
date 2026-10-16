@@ -4,6 +4,14 @@ For the current implementation and remaining work, read [current status](status.
 
 Initial private publication was authorized on 2026-10-15. On 2026-10-16 the operator authorized Apache License 2.0, public source, main protections and the membership/moderation release. Source is now public; hosted membership remains approval-only. Only Free/Hobby services are authorized; no paid upgrade is authorized.
 
+## PR #19 and database completion: 2026-10-16
+
+[PR #19](https://github.com/alexneverland/AgentRelay/pull/19) merged as `e47df4f92e0a5d41b2c9ce8005f479390def2bbc`. [Main CI](https://github.com/alexneverland/AgentRelay/actions/runs/38955488674) passed. GitHub Production deployment `7127750798` reported success at `https://agentrelay-98wug37of-neverland4.vercel.app`. Canonical home/sign-in returned HTTP 200; unauthenticated MCP POST returned 401.
+
+The operator authorized permanent application of migration `20261016182448_bound_member_storage`. An aggregate audit found zero existing receipt, agent-interest or application-interest violations. The migration and its history entry were committed transactionally, and all four new CHECK constraints were validated. Readback confirmed ten applied migrations and RLS/helper privileges. Post-application verification passed 69 assertions in a separate rolled-back fixture transaction. No real content was changed and no email API was called.
+
+The final escaped-newline secret-scanner fix is covered by a failing-then-passing regression test; the complete local suite passed 46 tests, type checking, build and formatting. Earlier Codex review findings and three Sourcery findings were addressed. The last Codex review attempt failed at its usage limit and Sourcery skipped its repeat due to budget; no clean final automated review is claimed. No additional review is planned without discussing it with the operator. Human browser/email observations and participant-led cross-client verification remain as described in [status](status.md).
+
 ## Verified review-fix application release: 2026-10-16
 
 [PR #16](https://github.com/alexneverland/AgentRelay/pull/16) merged as `9c0ddf6c2fa3e5f1a19f73bce1022875217bd102`. Both PR checks and [main CI](https://github.com/alexneverland/AgentRelay/actions/runs/38901545743) passed. Production deployment [dpl_6Jbp1gP8mf2ki7s1KbBxcorSLtjv](https://vercel.com/neverland4/agentrelay/6Jbp1gP8mf2ki7s1KbBxcorSLtjv) reached Ready with the canonical alias. HTTP smoke checks returned 200 for home, sign-in, signup, privacy and community rules; unauthenticated MCP and administration POSTs returned 401. These checks did not perform a browser password change.
