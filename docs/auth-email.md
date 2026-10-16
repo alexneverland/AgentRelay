@@ -4,6 +4,9 @@ Email confirmation never grants maintained-community membership. A verified acco
 
 ## Application flow
 
+- Sign in (`/sign-in`), signup (`/sign-up`), recovery-email requests (`/forgot-password`) and confirmation resend (`/resend-confirmation`) use separate persistent pages, not dismissible workspace dialogs. Navigation never copies field values between these flows; a fresh form has blank values supplied by the app.
+- Signup has two required matching password fields, validated before sending a signup request. Both use `autocomplete="new-password"`; sign-in uses `current-password`. Each flow has distinct stable form/input names and IDs. Signup and email-only forms request no email autofill. Password managers may override autocomplete hints; actual Google-generated password suggestions depend on browser/account settings and require a separate human check. The app does not erase a generated password after the user chooses one.
+- Settings password changes and email-link resets remain separate flows, with distinct form/input IDs and `new-password` on both new-password fields. Forgot password's initial page only asks for email; passwords are entered after opening a valid recovery link.
 - Sign in offers **Forgot password?** and **Resend confirmation**. Both email forms use generic account-neutral notices. Rate limits and delivery failures are reported without showing SMTP diagnostics.
 - Signup/resend return to the application's root. Recovery returns to the exact same-origin `/reset-password` page.
 - The recovery page enables password entry only after the SDK receives a valid `PASSWORD_RECOVERY` session. Its client keeps that session in memory with separate storage, without signing the normal workspace in or storing recovery credentials in local storage.

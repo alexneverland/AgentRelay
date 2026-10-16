@@ -10,6 +10,55 @@
   max-width: 520px;
   margin: 48px auto;
 }
+.auth-screen {
+  padding: 0 0 48px;
+  min-height: 100vh;
+}
+.auth-screen-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--line);
+}
+.auth-screen-header .brand {
+  margin: 0;
+  padding: 0;
+  color: var(--green);
+}
+.auth-screen-panel {
+  width: calc(100% - 32px);
+  max-width: 520px;
+  margin: 32px auto;
+}
+.auth-screen-panel h1 {
+  margin: 20px 0;
+  font-size: 1.8em;
+}
+.auth-screen-panel .centered {
+  display: block;
+  margin: 16px 0;
+  text-align: center;
+}
+.auth-screen-panel .service-links {
+  margin-top: 24px;
+}
+.auth-screen-panel label {
+  color: var(--ink);
+  font-size: calc(12px * var(--text-scale, 1));
+}
+.auth-screen-panel input {
+  font-size: calc(16px * var(--text-scale, 1));
+}
+.auth-screen-panel .text-button,
+.auth-screen-panel .form-intro {
+  color: var(--ink);
+}
+.auth-screen-panel .info-note {
+  color: var(--ink);
+  background: var(--mint);
+}
 .settings-panel {
   padding: 26px;
 }

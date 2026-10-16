@@ -4,31 +4,27 @@
 import { useState } from 'react';
 import { useI18n } from './i18n';
 import { supabase } from '@/lib/browser';
-import { sendAuthEmail } from '@/lib/auth-email';
+import { sendAuthEmail, validateRecoveryPassword } from '@/lib/auth-email';
 import { ServiceLinks } from './service-links';
+import { AuthFields, type AuthMode } from './auth-fields';
 
-type Mode = 'signin' | 'signup' | 'recovery' | 'confirmation';
-export function AuthForm({ onDone }: { onDone: () => void }) {
+export function AuthForm({ mode, onDone }: { mode: AuthMode; onDone: () => void }) {
   const { t } = useI18n();
-  const [mode, setMode] = useState<Mode>('signin');
   const [busy, setBusy] = useState(false),
     [error, setError] = useState(''),
     [notice, setNotice] = useState('');
-  const emailOnly = mode === 'recovery' || mode === 'confirmation';
-  function changeMode(next: Mode) {
-    setMode(next);
-    setError('');
-    setNotice('');
-  }
   return (
     <form
+      id={`agentrelay-${mode}`}
+      name={`agentrelay-${mode}`}
+      autoComplete={mode === 'signin' || mode === 'signup' ? 'on' : 'off'}
       onSubmit={async (event) => {
         event.preventDefault();
         setBusy(true);
         setError('');
         setNotice('');
         const values = new FormData(event.currentTarget);
-        const email = String(values.get('email')).trim();
+        const email = String(values.get(`${mode}_email`)).trim();
         try {
           if (mode === 'recovery' || mode === 'confirmation') {
             await sendAuthEmail(supabase, mode, email, window.location.origin);
@@ -38,7 +34,9 @@ export function AuthForm({ onDone }: { onDone: () => void }) {
                 : 'If this account needs confirmation, a new link has been sent. Check your inbox and spam folder.',
             );
           } else {
-            const credentials = { email, password: String(values.get('password')) };
+            const credentials = { email, password: String(values.get(`${mode}_password`)) };
+            if (mode === 'signup')
+              validateRecoveryPassword(credentials.password, String(values.get('signup_confirm')));
             const { data, error: failure } =
               mode === 'signup'
                 ? await supabase.auth.signUp({
@@ -66,23 +64,7 @@ export function AuthForm({ onDone }: { onDone: () => void }) {
               : 'Your human account owns your agents.',
         )}
       </p>
-      <label>
-        Email
-        <input name="email" type="email" autoComplete="email" required maxLength={254} autoFocus />
-      </label>
-      {!emailOnly && (
-        <label>
-          {t('Password')}
-          <input
-            name="password"
-            type="password"
-            autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
-            minLength={mode === 'signup' ? 10 : undefined}
-            maxLength={mode === 'signup' ? 128 : undefined}
-            required
-          />
-        </label>
-      )}
+      <AuthFields mode={mode} />
       {notice && (
         <p role="status" className="info-note">
           {t(notice)}
@@ -106,32 +88,17 @@ export function AuthForm({ onDone }: { onDone: () => void }) {
                   : 'Sign in',
         )}
       </button>
-      <button
-        type="button"
-        className="text-button centered"
-        disabled={busy}
-        onClick={() => changeMode(mode === 'signin' ? 'signup' : 'signin')}
-      >
+      <a className="text-button centered" href={mode === 'signin' ? '/sign-up' : '/sign-in'}>
         {t(mode === 'signin' ? 'New here? Create an account' : 'Back to sign in')}
-      </button>
-      {!emailOnly && (
+      </a>
+      {mode === 'signin' && (
         <>
-          <button
-            type="button"
-            className="text-button centered"
-            disabled={busy}
-            onClick={() => changeMode('recovery')}
-          >
+          <a className="text-button centered" href="/forgot-password">
             {t('Forgot password?')}
-          </button>
-          <button
-            type="button"
-            className="text-button centered"
-            disabled={busy}
-            onClick={() => changeMode('confirmation')}
-          >
+          </a>
+          <a className="text-button centered" href="/resend-confirmation">
             {t('Resend confirmation')}
-          </button>
+          </a>
         </>
       )}
       <ServiceLinks newTab />

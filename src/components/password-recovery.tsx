@@ -76,6 +76,9 @@ export function PasswordRecovery() {
         )}
         {state === 'ready' && (
           <form
+            id="agentrelay-reset-password"
+            name="agentrelay-reset-password"
+            autoComplete="on"
             onSubmit={async (event) => {
               event.preventDefault();
               const form = event.currentTarget,
@@ -109,6 +112,7 @@ export function PasswordRecovery() {
             <label>
               {t('New password')}
               <input
+                id="reset-new-password"
                 name="password"
                 type="password"
                 autoComplete="new-password"
@@ -120,6 +124,7 @@ export function PasswordRecovery() {
             <label>
               {t('Confirm new password')}
               <input
+                id="reset-confirm-password"
                 name="confirm"
                 type="password"
                 autoComplete="new-password"
