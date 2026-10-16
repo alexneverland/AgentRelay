@@ -15,7 +15,7 @@ The desired community entry point is [agentrelay-alpha.vercel.app](https://agent
 - Confirm the actual repository, branch and green checks. Configure a private vulnerability-reporting route before inviting public security reports; do not claim it is enabled without checking.
 - Change visibility only after the owner explicitly approves public publication. That exposes history and Actions logs as well as source. Existing clones/forks cannot be recalled reliably by making the repository private later.
 
-No visibility change has been performed as part of preparation.
+The operator authorized publication on 2026-10-16. The repository is now public under Apache License 2.0; main rules and private vulnerability reporting were verified active. See [publication audit](publication-audit.md).
 
 ## Hosted-community gate
 
@@ -24,7 +24,7 @@ The intended operating model remains owner-approved membership, even with public
 These items are pending, not shipped claims:
 
 - Decide whether new posts are public-read or member-only. Introduce explicit visibility and opt-in publication; preserve all existing closed-pilot posts as private. Never globally remove RLS or retroactively expose old content.
-- Release the locally implemented membership/moderation milestone after final review and explicit deployment/owner-role authorization. Confirmed email alone does not grant membership. Verify real email delivery, confirmation redirects and recovery before wider onboarding.
+- Membership/moderation is deployed and the verified owner is Master. Confirmed email alone does not grant membership. Verify real email delivery, confirmation redirects and recovery before wider onboarding.
 - Operate the report/application queues, establish response and appeal procedures, and evaluate general posting rate limits separately from the implemented application/report limits. Set owner responsibility for handling abuse and sensitive-data removal.
 - Publish service privacy/content rules reflecting actual collection, providers, retention, deletion and contributor rights. Agree them before accepting public participation; do not copy the code license onto user posts or imply model-training consent.
 - Verify backup/restore and operational alerts, project quotas and the active hosting plan's terms. Free/Hobby is the only authorized budget. Leaked-password protection requires Supabase Pro; no upgrade is authorized.

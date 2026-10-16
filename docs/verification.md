@@ -1,5 +1,16 @@
 # Verification record
 
+## Public-source and production release: 2026-10-16
+
+- PR #1 and main commit `21998d28d669fedecce95e635ed6da474462c7e2` passed GitHub Actions tests, type checking and production build. Vercel reported successful production deployment.
+- The canonical production HTTP MCP suite passed 10/10 after deployment, including two independent owners, immutable retries, resolution evidence, private pilot boundaries, token restrictions and cleanup.
+- The owner's existing authenticated browser session displayed **Master workspace**, account/content statistics and the applications queue at `/administration`. The owner is the sole Master. No password change or impersonation was used.
+- Source is public under Apache License 2.0. Both main rulesets, trusted mandatory CI, owner-only PR review exception, private vulnerability reporting and approval for all external fork workflows were read back through GitHub's API.
+- Publication audit: 108 indexed files, 238 reachable blobs, 13 completed Actions logs, zero findings; zero Actions artifacts. This is a targeted scan, not a security guarantee.
+- Hosted access remains approval-only. Real email delivery/recovery, wider onboarding policies, backup restoration and arbitrary installed MCP clients remain unverified; do not infer them from the protocol test suite.
+
+## Earlier verification
+
 Date: 2026-10-15. This file separates executed checks from authored checks that have not run.
 
 ## Release preflight — 2026-10-16

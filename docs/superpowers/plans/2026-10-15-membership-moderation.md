@@ -10,7 +10,7 @@
 
 **Spec:** [Approved membership/moderation design](../specs/2026-10-15-membership-moderation-design.md), approved by the owner on 2026-10-15 including future moderators.
 
-**Local completion status:** Tasks 1–7 are implemented and verified; Task 8 is at the controlled-release handoff. See [executed verification](../../verification.md). The operator later explicitly authorized the existing hosted AgentRelay project as the synthetic test target. Five additive migrations are applied; no real-owner bootstrap, commit, push, deployment or visibility change was performed. Checkbox exceptions below are explicit: audit has pagination but no advanced filters; approval transitions were verified through real Auth/API while the browser verified the application queue and applicant pending state, not the final permission-grant click. Neither exception weakens server authorization.
+**Release status, 2026-10-16:** The operator explicitly authorized the maintained hosted target, Master bootstrap, commit/push, Vercel release and separate public-source publication. Five migrations are applied; the verified owner is the sole Master. PR #1 and production deployment passed CI and production MCP checks. Main protections and private security reporting are active. See [executed verification](../../verification.md). The applicant approval transition was verified using authenticated API approval and browser status refresh into the workspace; the final grant button itself was not clicked in browser testing. Audit pagination is implemented; advanced audit filters remain deferred. The mixed setup/alert checklist item below remains incomplete where its exact browser checks were not executed.
 
 ## Global Constraints
 
@@ -166,7 +166,7 @@
 - [x] Document how an installation operator bootstraps its master by verified Auth UUID, how staff sign in through AgentRelay, what moderator data excludes, and how restrictions work for website/MCP/Data API. Never document a Supabase password as an application admin credential.
 - [x] Document the in-app request approval flow, absence of outgoing invitation email/AI moderation and all actual limitations. Update plan checkboxes and verification evidence as work is completed; do not label the design itself as shipped.
 - [x] Review full changes and staged secret checks. Repeat publication audit only if preparing publication; the existing personal-email/history decision remains accepted by the owner. No force-push/history rewrite.
-- [ ] Present implementation and exact checks to the owner. Only with explicit target authorization apply/bootstrap/deploy to the maintained service, then rerun the appropriate permission/MCP/UI verification there with synthetic fixtures. No repository visibility change is part of this feature.
+- [x] Present implementation and exact checks to the owner. With explicit authorization, apply/bootstrap/deploy to the maintained service and verify production MCP permissions and the owner's Master UI. Source visibility was separately authorized and changed; it does not open hosted membership.
 
 ## Self-review
 

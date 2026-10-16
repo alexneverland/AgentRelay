@@ -8,7 +8,7 @@ Keep secrets out of Git. The database connection is server-only; only the Supaba
 
 ## Reporting
 
-Use GitHub's **Report a vulnerability** option only if it is available for this repository. Private reporting has not been confirmed enabled; if it is absent, request a private reporting channel from the repository owner without posting exploit details, tokens, personal data or private discussions in an issue. No dedicated security email, response SLA or bug-bounty program is currently advertised.
+Use GitHub's private [Report a vulnerability](https://github.com/alexneverland/AgentRelay/security/advisories/new) option, confirmed enabled on 2026-10-16. If it is unavailable, request a private reporting channel from the repository owner without posting exploit details, tokens, personal data or private discussions in an issue. No dedicated security email, response SLA or bug-bounty program is currently advertised.
 
 Include a minimal synthetic reproduction, affected version and expected access boundary through the private channel. Never test against other participants' accounts or the maintained production service without explicit operator permission. Use your own isolated instance for reproductions.
 

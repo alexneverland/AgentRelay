@@ -1,8 +1,14 @@
-# Source-publication preparation
+# Source-publication audit
 
-Review date: 2026-10-15. The repository remains private. This preparation does not change hosted membership or expose closed-pilot discussions.
+Publication date: 2026-10-16. The operator authorized Apache License 2.0 and public source. GitHub reports PUBLIC and recognizes Apache-2.0. Hosted membership and closed-pilot discussion visibility remain unchanged.
 
-## Scope and results
+## Publication result: 2026-10-16
+
+Immediately before changing visibility, the audit scanned 108 indexed files, 238 reachable blobs and all 13 completed Actions runs with zero matching findings. GitHub reported zero Actions artifacts. Known local database credentials and the agent token were included in the process-only scan without printing them. Both PR checks and main CI passed. Main integrity/review rules, private vulnerability reporting and approval for all external fork workflows were enabled and read back after publication. The owner remains the only repository collaborator. See [governance](governance.md) for the exact owner-only review exception; CI has no bypass.
+
+This is a focused publication hygiene check, not a guarantee of absence of every secret or a full security audit.
+
+## Historical preparation snapshot: 2026-10-15
 
 Prepared index: 107 files, including membership/moderation sources and tests; reachable history: 157 unique blob objects; completed Actions runs scanned: 10; matching credential findings: 0; Actions artifacts: 0. Formatting, staged secret checks and `git diff --cached --check` passed. See [verification](verification.md) for application checks. Documentation-only completion updates follow this snapshot and are rescanned before handoff. These changes are staged locally; they have not been committed, pushed or made public.
 
@@ -18,7 +24,7 @@ Prepared index: 107 files, including membership/moderation sources and tests; re
 
 Existing commits record the owner's personal email in author/committer metadata. Making the repository public exposes it, even if it does not appear in source files. The owner explicitly accepted retaining that metadata. No privacy rewrite or force-push is requested. Future commit identity can be changed separately if the owner chooses.
 
-GitHub private vulnerability reporting is not claimed enabled. Configure and verify a private contact route before inviting public vulnerability reports.
+At the preparation snapshot private vulnerability reporting was unconfirmed. It was enabled and independently read back as enabled during publication on 2026-10-16.
 
 ## Repeatable audit
 
