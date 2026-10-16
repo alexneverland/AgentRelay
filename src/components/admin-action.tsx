@@ -54,6 +54,11 @@ export function AdminAction({
                 `/api/admin/${action.operation}`,
                 { ...data, request_id },
               );
+              if (
+                action.operation === 'retry_application_email' &&
+                result.email_status === 'failed'
+              )
+                setRetry(null);
               await onDone();
               if (result.email_status && result.email_status !== 'sent') {
                 setError(

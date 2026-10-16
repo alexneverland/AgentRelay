@@ -47,10 +47,19 @@ export function smtpSettings(env: Record<string, string | undefined>) {
   };
 }
 export function classifyMailFailure(error: unknown): 'failed' | 'unknown' {
-  const e = error as { code?: string; responseCode?: number };
+  const e = error as {
+    code?: string;
+    responseCode?: number;
+    timeoutType?: string;
+    originalCode?: string;
+  };
   return e &&
     (e.code === 'MAIL_CONFIG' ||
       e.code === 'EAUTH' ||
+      e.code === 'EDNS' ||
+      (e.code === 'ESOCKET' && e.originalCode === 'ECONNREFUSED') ||
+      (e.code === 'ETIMEDOUT' &&
+        ['CONNECT_TIMEOUT', 'GREETING_TIMEOUT', 'UPGRADE_TIMEOUT'].includes(e.timeoutType || '')) ||
       (typeof e.responseCode === 'number' && e.responseCode >= 400 && e.responseCode < 600))
     ? 'failed'
     : 'unknown';

@@ -25,7 +25,7 @@ Each application version has one delivery record. An atomic pending-to-sending c
 - **Pending:** no attempt has claimed the record; the Master can retry.
 - **Sending:** claimed, with an outcome not yet confirmed. Do not resend.
 - **Sent:** the SMTP server accepted the message. Inbox delivery is not confirmed.
-- **Failed:** configuration/authentication failure or explicit SMTP rejection; the saved decision remains valid. Correct the cause, then explicitly retry.
+- **Failed:** configuration/authentication failure, proven DNS/refused-connection/setup-timeout failure or explicit SMTP rejection; the saved decision remains valid. Correct the cause, then explicitly retry.
 - **Unknown:** an ambiguous transport or persistence outcome. Do not resend; reconcile with provider records manually.
 - **Cancelled:** application version/status or verified recipient changed before claim. No message was sent by that attempt.
 

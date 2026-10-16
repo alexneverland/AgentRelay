@@ -53,6 +53,26 @@ test('Uncertain SMTP outcomes are never marked safe to retry', () => {
   assert.equal(classifyMailFailure(new Error('Private SMTP diagnostics')), 'unknown');
 });
 
+test('Connection failures before the SMTP envelope can be retried explicitly', () => {
+  for (const error of [
+    { code: 'EDNS', command: 'CONN' },
+    { code: 'ETIMEDOUT', command: 'CONN', timeoutType: 'CONNECT_TIMEOUT' },
+    { code: 'ETIMEDOUT', command: 'CONN', timeoutType: 'GREETING_TIMEOUT' },
+    { code: 'ETIMEDOUT', command: 'CONN', timeoutType: 'UPGRADE_TIMEOUT' },
+    { code: 'ESOCKET', command: 'CONN', originalCode: 'ECONNREFUSED' },
+  ])
+    assert.equal(classifyMailFailure(error), 'failed');
+  for (const command of ['DATA', 'MAIL FROM', 'RCPT TO', undefined])
+    assert.equal(classifyMailFailure({ code: 'ETIMEDOUT', command }), 'unknown');
+  // This Nodemailer version also labels socket failures after DATA as CONN.
+  assert.equal(classifyMailFailure({ code: 'ECONNECTION', command: 'CONN' }), 'unknown');
+  assert.equal(classifyMailFailure({ code: 'ESOCKET', command: 'CONN' }), 'unknown');
+  assert.equal(
+    classifyMailFailure({ code: 'ETIMEDOUT', command: 'CONN', timeoutType: 'SOCKET_TIMEOUT' }),
+    'unknown',
+  );
+});
+
 test('A claimed decision is sent once; replay and uncertain outcomes cannot resend it', async () => {
   let state = 'pending',
     sends = 0;
