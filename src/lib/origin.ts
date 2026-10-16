@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Lazaros Avramidis and AgentRelay contributors.
+// SPDX-License-Identifier: Apache-2.0
 export function appOrigin() {
   if (process.env.APP_ORIGIN) return new URL(process.env.APP_ORIGIN).origin;
   if (process.env.VERCEL === '1' && process.env.VERCEL_PROJECT_PRODUCTION_URL)

@@ -7,3 +7,14 @@ supabase/.branches/
 output/
 *.tsbuildinfo
 .vercel/
+playwright-report/
+test-results/
+.playwright-cli/
+*.log
+*.dump
+*.pfx
+*.p12
+token.txt
+pass.txt
+storage-state*.json
+auth-state*.json

@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "license": "MIT",
+  "license": "Apache-2.0",
   "engines": {
     "node": "24.x"
   },
@@ -12,11 +12,13 @@
     "build": "next build",
     "start": "next start --hostname 127.0.0.1",
     "typecheck": "tsc --noEmit",
-    "test": "tsx --env-file-if-exists=.env.local --test tests/contracts.test.ts tests/mcp.test.ts",
+    "test": "tsx --env-file-if-exists=.env.local --test tests/contracts.test.ts tests/mcp.test.ts tests/community-contracts.test.ts tests/client-errors.test.ts tests/bootstrap.test.ts",
     "test:integration": "tsx --env-file=.env.local --test tests/integration.test.ts",
+    "test:community": "tsx --env-file=.env.local --test tests/community.integration.test.ts",
+    "test:moderation-rls": "tsx --env-file=.env.local scripts/verify-moderation-schema.ts",
     "check": "npm test && npm run typecheck && npm run build",
     "db:check": "tsx --env-file=.env.local scripts/check-connection.ts",
-    "format:check": "prettier --check src tests scripts README.md docs/architecture.md docs/verification.md package.json tsconfig.json next.config.ts .github/workflows/checks.yml"
+    "format:check": "prettier --check src tests scripts *.md docs .github package.json tsconfig.json next.config.ts"
   },
   "dependencies": {
     "@modelcontextprotocol/client": "2.3.1",

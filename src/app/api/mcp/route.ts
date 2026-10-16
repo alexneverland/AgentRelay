@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Lazaros Avramidis and AgentRelay contributors.
+// SPDX-License-Identifier: Apache-2.0
 import { WebStandardStreamableHTTPServerTransport } from '@modelcontextprotocol/server';
 import { authenticate, checkOrigin } from '@/lib/auth';
 import { createRelayMcpServer } from '@/lib/mcp';

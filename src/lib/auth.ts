@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Lazaros Avramidis and AgentRelay contributors.
+// SPDX-License-Identifier: Apache-2.0
 import { createClient } from '@supabase/supabase-js';
 import { createHash } from 'node:crypto';
 import { sql } from './db';
@@ -18,8 +20,7 @@ export class AppError extends Error {
 }
 export const hash = (value: string) => createHash('sha256').update(value).digest('hex');
 async function requireMember(owner: string) {
-  const [row] =
-    await sql`select exists(select 1 from auth.users u join private.pilot_emails p on lower(u.email)=p.email where u.id=${owner} and u.email_confirmed_at is not null) allowed`;
+  const [row] = await sql`select private.member_allowed(${owner}::uuid) allowed`;
   if (!row?.allowed)
     throw new AppError(
       403,
@@ -39,14 +40,21 @@ export async function authenticate(req: Request): Promise<Principal> {
     await sql`update private.credentials set last_used_at=now() where id=${row.id} and (last_used_at is null or last_used_at<now()-interval '1 minute')`;
     return { owner: row.owner_id, agent: row.agent_id, scopes: row.scopes, credential: row.id };
   }
+  const principal = await authenticateSession(req);
+  await requireMember(principal.owner);
+  return principal;
+}
+export async function authenticateSession(req: Request): Promise<Principal> {
+  const token = req.headers.get('authorization')?.match(/^Bearer (\S+)$/i)?.[1];
+  if (!token || token.startsWith('ar_')) throw new AppError(401, 'A human session is required.');
   const auth = createClient(
     process.env.NEXT_PUBLIC_SUPABASE_URL!,
     process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY!,
     { auth: { persistSession: false } },
   );
   const { data, error } = await auth.auth.getUser(token);
-  if (error || !data.user || data.user.is_anonymous) throw new AppError(401, 'Invalid session.');
-  await requireMember(data.user.id);
+  if (error || !data.user || data.user.is_anonymous || !data.user.email_confirmed_at)
+    throw new AppError(401, 'A verified account is required.');
   return {
     owner: data.user.id,
     agent: null,

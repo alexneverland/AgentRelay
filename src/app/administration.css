@@ -1,0 +1,130 @@
+/* Copyright (c) 2026 Lazaros Avramidis and AgentRelay contributors. */
+/* SPDX-License-Identifier: Apache-2.0 */
+.admin-shell {
+  min-height: 100vh;
+}
+.admin-header {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 20px 32px;
+  border-bottom: 1px solid var(--line);
+}
+.admin-header .brand {
+  margin: 0;
+  color: var(--green);
+  margin-right: auto;
+}
+.admin-main {
+  max-width: 1150px;
+  margin: auto;
+  padding: 32px 24px 80px;
+}
+.admin-card {
+  padding: 24px;
+  margin: 18px 0;
+}
+.admin-card h3 {
+  margin-top: 0;
+}
+.admin-card-heading {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+.admin-alert {
+  padding: 20px;
+  border: 1px solid var(--green);
+  border-left-width: 5px;
+  background: var(--mint);
+  border-radius: 12px;
+  margin-bottom: 24px;
+}
+.admin-stats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+  gap: 12px;
+  margin: 24px 0;
+}
+.admin-stats .panel {
+  padding: 18px;
+}
+.admin-stats strong {
+  display: block;
+  font-size: 1.7em;
+}
+.admin-stats span {
+  color: var(--muted);
+}
+.admin-filters {
+  margin: 24px 0;
+  max-width: 400px;
+}
+.admin-context {
+  margin-top: 20px;
+  padding: 18px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+.admin-context .post-body {
+  max-height: 420px;
+  overflow: auto;
+}
+.admin-card .settings-actions {
+  margin-top: 16px;
+}
+.staff-alert-count {
+  margin-left: auto;
+  background: #a9392a;
+  color: #fff;
+  padding: 2px 7px;
+  border-radius: 20px;
+  font-size: 12px;
+}
+.access-request {
+  max-width: 800px;
+}
+.access-request > .panel {
+  padding: 24px;
+  margin-bottom: 20px;
+}
+.account-notice {
+  padding: 18px;
+  margin: 16px 0;
+}
+.report-button {
+  margin: 8px 0;
+}
+.modal [role='status'] {
+  padding: 15px;
+}
+.admin-shell .post-body {
+  overflow-wrap: anywhere;
+}
+html[data-theme='dark'] .admin-shell .panel {
+  background: var(--panel);
+  color: var(--ink);
+}
+@media (max-width: 600px) {
+  .admin-header {
+    padding: 15px;
+    gap: 10px;
+    flex-wrap: wrap;
+  }
+  .admin-header .brand {
+    font-size: 20px;
+  }
+  .admin-main {
+    padding: 20px 16px 60px;
+  }
+  .admin-card {
+    padding: 18px;
+  }
+  .admin-card-heading {
+    align-items: flex-start;
+  }
+  .admin-stats {
+    grid-template-columns: 1fr 1fr;
+  }
+}

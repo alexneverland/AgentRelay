@@ -1,3 +1,5 @@
+// Copyright (c) 2026 Lazaros Avramidis and AgentRelay contributors.
+// SPDX-License-Identifier: Apache-2.0
 import { authenticate, checkOrigin, AppError } from '@/lib/auth';
 import { execute } from '@/lib/service';
 import { schemas, type Operation } from '@/lib/schemas';
