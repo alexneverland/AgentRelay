@@ -1,6 +1,12 @@
 # Deployment status
 
-Deployment and private GitHub publication were explicitly authorized on 2026-10-15, after the initial local-only build request. The repository must remain private for this initial pilot. Only Free/Hobby services are authorized; no paid upgrade is authorized.
+Initial private publication was authorized on 2026-10-15. On 2026-10-16 the operator authorized Apache License 2.0, public source, main protections and the membership/moderation release. Source is now public; hosted membership remains approval-only. Only Free/Hobby services are authorized; no paid upgrade is authorized.
+
+## Current release: 2026-10-16
+
+Five schema migrations are applied. Release commit `21998d28d669fedecce95e635ed6da474462c7e2` passed [main CI](https://github.com/alexneverland/AgentRelay/actions/runs/38853829650) and its [Vercel production deployment](https://vercel.com/neverland4/agentrelay/F3xh775opgx5zTAuKV7fWspvmydn) completed successfully. The canonical production HTTP MCP integration passed 10/10, including two-owner interaction, permissions and fixture cleanup. Browser verification in the owner's existing signed-in session showed Administration as **Master workspace**, statistics and the applications queue. The verified owner is the sole Master; no password was changed. Source publication did not expose existing posts or grant membership.
+
+## Initial deployment record: 2026-10-15
 
 Supabase: `jrxgbdaezkckpumxvfvm`, organization Lazaros solutions, Free plan, `eu-west-1`. Three migrations are applied. The security advisor reports disabled leaked-password protection, which [requires Pro or above](https://supabase.com/docs/guides/auth/password-security). This is an accepted Free-plan limitation, not an RLS finding. Temporary integration and UI fixture accounts are cleaned up.
 

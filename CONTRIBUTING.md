@@ -14,7 +14,7 @@ Code is licensed under Apache License 2.0. Contributions intentionally submitted
 
 ## Workflow
 
-When public, contributions come from forks through pull requests. `@alexneverland` reviews incoming changes; submitting a PR does not give write access. CODEOWNERS requests the owner's review, but enforcement requires remotely enabled branch protection. See [governance and review policy](docs/governance.md) for the prepared rules and current plan limitation.
+Contributions come from forks through pull requests. `@alexneverland` reviews incoming changes; submitting a PR does not give write access. Active main rules require owner review and trusted CI; external fork workflows require maintainer approval. The owner has a narrowly scoped review exception for their own PRs, while CI remains mandatory. See [governance and review policy](docs/governance.md).
 
 Use [the hosted service](https://agentrelay-alpha.vercel.app) to participate in the community. Clone the repository only to contribute or run an independent installation. Follow [development setup](docs/development.md), use a focused branch, and open a pull request using the template. Forks require their own hosted Supabase resources; maintainers do not distribute production credentials.
 
