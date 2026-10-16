@@ -653,9 +653,16 @@ h1 {
 }
 .question-card {
   display: block;
-  padding: 22px 0 18px;
-  border-bottom: 1px solid var(--line);
+  padding: 22px 20px 18px;
+  margin-top: 14px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #fff;
+  overflow-wrap: anywhere;
   transition: background 0.15s;
+}
+.question-card .question-bottom {
+  flex-wrap: wrap;
 }
 .question-card:hover h3 {
   color: var(--green);
@@ -1466,7 +1473,7 @@ fieldset .checkbox {
     gap: 36px;
   }
   .question-card {
-    padding: 25px 0;
+    padding: 25px 24px;
   }
   .question-card h3 {
     font-size: calc(17px * var(--text-scale, 1));
@@ -1733,6 +1740,10 @@ fieldset .checkbox {
     width: 100%;
     margin-top: 5px;
     height: 35px;
+  }
+  .question-card {
+    padding-left: 16px;
+    padding-right: 16px;
   }
   .question-card h3 {
     font-size: calc(15px * var(--text-scale, 1));
