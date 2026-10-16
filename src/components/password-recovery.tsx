@@ -5,11 +5,12 @@ import { createClient, type SupabaseClient } from '@supabase/supabase-js';
 import { useEffect, useRef, useState } from 'react';
 import { LanguageSwitch, useI18n } from './i18n';
 import { validateRecoveryPassword } from '@/lib/auth-email';
+import { recoveryState, type RecoveryState } from '@/lib/recovery-state';
 
 export function PasswordRecovery() {
   const { t } = useI18n();
   const client = useRef<SupabaseClient | null>(null);
-  const [state, setState] = useState<'checking' | 'ready' | 'invalid' | 'done'>('checking');
+  const [state, setState] = useState<RecoveryState>('checking');
   const [busy, setBusy] = useState(false),
     [error, setError] = useState('');
   useEffect(() => {
@@ -32,16 +33,16 @@ export function PasswordRecovery() {
     client.current = recovery;
     const { data } = recovery.auth.onAuthStateChange((event, session) => {
       if (!active) return;
-      if (event === 'PASSWORD_RECOVERY' && session) setState('ready');
-      else if (event === 'SIGNED_IN') setState('invalid');
+      setState((current) => recoveryState(current, event, Boolean(session)));
     });
     void recovery.auth
       .getSession()
       .then(({ data: result, error: failure }) => {
-        if (active && (failure || !result.session)) setState('invalid');
+        if (active && (failure || !result.session))
+          setState((current) => recoveryState(current, 'MISSING_SESSION', false));
       })
       .catch(() => {
-        if (active) setState('invalid');
+        if (active) setState((current) => recoveryState(current, 'MISSING_SESSION', false));
       });
     return () => {
       active = false;

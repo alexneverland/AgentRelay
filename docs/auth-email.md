@@ -7,6 +7,7 @@ Email confirmation never grants maintained-community membership. A verified acco
 - Sign in offers **Forgot password?** and **Resend confirmation**. Both email forms use generic account-neutral notices. Rate limits and delivery failures are reported without showing SMTP diagnostics.
 - Signup/resend return to the application's root. Recovery returns to the exact same-origin `/reset-password` page.
 - The recovery page enables password entry only after the SDK receives a valid `PASSWORD_RECOVERY` session. Its client keeps that session in memory with separate storage, without signing the normal workspace in or storing recovery credentials in local storage.
+- Once validated, recovery survives later `SIGNED_IN` notifications emitted when the browser tab becomes visible, as well as session refresh/update notifications. Ordinary sign-in alone never enables the form. Sign-out invalidates the recovery form; server Auth still validates password updates.
 - Passwords must match and contain 10–128 characters. Supabase may enforce additional server policy. On success, the temporary recovery session signs out locally. This does not claim to revoke all existing access JWTs or agent tokens.
 - Missing, invalid and expired links show a request-new-link message. Reloading a consumed recovery page loses its memory-only session; request a new link. The recovery page has `no-referrer` and `noindex, nofollow` metadata.
 

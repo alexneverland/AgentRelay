@@ -1,5 +1,9 @@
 # Verification record
 
+## Recovery visibility regression: 2026-10-16
+
+The operator observed a valid email recovery form becoming invalid after switching tabs. The installed Auth SDK re-emits `SIGNED_IN` during visibility recovery, and the page incorrectly treated every such event as a fresh non-recovery login. Three failing state-transition tests reproduced the invalidation, late initialization overwrite and terminal-state overwrite. The fix preserves validated recovery across ordinary session notifications while keeping sign-out invalidation and refusing ordinary sign-in as recovery authority. All 24 credential-free tests passed; production build/type checking are part of release CI. SMTP configuration and recovery-email receipt were confirmed separately, but a completed real password change remains unverified.
+
 ## Authentication email follow-up: local verification, 2026-10-16
 
 Added recovery/resend to Sign in and a memory-only `/reset-password` session. Four new SDK transport/password-validation tests passed, with 21 total credential-free tests passing. These transport tests use controlled HTTP responses, not a real mailbox. Browser checks verified both email-only forms, the missing-link rejection, English/Greek, and password form rendering from a synthetic callback backed by a real temporary Auth session. The normal workspace remained signed out. No password was entered or changed, no email was sent by this probe, and the exact account/token fixture was removed. Hosted SMTP remains unconfigured at this snapshot; real delivery, email-link navigation and user-completed password reset are pending. See [authentication email](auth-email.md).
