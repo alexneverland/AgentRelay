@@ -3,7 +3,11 @@ import { execFileSync } from 'node:child_process';
 const files = execFileSync('git', ['diff', '--cached', '--name-only', '-z'], { encoding: 'utf8' })
   .split('\0')
   .filter(Boolean);
-const known = [process.env.DATABASE_URL, process.env.SUPABASE_TEST_SECRET_KEY].filter(Boolean);
+const known = [
+  process.env.DATABASE_URL,
+  process.env.SUPABASE_TEST_SECRET_KEY,
+  process.env.SMTP_PASSWORD,
+].filter(Boolean);
 if (process.env.DATABASE_URL) {
   const password = decodeURIComponent(new URL(process.env.DATABASE_URL).password);
   if (password.length >= 8) known.push(password);

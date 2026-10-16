@@ -50,8 +50,17 @@ export function AdminAction({
             const request_id = retry?.fingerprint === fingerprint ? retry.id : crypto.randomUUID();
             setRetry({ fingerprint, id: request_id });
             try {
-              await authenticatedRequest(`/api/admin/${action.operation}`, { ...data, request_id });
+              const result = await authenticatedRequest<{ email_status?: string }>(
+                `/api/admin/${action.operation}`,
+                { ...data, request_id },
+              );
               await onDone();
+              if (result.email_status && result.email_status !== 'sent') {
+                setError(
+                  'The decision is saved. Email delivery is not confirmed. Check its status in Applications.',
+                );
+                return;
+              }
               onClose();
             } catch (e) {
               setError((e as Error).message);

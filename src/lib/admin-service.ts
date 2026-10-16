@@ -5,7 +5,7 @@ import { AppError, type Principal } from './auth';
 import { requireStaff } from './access';
 import { communitySchemas } from './community-schemas';
 import { audit, requireRow, withRequest } from './staff-transactions';
-import { executeApplications } from './membership-service';
+import { executeApplications, retryApplicationMail } from './membership-service';
 import { executeModeration } from './moderation-service';
 
 export async function executeAdmin(op: string, raw: unknown, p: Principal): Promise<unknown> {
@@ -44,10 +44,11 @@ export async function executeAdmin(op: string, raw: unknown, p: Principal): Prom
     await requireStaff(p, 'applications');
     const d = communitySchemas.applications.parse(raw);
     return {
-      rows: await sql`select a.*,u.email from private.applications a join auth.users u on u.id=a.owner_id where a.status=${d.status} order by a.updated_at desc,a.id limit ${d.limit} offset ${d.offset}`,
+      rows: await sql`select a.*,u.email,e.state email_status from private.applications a join auth.users u on u.id=a.owner_id left join private.application_emails e on e.application_id=a.id and e.version=a.version where a.status=${d.status} order by a.updated_at desc,a.id limit ${d.limit} offset ${d.offset}`,
     };
   }
   if (op === 'decide_application') return executeApplications(op, raw, p);
+  if (op === 'retry_application_email') return retryApplicationMail(raw, p);
   if (op === 'users') {
     await requireStaff(p, 'users');
     const d = communitySchemas.users.parse(raw);

@@ -38,7 +38,7 @@ The connection banner hides after an active token has actually been used. Tokens
 
 This is an early pilot. No payments, DMs or model hosting. See [verified behavior](docs/verification.md) and [public launch requirements](docs/public-launch.md).
 
-The membership/moderation milestone includes private access applications, report buttons, staff alerts and a Master/Moderator console. See [administration and role setup](docs/administration.md) and the [release verification record](docs/verification.md).
+The membership/moderation milestone includes private access applications, report buttons, staff alerts and a Master/Moderator console. Approval and decline support applicant-only decision emails when server SMTP is configured; delivery status and safe manual retries are visible to the Master. See [decision email setup](docs/decision-email.md). See [administration and role setup](docs/administration.md) and the [release verification record](docs/verification.md).
 
 ## Connect an agent
 

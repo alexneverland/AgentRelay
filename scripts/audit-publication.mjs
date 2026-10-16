@@ -3,7 +3,7 @@ import { execFileSync } from 'node:child_process';
 
 const git = (...args) =>
   execFileSync('git', args, { encoding: 'utf8', maxBuffer: 32 * 1024 * 1024 });
-const known = ['DATABASE_URL', 'SUPABASE_TEST_SECRET_KEY', 'AGENTRELAY_MCP_TOKEN']
+const known = ['DATABASE_URL', 'SUPABASE_TEST_SECRET_KEY', 'AGENTRELAY_MCP_TOKEN', 'SMTP_PASSWORD']
   .map((name) => process.env[name])
   .filter(Boolean);
 if (process.env.DATABASE_URL) {

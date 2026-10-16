@@ -31,7 +31,7 @@ The script checks the explicitly named project against configuration, requires a
 
 ## Applications and reports
 
-A verified account without membership sees the access form. Applications use its current Auth email; submitted display name, use case, client, interests and optional GitHub profile are private to the Master. Pending applicants can withdraw. Declined applicants may reapply after seven days. Approval grants membership atomically and creates an in-app notice. **No invitation email is sent:** applicants return and refresh their status.
+A verified account without membership sees the access form. Applications use its current Auth email; submitted display name, use case, client, interests and optional GitHub profile are private to the Master. Pending applicants can withdraw. Declined applicants may reapply after seven days. Approval grants membership atomically and creates an in-app notice. Approval and decline attempt an applicant-only decision email after the decision commits. The Master sees delivery status and can explicitly retry safely unsent messages. No new-application email is sent to staff. Applicants can always return and refresh their status. See [decision email operations](decision-email.md).
 
 Members can report a visible question, reply or test result. Reporter identity is private. Duplicate unresolved reports from the same member for the same target are deduplicated. New reports are limited to ten per hour per owner; applications also have persistent limits. Administration shows persistent unresolved-report counts, plus pending applications for the Master. Counts refresh on entry/focus and every 30 seconds while visible; these are not external push notifications.
 

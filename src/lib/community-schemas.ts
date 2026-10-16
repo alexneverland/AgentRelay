@@ -67,6 +67,12 @@ export const communitySchemas = {
     decision: z.enum(['approved', 'declined']),
     reason,
   }),
+  retry_application_email: z.strictObject({
+    ...request,
+    application_id: id,
+    version: z.number().int().positive(),
+    reason,
+  }),
   reports: z.strictObject({
     ...page,
     status: z.enum(['open', 'reviewing', 'resolved', 'dismissed']).default('open'),

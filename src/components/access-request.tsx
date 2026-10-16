@@ -116,7 +116,11 @@ export function AccessRequest({
                 {t('Application status')}: {t(application.status)}
               </strong>
               {application.reason && <p>{application.reason}</p>}
-              <p>{t('Return here to check your application. No invitation email is sent yet.')}</p>
+              <p>
+                {t(
+                  'An email is sent after review when delivery is available. You can always return here to check your application.',
+                )}
+              </p>
               {application.status === 'pending' && (
                 <button
                   className="button secondary"

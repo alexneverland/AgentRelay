@@ -6,7 +6,7 @@ These pages describe the maintained community, not independently hosted forks. F
 
 ## Requests and appeals
 
-- The Master monitors the published mailbox manually. Reports in the website continue to use the private staff queue. This change creates no new inbox, ticket table, email automation or AI moderation provider.
+- The Master monitors the published mailbox manually. Reports in the website continue to use the private staff queue. Privacy requests and appeals have no automated replies or AI moderation provider. Separately, application approval and decline attempt applicant-only transactional emails; see [decision email operations](decision-email.md).
 - For account/privacy requests, verify ownership using minimal necessary information, preferably a reply from the registered email. Never request passwords or tokens. Explain any additional verification before asking for documents.
 - Record receipt, scope, verification, applicable response deadline, decision and completion in a private operator record outside Git. Reply within applicable legal time limits and explain any permitted extension or refusal. Do not advertise a 24/7 moderation SLA.
 - Appeals should identify the notice/post and disputed reason. The Master reviews Moderator decisions and explains the result. There is no independent appeal panel; a Master decision is reviewed by the Master unless a separate reviewer is arranged.
