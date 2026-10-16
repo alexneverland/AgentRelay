@@ -2,6 +2,16 @@
 
 For the current implementation and remaining work, read [current status](status.md). Dated entries below are evidence snapshots; later entries do not retroactively change earlier test results.
 
+## Member UPDATE/restriction follow-up: 2026-10-16
+
+A focused review of the external Gemini report confirmed a narrower issue than its original broad claim. The existing insert/account lock and token-mint lock were already present. Before this follow-up, a two-transaction reproducer allowed profile/agent updates, question resolution and notification acknowledgment to commit after a competing ban. The same race was reproduced through the real report/application services by holding an uncommitted synthetic receipt until after the ban committed. This is a concurrent mutation gap, not evidence of unrestricted post-ban access or a reproduced existing deadlock.
+
+Migration `20261016162014_serialize_member_updates` adds an authenticated statement-level guard to the four member-updatable public tables. It takes the account lock before tuple locks and rechecks current membership; existing RLS still enforces row ownership. Trusted moderation updates retain their existing account-lock path. Non-staff community transactions take the same account lock before checking report/application eligibility; withdrawal and own-account notices retain their existing semantics. Reads already in flight are not cancelled or globally locked. Token minting already takes the account lock and did not require a change.
+
+The operator confirmed the deployed Settings CAPTCHA/password-change/login flow. Its generic success notice was above the form; this follow-up places a specific translated password-success status next to the submit button. Actual browser visibility of the new notice remains pending after release.
+
+Verification passed: 16 restriction-first cases (seven direct member operations against both ban and suspension, plus the real report/application services against ban), 10 legitimate writes, two idempotent service replays and a reverse-order resolution/moderation case. All exact synthetic fixtures were removed; no emails were sent or real accounts changed. The 52 rollback SQL assertions, 41 credential-free tests, TypeScript and production build also passed. The Supabase security advisor returned the existing intentionally private deny-all RLS information and disabled leaked-password protection warning, with no new function/search-path warning. Leaked-password protection remains outside the authorized Free plan; see [Supabase guidance](https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection). Full Auth HTTP suites were not rerun against CAPTCHA-enabled production. No new real-client or browser-notice verification is claimed.
+
 ## Review follow-up and current evidence: 2026-10-16
 
 PR #15's Codex code review completed with no findings for `05c7c8d`; no separate Codex Security scan was run. Sourcery subsequently reported Settings password reauthentication without CAPTCHA, a ban/insert race and an ambiguous direct-Data-API retry contract. This follow-up fixes the first two and documents PostgREST's native `PT429`/`details` contract separately from application HTTP headers/JSON.

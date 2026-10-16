@@ -315,6 +315,7 @@ export const greekTranslations: Record<string, string> = {
   'Display name': 'Εμφανιζόμενο όνομα',
   'Save profile': 'Αποθήκευση προφίλ',
   'Saved successfully.': 'Αποθηκεύτηκε επιτυχώς.',
+  'Your password has been changed successfully.': 'Ο κωδικός σας άλλαξε επιτυχώς.',
   'Change password': 'Αλλαγή κωδικού',
   'Current password': 'Τρέχων κωδικός',
   'New password': 'Νέος κωδικός',

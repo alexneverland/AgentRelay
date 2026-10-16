@@ -11,6 +11,8 @@ import { Appearance } from './appearance';
 import { AuthCaptcha } from './auth-captcha';
 import { changeAccountPassword } from '@/lib/change-password';
 
+const passwordSuccess = 'Your password has been changed successfully.';
+
 export function SettingsPanel({
   dashboard,
   session,
@@ -35,13 +37,13 @@ export function SettingsPanel({
   const [busy, setBusy] = useState(false),
     [message, setMessage] = useState(''),
     [error, setError] = useState('');
-  async function run(work: () => Promise<void>) {
+  async function run(work: () => Promise<void>, success = 'Saved successfully.') {
     setBusy(true);
     setError('');
     setMessage('');
     try {
       await work();
-      setMessage(t('Saved successfully.'));
+      setMessage(success);
     } catch (e) {
       setError((e as Error).message);
     } finally {
@@ -50,9 +52,9 @@ export function SettingsPanel({
   }
   return (
     <div className="settings-stack">
-      {message && (
+      {message && message !== passwordSuccess && (
         <p role="status" className="info-note">
-          {message}
+          {t(message)}
         </p>
       )}
       {error && (
@@ -127,7 +129,7 @@ export function SettingsPanel({
                   setCaptchaToken('');
                   setCaptchaVersion((v) => v + 1);
                 }
-              });
+              }, passwordSuccess);
             }}
           >
             <label>
@@ -170,6 +172,11 @@ export function SettingsPanel({
             <button className="button primary" disabled={busy || Boolean(siteKey && !captchaToken)}>
               {t('Update password')}
             </button>
+            {message === passwordSuccess && (
+              <p role="status" className="info-note">
+                {t(passwordSuccess)}
+              </p>
+            )}
           </form>
         </details>
         <button
