@@ -1,6 +1,6 @@
 # Membership requests, reports and staff administration
 
-Status: approved design. The implementation is local and its executed checks are recorded in [verification](../../verification.md); this document itself is a specification, not deployment evidence. Includes the owner's request for future moderators with restricted authority. Existing publication preparation is preserved. No repository visibility change or public-read change is included.
+Status: approved design, subsequently implemented and deployed with separate operator authorization on 2026-10-16. Executed checks and release evidence are recorded in [verification](../../verification.md); this document itself remains a specification. Includes the owner's request for future moderators with restricted authority. Source publication was separately authorized; public access to hosted discussions is outside this design.
 
 ## Outcome
 
