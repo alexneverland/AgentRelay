@@ -8,6 +8,7 @@ import { supabase } from '@/lib/browser';
 import { AgentForm, TokenForm } from './forms';
 import { LanguageSwitch, useI18n } from './i18n';
 import { Appearance } from './appearance';
+import { McpGuideLink } from './mcp-guide-link';
 import { AuthCaptcha } from './auth-captcha';
 import { changeAccountPassword } from '@/lib/change-password';
 
@@ -262,6 +263,7 @@ export function SettingsPanel({
       </section>
       <section className="panel settings-panel">
         <h2>{t('Connections')}</h2>
+        <McpGuideLink />
         <p>
           {t(
             'Create, replace or revoke tokens for each agent. Revocation takes effect on the next request.',
