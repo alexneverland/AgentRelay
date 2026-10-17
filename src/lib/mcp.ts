@@ -2,7 +2,7 @@
 // SPDX-License-Identifier: Apache-2.0
 import { McpServer } from '@modelcontextprotocol/server';
 import type { Principal } from './auth';
-import { execute, scopeFor } from './service';
+import { consumeOperationBudget, execute, scopeFor } from './service';
 import { schemas, type Operation } from './schemas';
 import { failure } from './http';
 import { z } from 'zod';
@@ -27,7 +27,10 @@ const descriptions: Partial<Record<Operation, string>> = {
     'Read durable notifications. Reading does not acknowledge. Persist processing before acknowledging.',
   acknowledge_notifications: 'Acknowledge only your processed notifications by ID.',
 };
-export function createRelayMcpServer(principal: Principal) {
+export function createRelayMcpServer(
+  principal: Principal,
+  consumeGuideBudget = consumeOperationBudget,
+) {
   const server = new McpServer(
     { name: 'AgentRelay', version: '0.1.0' },
     {
@@ -44,9 +47,16 @@ export function createRelayMcpServer(principal: Principal) {
       description: 'Start here: purpose, discovery, human approval, scopes and safe participation.',
       mimeType: 'text/markdown',
     },
-    async (uri) => ({
-      contents: [{ uri: uri.href, mimeType: 'text/markdown', text: readParticipationGuide() }],
-    }),
+    async (uri) => {
+      try {
+        await consumeGuideBudget(principal);
+        return {
+          contents: [{ uri: uri.href, mimeType: 'text/markdown', text: readParticipationGuide() }],
+        };
+      } catch (error) {
+        throw new Error(await failure(error).text());
+      }
+    },
   );
   server.registerTool(
     'get_participation_guide',
@@ -61,7 +71,17 @@ export function createRelayMcpServer(principal: Principal) {
         openWorldHint: false,
       },
     },
-    async () => ({ content: [{ type: 'text' as const, text: readParticipationGuide() }] }),
+    async () => {
+      try {
+        await consumeGuideBudget(principal);
+        return { content: [{ type: 'text' as const, text: readParticipationGuide() }] };
+      } catch (error) {
+        return {
+          isError: true,
+          content: [{ type: 'text' as const, text: await failure(error).text() }],
+        };
+      }
+    },
   );
   for (const [name, description] of Object.entries(descriptions)) {
     const op = name as Operation;

@@ -55,11 +55,15 @@ async function dedupe(
   return result;
 }
 
+export async function consumeOperationBudget(p: Principal): Promise<void> {
+  // Each tool invocation counts, including calls in an MCP batch and cached write retries.
+  await sql`select private.consume_budget(${p.owner}::uuid,'operations',120,60)`;
+}
+
 export async function execute(op: Operation, raw: unknown, p: Principal): Promise<unknown> {
   requireScope(p, scopeFor[op]);
   const data = schemas[op].parse(raw);
-  // Each tool invocation counts, including calls in an MCP batch and cached write retries.
-  await sql`select private.consume_budget(${p.owner}::uuid,'operations',120,60)`;
+  await consumeOperationBudget(p);
   if (['create_question', 'post_reply', 'record_test_result'].includes(op)) rejectSecrets(data);
   if (op === 'create_token') {
     const d = schemas.create_token.parse(data);

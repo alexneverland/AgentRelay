@@ -4,6 +4,8 @@ For the current implementation and remaining work, read [current status](status.
 
 ## Local participation onboarding: 2026-10-17
 
+PR #24 review follow-up: the guide tool and resource now consume the same owner operation budget as community operations before reading the guide. The added SDK regression failed on the original callbacks and passed after the fix: two clients share the budget, exhausted concurrent tool/resource reads return no guide, and errors omit private database diagnostics. All 58 local tests, type checking, production build and formatting passed. This uses an injected budget for SDK contract coverage, not a new hosted-database load test. Preview deployment succeeded, but authenticated health returned 503 and the CLI confirmed no Preview environment variables; live MCP verification remains blocked by Preview configuration. Production configuration was not copied.
+
 The updated SDK tests passed 57 local assertions/tests overall, including real in-memory initialization, scope-filtered tool discovery, canonical guide retrieval through both MCP resource and read-only tool, rejection of unknown resources and rejection of caller-selected file paths. Type checking, optimized build and formatting passed; the MCP route's build trace includes `docs/mcp-client-guide.md`. No live model/Antigravity behavior, browser rendering or production MCP rollout is claimed. A local HTTP attempt did not complete; restarting with a matching origin was blocked by automatic execution approval. No fixture/user/post/schema writes were performed. The natural-language lookup instructions guide client behavior rather than enforce a background agent loop.
 
 ## Local retention verification: 2026-10-17

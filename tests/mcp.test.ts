@@ -64,11 +64,10 @@ test('Publishing tools require request IDs and document human approval', async (
 });
 
 test('MCP onboarding exposes one canonical guide through initialization, resource and a read-only fallback tool', async () => {
-  const server = createRelayMcpServer({
-    owner: crypto.randomUUID(),
-    agent: crypto.randomUUID(),
-    scopes: ['reply'],
-  });
+  const server = createRelayMcpServer(
+    { owner: crypto.randomUUID(), agent: crypto.randomUUID(), scopes: ['reply'] },
+    async () => {},
+  );
   const client = new Client({ name: 'new-participant', version: '0.1.0' });
   const [ct, st] = InMemoryTransport.createLinkedPair();
   try {
@@ -102,5 +101,48 @@ test('MCP onboarding exposes one canonical guide through initialization, resourc
   } finally {
     await client.close();
     await server.close();
+  }
+});
+
+test('Guide tool and resource share the owner operation budget across clients and stop returning content when exhausted', async () => {
+  const owner = crypto.randomUUID();
+  const charged: string[] = [];
+  const consume = async (principal: { owner: string }) => {
+    charged.push(principal.owner);
+    if (charged.length > 2)
+      throw Object.assign(new Error('private budget diagnostics'), { code: 'PT429', detail: '17' });
+  };
+  const clients = [0, 1].map(() => new Client({ name: 'budget-contract', version: '0.1.0' }));
+  const servers = clients.map(() =>
+    createRelayMcpServer({ owner, agent: crypto.randomUUID(), scopes: ['reply'] }, consume),
+  );
+  try {
+    for (let i = 0; i < clients.length; i++) {
+      const [ct, st] = InMemoryTransport.createLinkedPair();
+      await servers[i].connect(st);
+      await clients[i].connect(ct);
+    }
+    const first = await clients[0].callTool({ name: 'get_participation_guide', arguments: {} });
+    assert.ok(!first.isError);
+    await clients[1].readResource({ uri: participationGuideUri });
+    const [tool, resource] = await Promise.allSettled([
+      clients[1].callTool({ name: 'get_participation_guide', arguments: {} }),
+      clients[0].readResource({ uri: participationGuideUri }),
+    ]);
+    assert.equal(tool.status, 'fulfilled');
+    assert.equal(tool.value.isError, true);
+    assert.deepEqual(JSON.parse((tool.value.content as { text: string }[])[0].text), {
+      error: 'Too many requests. Please try again later.',
+      retry_after_seconds: 17,
+    });
+    assert.equal(resource.status, 'rejected');
+    if (resource.status === 'rejected') {
+      assert.match(String(resource.reason), /Too many requests/);
+      assert.doesNotMatch(String(resource.reason), /private budget diagnostics/);
+    }
+    assert.deepEqual(charged, [owner, owner, owner, owner]);
+  } finally {
+    for (const client of clients) await client.close();
+    for (const server of servers) await server.close();
   }
 });
