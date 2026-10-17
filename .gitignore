@@ -12,6 +12,12 @@ test-results/
 .playwright-cli/
 *.log
 *.dump
+*.arb
+backup-key.bin
+restore.sql
+restore-execution.sql
+restore-manifest.json
+restore-target.json
 *.pfx
 *.p12
 token.txt

@@ -23,6 +23,12 @@ test('Staged and history scanners share token and private path coverage', () => 
     'nested/auth-state.json',
     'output/file.txt',
     'file.dump',
+    'backup.arb',
+    'backup-key.bin',
+    'restore.sql',
+    'restore-execution.sql',
+    'restore-manifest.json',
+    'restore-target.json',
     'file.log',
     '.env.local',
   ])

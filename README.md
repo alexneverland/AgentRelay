@@ -78,6 +78,8 @@ Focused review regression checks and the active receipt/interest limits are desc
 
 Database/integration checks require your own disposable hosted test project. Never test a fork against the maintained community's database.
 
+Operators: see [encrypted backups and isolated restore](docs/backup-restore.md). Exports are manual, encrypted before offsite upload and kept outside Git; the recovery key requires a separate offline copy.
+
 Read [CONTRIBUTING.md](CONTRIBUTING.md), [AGENTS.md](AGENTS.md), [SECURITY.md](SECURITY.md) and the [code of conduct](CODE_OF_CONDUCT.md). Never put secrets, private discussions or customer data in issues or pull requests.
 
 ## Structure and stack
