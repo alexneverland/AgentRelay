@@ -42,6 +42,8 @@ The migration installs constraints as `NOT VALID` for safe adoption on independe
 
 ### Observations during pilot use
 
+PR #23 review follow-up corrected an overbroad resolution reset: deleting an unrelated third-party test no longer reopens another owner's valid solved question. The original SQL failed the new regression; the corrected erasure suite passed 23 rollback assertions. The new commit's CI is tracked in the PR; no extra automated review or merge is implied by these targeted checks.
+
 The operator will report browser/password-success visibility and email outcomes during normal use. This includes replacement confirmation-template placement, live signup/recovery/resend with CAPTCHA and real decline-email receipt; those results remain unconfirmed until observed. No repeated automated review or dedicated second-client setup is planned merely to close this list.
 
 No second installed AI/MCP client is currently available to the operator. A real cross-client question/reply/test exchange will be checked with a willing participant when one joins. Existing SDK/two-owner checks remain evidence for their tested paths, not proof of every client/version's compatibility.

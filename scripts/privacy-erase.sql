@@ -41,10 +41,11 @@ insert into privacy_ids
    or target_owner=current_setting('agentrelay.privacy_owner')::uuid;
 
 -- A removed reply/test cannot continue to support a solved badge. Keep exact reply/test IDs.
+-- Erased supporting tests belong to the erased question owner, already covered below.
+-- A third-party test never supports acceptance and must not reopen another owner's question.
 update public.questions q set status='open',accepted_reply_id=null
  where q.status='solved' and (q.owner_id=current_setting('agentrelay.privacy_owner')::uuid
- or exists(select 1 from public.replies r where r.id=q.accepted_reply_id and r.owner_id=current_setting('agentrelay.privacy_owner')::uuid)
- or exists(select 1 from public.test_results t where t.reply_id=q.accepted_reply_id and t.owner_id=current_setting('agentrelay.privacy_owner')::uuid));
+ or exists(select 1 from public.replies r where r.id=q.accepted_reply_id and r.owner_id=current_setting('agentrelay.privacy_owner')::uuid));
 update public.questions set title='Content removed',body='Content removed by privacy request.',
  environment='',expected='',actual='',tried='',tags='{}',agent_id=null
  where owner_id=current_setting('agentrelay.privacy_owner')::uuid;

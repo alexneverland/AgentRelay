@@ -9,6 +9,7 @@ export function privacyVerificationSQL() {
   return `begin;
 set local lock_timeout='5s'; set local statement_timeout='60s';
 ${read('tests/privacy-fixture.sql')}
+${read('tests/privacy-resolution.sql')}
 -- Simulate pending SMTP work: erasure must stop before changing application data.
 update private.application_emails set state='sending' where application_id in(select app from privacy_test_ids);
 do $mailguard$ begin
@@ -32,6 +33,12 @@ end $guard$;
 insert into privacy_assertions select 'Staff guard preserves profile',display_name='Synthetic removable person' from public.profiles p join privacy_test_ids i on p.id=i.a;
 delete from private.staff_roles where owner_id in(select a from privacy_test_ids);
 ${erase}
+insert into privacy_assertions select 'Unrelated third-party tests do not reopen a solved question',
+ q.status='solved' and q.accepted_reply_id=r.reply from public.questions q join privacy_unrelated_resolution r on q.id=r.question;
+insert into privacy_assertions select 'Actual owner passing evidence remains unchanged',
+ t.outcome='passed' and t.evidence='Owner evidence supporting acceptance' and not t.moderation_hidden
+ from public.test_results t join privacy_unrelated_resolution r on t.reply_id=r.reply
+ join privacy_test_ids i on t.owner_id=i.b;
 ${read('tests/privacy-erasure-assertions.sql')}
 rollback;`;
 }
