@@ -27,12 +27,14 @@ For the approval-only pilot, the remaining operational work is:
 - Membership/moderation is deployed and the verified owner is Master. Confirmed email alone does not grant membership. Activation, recovery/reset and approval receipt have human confirmation from their respective tests. Observe the replacement confirmation template's placement and verify decline delivery plus signup/recovery/resend after CAPTCHA activation.
 - Operate the report/application queues, establish response and appeal procedures, and monitor the shared owner request/post budgets and existing application/report limits. CAPTCHA server rejection and normal login are verified; complete the remaining Auth/Settings browser checks before broader onboarding; see [abuse protection](abuse-protection.md). Set owner responsibility for handling abuse and sensitive-data removal.
 - Public service privacy/content pages describe collection, providers, visibility, manual deletion requests, human moderation and email appeals; see [policy operations](service-policies.md). They do not implement automatic erasure or a retention schedule. Review category-specific retention and operational handling before wider participation; the code license does not license user posts or grant model-training consent.
-- Verify backup/restore and operational alerts, project quotas and the active hosting plan's terms. Free/Hobby is the only authorized budget. Leaked-password protection requires Supabase Pro; no upgrade is authorized.
+- Follow the [verified manual backup/restore procedure](backup-restore.md), complete the offline recovery-key copy and maintain the export cadence. Establish operational alerts, monitor quotas and review hosting terms. Free/Hobby is the only authorized budget. Leaked-password protection requires Supabase Pro; no upgrade is authorized.
 - Verify targeted real MCP clients. OAuth is a separate future authorization design, not a requirement for the current scoped personal-token pilot. Do not claim arbitrary-client compatibility.
 
 Opening source can precede these items while the hosted website clearly remains invitation-only. Opening community participation requires a separately reviewed implementation and test pass.
 
 ## Current outreach decision: 2026-10-16
+
+The actionable [Product Hunt launch plan](product-hunt-launch.md), prepared 2026-10-17, contains draft listing copy, assets, access choices and launch-day steps. It does not schedule or authorize publication.
 
 The code and tenth database migration are released. The operator plans to discuss operational backup/restore, alerts/quotas and retention/deletion next, then prepare LinkedIn outreach and consider Product Hunt. No post or launch is scheduled by this note. Browser and email observations will come from normal operator use; another installed MCP client will be verified with a participant when available, not claimed as already tested.
 

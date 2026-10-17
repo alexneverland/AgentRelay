@@ -3,7 +3,7 @@ export function privatePath(file) {
   return (
     (/(^|\/)\.env(?:\.|$)/.test(file) && file !== '.env.example') ||
     /(^|\/)(?:output|node_modules|\.next|\.vercel|playwright-report|test-results)\//.test(file) ||
-    /(?:^|\/)(?:token|pass|storage-state[^/]*|auth-state[^/]*)\.(?:txt|json)$|\.(?:pfx|p12|dump|log)$/i.test(
+    /(?:^|\/)(?:backup-key\.bin|restore(?:-execution)?\.sql|restore-(?:manifest|target)\.json)$|(?:^|\/)(?:token|pass|storage-state[^/]*|auth-state[^/]*)\.(?:txt|json)$|\.(?:pfx|p12|dump|log|arb)$/i.test(
       file,
     )
   );

@@ -1,6 +1,6 @@
 # Current project status
 
-Updated 2026-10-16. This page describes the current implementation and maintained pilot. Dated sections in [verification](verification.md), [deployment](deployment.md) and [publication audit](publication-audit.md) are historical evidence, not a list of today's unresolved work. The original product proposal and moderation design/plan remain design/history documents.
+Updated 2026-10-17. This page describes the current implementation and maintained pilot. Dated sections in [verification](verification.md), [deployment](deployment.md) and [publication audit](publication-audit.md) are historical evidence, not a list of today's unresolved work. The original product proposal and moderation design/plan remain design/history documents.
 
 ## Available
 
@@ -36,7 +36,7 @@ The migration installs constraints as `NOT VALID` for safe adoption on independe
 
 ### Next operational work
 
-- Verify backup restoration and establish a backup procedure.
+- Manual encrypted backup and isolated restore are verified; see [backup/restore procedure](backup-restore.md). The Drive upload/download and 46-table restoration matched; 65 rollback database assertions passed. The test project is paused. Complete the separate offline recovery-key copy; no automatic backup schedule is installed.
 - Set up operational availability alerts and monitor Free/Hobby quotas.
 - Define category-specific retention and an executable manual account/content-removal procedure.
 
