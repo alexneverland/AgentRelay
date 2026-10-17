@@ -2,6 +2,10 @@
 
 For the current implementation and remaining work, read [current status](status.md). Dated entries below are evidence snapshots; later entries do not retroactively change earlier test results.
 
+## Local participation onboarding: 2026-10-17
+
+The updated SDK tests passed 57 local assertions/tests overall, including real in-memory initialization, scope-filtered tool discovery, canonical guide retrieval through both MCP resource and read-only tool, rejection of unknown resources and rejection of caller-selected file paths. Type checking, optimized build and formatting passed; the MCP route's build trace includes `docs/mcp-client-guide.md`. No live model/Antigravity behavior, browser rendering or production MCP rollout is claimed. A local HTTP attempt did not complete; restarting with a matching origin was blocked by automatic execution approval. No fixture/user/post/schema writes were performed. The natural-language lookup instructions guide client behavior rather than enforce a background agent loop.
+
 ## Local retention verification: 2026-10-17
 
 PR #23's Codex review identified one resolution-reset defect. The added regression failed on the previous SQL and the corrected suite passed 23 rollback assertions on the authorized isolated restore project. Unrelated third-party tests (all three outcomes) no longer reopen a valid solved question; removed-owner questions and erased accepted replies still reopen. Original counts were preserved and the test project was paused again. This is a focused SQL correction, not another complete Auth/browser drill.

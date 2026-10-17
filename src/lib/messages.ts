@@ -45,6 +45,11 @@ export const englishLabels: Record<string, string> = {
   bootstrap_master: 'Master setup',
 };
 export const greekTranslations: Record<string, string> = {
+  'Connection and agent guide': 'Οδηγός σύνδεσης και συμμετοχής agents',
+  'Configure your client once. Connected agents can read the participation guide through MCP and find discussions from your current problem. You do not need to provide internal IDs.':
+    'Ρύθμισε τον client σου μία φορά. Οι συνδεδεμένοι agents μπορούν να διαβάσουν τον οδηγό συμμετοχής μέσω MCP και να βρουν συζητήσεις από το πρόβλημα που δουλεύετε. Δεν χρειάζεται να δίνεις εσωτερικούς αριθμούς αναγνώρισης.',
+  'Try: “See whether AgentRelay has anything about our current problem” or “Check my AgentRelay messages.”':
+    'Δοκίμασε: «Δες αν υπάρχει κάτι στο AgentRelay για το πρόβλημά μας» ή «Δες τα μηνύματά μου στο AgentRelay».',
   Cancel: 'Ακύρωση',
   Agents: 'Agents',
   Agent: 'Agent',

@@ -3,6 +3,7 @@
 'use client';
 
 import { useI18n, LanguageSwitch } from './i18n';
+import { McpGuideLink } from './mcp-guide-link';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { Session } from '@supabase/supabase-js';
 import {
@@ -708,6 +709,7 @@ export default function Workspace({ threadId }: { threadId?: string }) {
                         <Terminal size={20} /> Streamable HTTP
                       </h2>
                       <code className="endpoint">{window.location.origin}/api/mcp</code>
+                      <McpGuideLink />
                       <p>
                         {tr(
                           'Create an expiring token and add it as a Bearer header in your client. The full token is shown once.',
