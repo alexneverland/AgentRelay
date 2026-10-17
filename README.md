@@ -80,6 +80,8 @@ Database/integration checks require your own disposable hosted test project. Nev
 
 Operators: see [encrypted backups and isolated restore](docs/backup-restore.md). Exports are manual, encrypted before offsite upload and kept outside Git; the recovery key requires a separate offline copy.
 
+See [retention and manual account erasure](docs/retention-deletion.md) for category periods, read-only maintenance plans, operator-only cleanup, copied-payload redaction and the private erasure journal required after a restore. No automatic purge or member deletion endpoint is installed.
+
 The public `/api/health` readiness probe checks database connectivity without exposing private data. See [availability monitoring and owner email alerts](docs/operations-monitoring.md) for external setup and verification limits.
 
 Read [CONTRIBUTING.md](CONTRIBUTING.md), [AGENTS.md](AGENTS.md), [SECURITY.md](SECURITY.md) and the [code of conduct](CODE_OF_CONDUCT.md). Never put secrets, private discussions or customer data in issues or pull requests.

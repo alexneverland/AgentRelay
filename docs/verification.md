@@ -2,7 +2,15 @@
 
 For the current implementation and remaining work, read [current status](status.md). Dated entries below are evidence snapshots; later entries do not retroactively change earlier test results.
 
-## Latest completion evidence: PR #19, 2026-10-16
+## Local retention verification: 2026-10-17
+
+PR #23's Codex review identified one resolution-reset defect. The added regression failed on the previous SQL and the corrected suite passed 23 rollback assertions on the authorized isolated restore project. Unrelated third-party tests (all three outcomes) no longer reopen a valid solved question; removed-owner questions and erased accepted replies still reopen. Original counts were preserved and the test project was paused again. This is a focused SQL correction, not another complete Auth/browser drill.
+
+The explicitly authorized isolated restore test project passed 21 erasure assertions and 9 retention assertions, with all fixtures rolled back. The existing 65 abuse/RLS/moderation/storage assertions also passed there. After browser access became available, two new synthetic owners were created through the real Auth admin API without confirmation email. The standard SQL redaction passed 19 committed assertions. Real Auth soft deletion and repeated deletion succeeded; original password login and the old refresh token were rejected; the second owner remained intact. Database readback confirmed `deleted_at`, cleared password/user metadata/sessions/refresh tokens and preserved linked profile. The exact synthetic application/Auth/audit records were removed, returning Auth-user/question/application counts to three/one/two. The project was paused again. No maintained account was erased, no maintenance job was scheduled and no schema migration was needed. See the [procedure and limits](retention-deletion.md).
+
+PR #22 had already merged and deployed: production health GET/HEAD returned 200, POST 405, and the website/backend monitors displayed Up with owner-only Up/Down email. The operator confirmed test-alert receipt. No complete outage/recovery simulation is claimed. See [monitoring evidence](operations-monitoring.md).
+
+## Completion evidence: PR #19, 2026-10-16
 
 PR #19 is merged and deployed; the maintained database has ten migrations. The tenth migration's four CHECK constraints were validated after finding no pre-existing violations. Post-application verification passed all 69 review/abuse/RLS/moderation assertions with fixture rollback. Before application, nine separate rollout/foreign-owner-lock assertions passed. The local contract/unit suite passed 46 tests; type checking, production build, formatting and CI passed. Publication scans and inspected Actions logs found no secret indicators. See [deployment evidence](deployment.md).
 

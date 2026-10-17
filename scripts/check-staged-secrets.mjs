@@ -11,6 +11,7 @@ const known = [
   process.env.SUPABASE_TEST_SECRET_KEY,
   process.env.SMTP_PASSWORD,
   process.env.AGENTRELAY_MCP_TOKEN,
+  process.env.AGENTRELAY_AUTH_ADMIN_KEY,
 ].filter(Boolean);
 if (process.env.DATABASE_URL) {
   const password = decodeURIComponent(new URL(process.env.DATABASE_URL).password);

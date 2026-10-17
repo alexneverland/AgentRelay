@@ -5,6 +5,7 @@ import { AppError, hash, type Principal } from './auth';
 import { requireStaff } from './access';
 import type { StaffCapability } from './staff-policy';
 import type { ContentKind, StaffActor } from './community-types';
+import { retainedResult } from './receipt-result';
 
 export function requireRow<T>(rows: readonly T[]): NonNullable<T> {
   if (!rows[0]) throw new AppError(404, 'This record is unavailable.');
@@ -32,7 +33,7 @@ export async function withRequest(
     if (old) {
       if (old.fingerprint !== fingerprint)
         throw new AppError(409, 'This request_id was already used with different content.');
-      return old.result;
+      return retainedResult(old.result);
     }
     const result = await work(db, actor);
     await db`insert into private.community_receipts(owner_id,request_id,fingerprint,result) values(${p.owner},${data.request_id},${fingerprint},${db.json(result as never)})`;
