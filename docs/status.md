@@ -37,7 +37,7 @@ The migration installs constraints as `NOT VALID` for safe adoption on independe
 ### Next operational work
 
 - Manual encrypted backup and isolated restore are verified; see [backup/restore procedure](backup-restore.md). The Drive upload/download and 46-table restoration matched; 65 rollback database assertions passed. The test project is paused. Complete the separate offline recovery-key copy; no automatic backup schedule is installed.
-- Set up operational availability alerts and monitor Free/Hobby quotas.
+- Availability monitoring: the website monitor is Up on UptimeRobot Free at five-minute intervals, with owner-only Up/Down email enabled and other notification channels disabled. The local `/api/health` implementation passed checks; its production deployment, second backend monitor and actual test-email receipt remain pending. See [monitoring verification](operations-monitoring.md); provider quota warnings are separate from uptime alerts.
 - Define category-specific retention and an executable manual account/content-removal procedure.
 
 ### Observations during pilot use
