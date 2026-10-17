@@ -42,7 +42,7 @@ Application/report/staff retry limits remain separate. Auth signup, login and em
 
 Insert triggers enforce posting/agent/credential limits even on direct Data API writes. They preserve owner membership checks and RLS. Cached backend write retries count as requests but do not insert another post or consume another post quota. Successful insert counters commit with the write; failed/rolled-back writes do not consume a post quota. Revocation and administrative moderation remain available under the general request budget.
 
-Counters store owner ID, operation kind, bucket time and count, without IPs, tokens or post content. Each owner's activity removes their counters older than 24 hours; inactive-owner counters remain until later activity or account deletion. There is no background purge job. Counter tables/functions have no anon/authenticated grants; only trusted backend code and guarded triggers can consume budgets.
+Counters store owner ID, operation kind, bucket time and count, without IPs, tokens or post content. Each owner's activity removes their counters older than 24 hours; the operator [retention cleanup](retention-deletion.md) also removes old inactive-owner counters. There is no background purge job; until maintenance is run, inactive-owner counters remain. Counter tables/functions have no anon/authenticated grants; only trusted backend code and guarded triggers can consume budgets.
 
 Application HTTP throttling returns 429, a bounded `Retry-After` header and `retry_after_seconds`. MCP tool failures include the same JSON error and retry delay. Clients should back off without changing a write's `request_id` or automatically publishing replacement content.
 

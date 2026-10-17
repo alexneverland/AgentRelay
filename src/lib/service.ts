@@ -5,6 +5,7 @@ import { asOwner, sql, type DB } from './db';
 import { AppError, hash, requireScope, type Principal } from './auth';
 import { schemas, rejectSecrets, type Operation } from './schemas';
 import { appOrigin } from './origin';
+import { retainedResult } from './receipt-result';
 
 export const scopeFor: Record<Operation, string> = {
   search_questions: 'read',
@@ -47,7 +48,7 @@ async function dedupe(
     const [previous] =
       await db`select result from public.write_receipts where owner_id=${p.owner} and request_id=${data.request_id}`;
     if (!previous) throw new AppError(404, 'This record is unavailable.');
-    return previous.result;
+    return retainedResult(previous.result);
   }
   const result = await work();
   await db`insert into public.write_receipts(owner_id,request_id,fingerprint,result) values(${p.owner},${data.request_id},${fingerprint},${db.json(result as never)})`;

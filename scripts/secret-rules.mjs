@@ -1,6 +1,7 @@
 // Shared by staged-content and publication-history checks. Never return matched values.
 export function privatePath(file) {
   return (
+    /(?:^|\/)privacy-journal[^/]*\.jsonl$/i.test(file) ||
     (/(^|\/)\.env(?:\.|$)/.test(file) && file !== '.env.example') ||
     /(^|\/)(?:output|node_modules|\.next|\.vercel|playwright-report|test-results)\//.test(file) ||
     /(?:^|\/)(?:backup-key\.bin|restore(?:-execution)?\.sql|restore-(?:manifest|target)\.json)$|(?:^|\/)(?:token|pass|storage-state[^/]*|auth-state[^/]*)\.(?:txt|json)$|\.(?:pfx|p12|dump|log|arb)$/i.test(

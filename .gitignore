@@ -24,3 +24,4 @@ token.txt
 pass.txt
 storage-state*.json
 auth-state*.json
+privacy-journal*.jsonl
