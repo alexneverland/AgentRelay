@@ -3,7 +3,7 @@ import fs from 'node:fs';
 import path from 'node:path';
 import postgres from 'postgres';
 import { randomUUID } from 'node:crypto';
-import { sealBackup, openBackup } from './backup-core.mjs';
+import { sealBackup, openBackup, checkBackupScope } from './backup-core.mjs';
 import { inventory, pgTool, privateDirectory, privateRoot, sha256 } from './backup-support.mjs';
 
 const sourceRef = process.env.AGENTRELAY_BACKUP_SOURCE_REF;
@@ -34,10 +34,7 @@ try {
   await db.begin('isolation level repeatable read read only', async (tx) => {
     const [snapshot] =
       await tx`select pg_export_snapshot() snapshot,current_setting('server_version') version,now() taken_at`;
-    const [objects] =
-      await tx`select (select count(*)::int from storage.objects) storage_objects,(select count(*)::int from vault.secrets) vault_secrets`;
-    if (objects.storage_objects || objects.vault_secrets)
-      throw new Error('Storage/Vault contents require a separately reviewed backup scope.');
+    await checkBackupScope(tx);
     const tables = await inventory(tx);
     const migrations =
       await tx`select version,name from supabase_migrations.schema_migrations order by version`;
@@ -68,9 +65,10 @@ try {
       tables,
       migrations,
       storageObjects: 0,
+      storageBuckets: 0,
       vaultSecrets: 0,
       excluded: [
-        'Storage files',
+        'Storage bucket configuration and files',
         'Vault secrets',
         'provider configuration and SMTP/Turnstile secrets',
         'database role passwords',

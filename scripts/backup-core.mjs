@@ -2,6 +2,17 @@
 import { createCipheriv, createDecipheriv, randomBytes } from 'node:crypto';
 const magic = Buffer.from('AGENTRELAY-BACKUP-1\n');
 
+export async function checkBackupScope(db) {
+  const [scope] = await db`select (select count(*)::int from storage.objects) storage_objects,
+    (select count(*)::int from storage.buckets) storage_buckets,
+    (select count(*)::int from vault.secrets) vault_secrets`;
+  if (scope.storage_objects || scope.storage_buckets || scope.vault_secrets)
+    throw new Error(
+      'Storage buckets/objects or Vault secrets require a separately reviewed backup scope.',
+    );
+  return scope;
+}
+
 export function sealBackup(payload, key) {
   if (key.length !== 32) throw new Error('A 32-byte backup key is required.');
   const iv = randomBytes(12);

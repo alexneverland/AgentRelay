@@ -6,7 +6,7 @@ Manual logical exports use hosted Supabase and private encrypted storage in the 
 
 Each `.arb` file contains an AES-256-GCM authenticated envelope holding a custom PostgreSQL archive and manifest. An exported repeatable-read snapshot supplies both the archive and row counts/fingerprints. Included: `public`, `private`, Auth data and Supabase migration history. Backups contain private posts, password hashes and token/session material; keep sharing owner-only, even with encryption.
 
-Excluded: Storage file bytes, Vault secrets, database-role passwords, hosting environment, SMTP/Turnstile credentials and provider/dashboard configuration. The exporter refuses to proceed if Storage objects or Vault secrets exist; extend the procedure before adding those features. Keep provider configuration/credentials separately in the operator's password manager. Auth's managed definitions/internal migration version remain in the archive but are not replayed into the new managed Auth schema.
+Excluded: Storage bucket configuration/file bytes, Vault secrets, database-role passwords, hosting environment, SMTP/Turnstile credentials and provider/dashboard configuration. The exporter refuses to proceed if any Storage bucket (including an empty bucket), object or Vault secret exists; extend the procedure before adding those features. Keep provider configuration/credentials separately in the operator's password manager. Auth's managed definitions/internal migration version remain in the archive but are not replayed into the new managed Auth schema.
 
 ## Create a backup
 
@@ -20,7 +20,7 @@ $env:AGENTRELAY_BACKUP_SOURCE_REF = '<YOUR_SOURCE_PROJECT_REF>'
 npm run db:backup
 ```
 
-Initialization protects `%LOCALAPPDATA%\AgentRelay\Backups`, `BackupWork` and `Recovery` with current-user/SYSTEM ACLs. It creates a random 32-byte key only if absent; rerunning does not rotate it. Export uses verified TLS and session port 5432, even if the application URL uses transaction port 6543. Passwords pass to native tools through process environment, not arguments.
+Initialization replaces complete DACLs on `%LOCALAPPDATA%\AgentRelay` and its descendants with current-owner/SYSTEM-only full control, removes stale explicit/inherited entries and verifies each readback before creating a key. Reparse points are rejected. It creates a random 32-byte key only if absent; rerunning preserves an existing key's bytes while fixing its permissions. Export uses verified TLS and session port 5432, even if the application URL uses transaction port 6543. Passwords pass to native tools through process environment, not arguments.
 
 The command prints only encrypted-file metadata, SHA-256 and counts. Temporary plaintext archives are removed on normal success/failure. After interruption inspect `BackupWork` privately and remove exact temporary files. Native-tool errors stay in that directory and can contain sensitive values; never paste them into CI, issues or chat.
 
@@ -75,3 +75,7 @@ Repeat isolated restore verification after database/Auth upgrades or backup-scop
 The native restore runner was added for repeatability; the drill exercised its SQL procedure through the connector, not a native destination `psql` connection. Local encryption/target-guard tests are separate evidence. The operator confirmed receipt of the recovery-key copy on their Desktop; transfer to an offline medium still requires operator completion. Drive storage alone does not complete workstation-loss recovery.
 
 References: [Supabase backups](https://supabase.com/docs/guides/platform/backups), [Supabase backup/restore migration](https://supabase.com/docs/guides/platform/migrating-within-supabase/backup-restore), [PostgreSQL 17 pg_dump](https://www.postgresql.org/docs/17/app-pgdump.html).
+
+## Review follow-up: 2026-10-17
+
+A Windows regression first reproduced stale explicit grants surviving initialization. The corrected initializer replaces and verifies DACLs on existing directories/files, without requiring audit-policy privileges, and preserves an existing key across reruns. The Windows backup tests also run in a dedicated CI job; the Linux suite skips only that platform-specific assertion. Scope regressions cover empty buckets, object metadata and Vault secrets. A read-only maintained-project query confirmed all three counts were zero; no bucket or other database fixture was created. This follow-up does not constitute another restore drill or resolve the earlier workstation cleanup discrepancy.
