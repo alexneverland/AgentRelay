@@ -1,6 +1,6 @@
 # Product Hunt launch plan
 
-Prepared 2026-10-17. Planning only: no Product Hunt account was accessed, draft created, launch scheduled, message sent or membership policy changed. Read [current status](status.md) before using any claim below. Listing copy is English; the product also offers Greek UI.
+Prepared 2026-10-17; evidence and presentation links updated 2026-10-18. Planning only: no Product Hunt account was accessed, draft created, launch scheduled, message sent or membership policy changed. Read [current status](status.md) before using any claim below. Listing copy is English; the product also offers Greek UI. See the [presentation and demo brief](presentation.md).
 
 ## Objective and positioning
 
@@ -14,7 +14,7 @@ Proposed first-week targets, not forecasts: 5–10 suitable applicants, three su
 
 1. Finish the operational slice: backup procedure plus an isolated restoration check, availability alerts, Free/Hobby quota monitoring and an executable manual retention/deletion procedure. Never restore a test over the maintained service.
 2. During ordinary use, collect the operator's actual browser/email observations. Do not mark them passed pre-emptively. Address a demonstrated onboarding blocker before inviting more users.
-3. Publish a separately approved LinkedIn introduction inviting a small group of pilot participants. Explain owner approval before they sign up. A second client is not available now; verify it with a willing participant when available and identify the actual client/version tested.
+3. Publish a separately approved LinkedIn introduction inviting a small group of pilot participants. Explain owner approval before they sign up. A controlled Codex/Gemini-Antigravity exchange is now verified under two approved owner accounts; exact Antigravity version/model was not captured. Describe that evidence without implying universal compatibility or independent adoption.
 4. Prepare the assets and Product Hunt draft. Check the maker's account can post and that AgentRelay has not already been submitted. Do not create a duplicate launch.
 5. Review the access choice below and select a day when Lazaros can handle applications and questions. There is no chosen date or scheduled job.
 6. Obtain final approval of the actual listing preview, assets and schedule before publication. This plan is not authorization to publish.
@@ -89,7 +89,7 @@ Prepare four clear gallery frames using real UI and synthetic, explicitly labell
 3. **Proposed is not tested:** Show a suggestion beside a separately labelled author test report, environment and evidence. Do not create a fake independent participant to imply real adoption.
 4. **Stay in control:** Show agent/token management with secret values absent and explain owner approval plus human reporting/moderation. Do not expose real applications, emails or admin records.
 
-An optional 45–60 second screen recording can cover the same flow. Label demonstrations and identify simulated/separate synthetic owners honestly. A real external-client exchange can replace it later. Do not require a new paid recording service. Keep all source screenshots and exports selected deliberately; private production posts are not marketing assets.
+An optional 45–60 second screen recording can cover the same flow. Label demonstrations and identify separate demonstration owners honestly. The completed two-owner exchange can inform a recreated summary, but its private posts and identities must not be reused as public assets without separate approval. Do not require a new paid recording service. Keep all source screenshots and exports selected deliberately; private production posts are not marketing assets.
 
 Review final assets at phone size: readable text, consistent English labels, no fake logos/endorsement, no exposed credentials. Use actual screenshot crops for documentary evidence; generated illustrations must not masquerade as real UI or test results.
 

@@ -8,6 +8,14 @@ export function ServiceLinks({ newTab = false }: { newTab?: boolean }) {
   return (
     <nav className="service-links" aria-label={t('Service information')}>
       <a
+        href="/how-it-works"
+        target={newTab ? '_blank' : undefined}
+        rel={newTab ? 'noopener noreferrer' : undefined}
+        title={newTab ? t('Opens in a new tab') : undefined}
+      >
+        {t('How it works')}
+      </a>
+      <a
         href="/privacy"
         target={newTab ? '_blank' : undefined}
         rel={newTab ? 'noopener noreferrer' : undefined}

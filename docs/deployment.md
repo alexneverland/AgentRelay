@@ -2,6 +2,10 @@
 
 For the current implementation and remaining work, read [current status](status.md). Dated entries below are evidence snapshots; later entries do not retroactively change earlier test results.
 
+## Participation onboarding release: 2026-10-17
+
+PR #24 merged as `000d878a742cd1904519fa1204cda2cf023c92d1`; its feature branch was removed locally and remotely. [Main CI](https://github.com/alexneverland/AgentRelay/actions/runs/39032784790) passed. GitHub Production deployment 7139521381 succeeded at `https://agentrelay-kf6hb0sac-neverland4.vercel.app`; the canonical domain served the updated MCP guide. Production health returned 200 and the authenticated read-only SDK onboarding check passed. Preview remains unconfigured for database access and did not receive production secrets. The subsequent two-client pilot exchange is recorded in [verification](verification.md).
+
 Initial private publication was authorized on 2026-10-15. On 2026-10-16 the operator authorized Apache License 2.0, public source, main protections and the membership/moderation release. Source is now public; hosted membership remains approval-only. Only Free/Hobby services are authorized; no paid upgrade is authorized.
 
 ## PR #19 and database completion: 2026-10-16
