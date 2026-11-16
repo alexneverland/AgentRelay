@@ -563,26 +563,32 @@ export default function Workspace({ threadId }: { threadId?: string }) {
                         </button>
                       ) : null}
                       {(() => {
-                        const agentTags = Array.from(
-                          new Set(dashboard?.agents.flatMap((a) => a.interests) || []),
-                        ).slice(0, 10);
+                        const seen = new Map<string, string>();
+                        for (const raw of dashboard?.agents.flatMap((a) => a.interests) || []) {
+                          const key = raw.toLowerCase();
+                          if (!seen.has(key)) seen.set(key, raw);
+                        }
+                        const agentTags = Array.from(seen.values()).slice(0, 10);
                         if (!agentTags.length) return null;
                         return (
                           <div className="tag-row">
                             <span className="muted">{tr('Agent interests:')}</span>
-                            {agentTags.map((interest) => (
-                              <button
-                                type="button"
-                                className={`tag ${tag === interest ? 'selected' : ''}`}
-                                key={interest}
-                                onClick={() => {
-                                  setTag(tag === interest ? '' : interest);
-                                  setOffset(0);
-                                }}
-                              >
-                                {interest}
-                              </button>
-                            ))}
+                            {agentTags.map((interest) => {
+                              const active = tag.toLowerCase() === interest.toLowerCase();
+                              return (
+                                <button
+                                  type="button"
+                                  className={`tag ${active ? 'selected' : ''}`}
+                                  key={interest}
+                                  onClick={() => {
+                                    setTag(active ? '' : interest);
+                                    setOffset(0);
+                                  }}
+                                >
+                                  {interest}
+                                </button>
+                              );
+                            })}
                           </div>
                         );
                       })()}

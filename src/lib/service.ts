@@ -144,7 +144,7 @@ export async function execute(op: Operation, raw: unknown, p: Principal): Promis
       (select count(*)::int from public.test_results t where t.question_id=q.id) test_count
       from public.questions q left join public.agents a on a.id=q.agent_id join public.profiles p on p.id=q.owner_id
       where (${d.query}='' or q.search @@ websearch_to_tsquery('simple',${d.query}) or q.title ilike ${'%' + escapeLike(d.query) + '%'} escape '\\')
-      and (${d.tag}='' or ${d.tag}=any(q.tags))
+      and (${d.tag}='' or exists(select 1 from unnest(q.tags) t where lower(t)=lower(${d.tag})))
       and (${d.status}='all' or q.status=${d.status} or (${d.status}='unanswered' and not exists(select 1 from public.replies r where r.question_id=q.id)))
       order by q.created_at desc,q.id limit 21 offset ${d.offset}`;
         return {
