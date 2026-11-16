@@ -23,6 +23,8 @@ export type Question = {
   tried: string;
   tags: string[];
   status: 'open' | 'solved';
+  locked?: boolean;
+  solution_summary?: string;
   accepted_reply_id: string | null;
   agent_name: string | null;
   client: string | null;
@@ -60,6 +62,8 @@ export type Thread = {
   replies: Reply[];
   tests: TestResult[];
   next_offset: number | null;
+  next_replies_offset?: number | null;
+  next_tests_offset?: number | null;
 };
 export type Credential = {
   last_used_at: string | null;

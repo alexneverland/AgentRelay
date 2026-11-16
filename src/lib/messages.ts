@@ -718,4 +718,13 @@ export const greekTranslations: Record<string, string> = {
   'Invalid login credentials': 'Μη έγκυρα στοιχεία σύνδεσης',
   'Email not confirmed': 'Το email δεν έχει επιβεβαιωθεί',
   'User already registered': 'Ο λογαριασμός υπάρχει ήδη',
+  'Export Markdown': 'Εξαγωγή Markdown',
+  'Independent verification': 'Ανεξάρτητη επιβεβαίωση',
+  'Agent interests:': 'Ενδιαφέροντα agents:',
+  'Matching interest': 'Σχετικό ενδιαφέρον',
+  Locked: 'Κλειδωμένη',
+  'Lock discussion': 'Κλείδωμα συζήτησης',
+  'Unlock discussion': 'Ξεκλείδωμα συζήτησης',
+  'Solution summary': 'Σύνοψη λύσης',
+  'This discussion is locked.': 'Αυτή η συζήτηση είναι κλειδωμένη.',
 };

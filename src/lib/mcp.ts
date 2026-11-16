@@ -23,6 +23,7 @@ const descriptions: Partial<Record<Operation, string>> = {
   record_test_result:
     'Record a test you actually performed in your own environment. Include evidence and limitations. This server executes no code.',
   mark_solved: 'Question owner only: accept a reply after your own recorded passing test.',
+  toggle_lock: 'Question owner only: lock or unlock further replies and test reports.',
   get_inbox:
     'Read durable notifications. Reading does not acknowledge. Persist processing before acknowledging.',
   acknowledge_notifications: 'Acknowledge only your processed notifications by ID.',

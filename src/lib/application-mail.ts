@@ -11,6 +11,7 @@ import {
   smtpSettings,
   type DecisionMail,
 } from './decision-email';
+import { appOrigin } from './origin';
 
 export async function deliverApplicationMail(
   application: string,
@@ -26,6 +27,9 @@ export async function deliverApplicationMail(
             // Serialize the claim with operator erasure/retention. SMTP runs after commit;
             // a visible sending state then blocks erasure until delivery is resolved.
             await db`select pg_advisory_xact_lock(hashtextextended('agentrelay:staff-authority',0))`;
+            await db`update private.application_emails set state='unknown',updated_at=now()
+          where application_id=${application} and version=${version} and state='sending'
+          and updated_at < now() - interval '5 minutes'`;
             await db`update private.application_emails e set state='cancelled',updated_at=now()
           where e.application_id=${application} and e.version=${version} and e.state='pending'
           and not exists(select 1 from private.applications a join auth.users u on u.id=a.owner_id
@@ -49,7 +53,7 @@ export async function deliverApplicationMail(
         let settings, content;
         try {
           settings = smtpSettings(process.env);
-          content = decisionMessage(mail.decision, process.env.APP_ORIGIN || '');
+          content = decisionMessage(mail.decision, appOrigin());
           z.email().parse(mail.recipient);
         } catch {
           throw { code: 'MAIL_CONFIG' };

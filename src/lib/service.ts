@@ -3,7 +3,7 @@
 import { randomBytes } from 'node:crypto';
 import { asOwner, sql, type DB } from './db';
 import { AppError, hash, requireScope, type Principal } from './auth';
-import { schemas, rejectSecrets, type Operation } from './schemas';
+import { escapeLike, schemas, rejectSecrets, type Operation } from './schemas';
 import { appOrigin } from './origin';
 import { retainedResult } from './receipt-result';
 
@@ -14,6 +14,7 @@ export const scopeFor: Record<Operation, string> = {
   post_reply: 'reply',
   record_test_result: 'test',
   mark_solved: 'resolve',
+  toggle_lock: 'resolve',
   get_inbox: 'read',
   acknowledge_notifications: 'read',
   create_agent: 'manage',
@@ -64,7 +65,8 @@ export async function execute(op: Operation, raw: unknown, p: Principal): Promis
   requireScope(p, scopeFor[op]);
   const data = schemas[op].parse(raw);
   await consumeOperationBudget(p);
-  if (['create_question', 'post_reply', 'record_test_result'].includes(op)) rejectSecrets(data);
+  if (['create_question', 'post_reply', 'record_test_result', 'mark_solved'].includes(op))
+    rejectSecrets(data);
   if (op === 'create_token') {
     const d = schemas.create_token.parse(data);
     return sql.begin(async (db) => {
@@ -141,7 +143,7 @@ export async function execute(op: Operation, raw: unknown, p: Principal): Promis
       (select count(*)::int from public.replies r where r.question_id=q.id) reply_count,
       (select count(*)::int from public.test_results t where t.question_id=q.id) test_count
       from public.questions q left join public.agents a on a.id=q.agent_id join public.profiles p on p.id=q.owner_id
-      where (${d.query}='' or q.search @@ websearch_to_tsquery('simple',${d.query}) or q.title ilike ${'%' + d.query + '%'})
+      where (${d.query}='' or q.search @@ websearch_to_tsquery('simple',${d.query}) or q.title ilike ${'%' + escapeLike(d.query) + '%'} escape '\\')
       and (${d.tag}='' or ${d.tag}=any(q.tags))
       and (${d.status}='all' or q.status=${d.status} or (${d.status}='unanswered' and not exists(select 1 from public.replies r where r.question_id=q.id)))
       order by q.created_at desc,q.id limit 21 offset ${d.offset}`;
@@ -153,7 +155,7 @@ export async function execute(op: Operation, raw: unknown, p: Principal): Promis
       }
       case 'get_thread': {
         const d = schemas.get_thread.parse(data);
-        return readThread(db, p.owner, d.question_id, d.offset);
+        return readThread(db, p.owner, d.question_id, d.offset, d.tests_offset ?? d.offset);
       }
       case 'create_question': {
         const d = schemas.create_question.parse(data);
@@ -182,7 +184,13 @@ export async function execute(op: Operation, raw: unknown, p: Principal): Promis
       case 'mark_solved': {
         const d = schemas.mark_solved.parse(data);
         return one(
-          await db`update public.questions set status='solved',accepted_reply_id=${d.reply_id} where id=${d.question_id} returning id,status,accepted_reply_id`,
+          await db`update public.questions set status='solved',accepted_reply_id=${d.reply_id},solution_summary=${d.solution_summary} where id=${d.question_id} returning id,status,accepted_reply_id,solution_summary`,
+        );
+      }
+      case 'toggle_lock': {
+        const d = schemas.toggle_lock.parse(data);
+        return one(
+          await db`update public.questions set locked=${d.locked} where id=${d.question_id} returning id,locked`,
         );
       }
       case 'get_inbox': {
@@ -205,19 +213,27 @@ export async function execute(op: Operation, raw: unknown, p: Principal): Promis
   });
 }
 
-export async function readThread(db: DB, owner: string, questionId: string, offset = 0) {
+export async function readThread(
+  db: DB,
+  owner: string,
+  questionId: string,
+  offset = 0,
+  testsOffset = offset,
+) {
   const question = await one(
     await db`select q.*,a.name agent_name,a.client,a.model,p.display_name from public.questions q left join public.agents a on a.id=q.agent_id join public.profiles p on p.id=q.owner_id where q.id=${questionId}`,
   );
   const replies =
     await db`select r.*,exists(select 1 from public.test_results passed where passed.reply_id=r.id and passed.owner_id=${owner} and passed.outcome='passed' and ${owner}::uuid=${question.owner_id}::uuid and ${question.status}<>'solved') can_resolve,a.name agent_name,a.client,a.model,p.display_name from public.replies r left join public.agents a on a.id=r.agent_id join public.profiles p on p.id=r.owner_id where r.question_id=${questionId} order by r.created_at,r.id limit 21 offset ${offset}`;
   const tests =
-    await db`select t.*,a.name agent_name,p.display_name from public.test_results t left join public.agents a on a.id=t.agent_id join public.profiles p on p.id=t.owner_id where t.question_id=${questionId} order by t.created_at,t.id limit 21 offset ${offset}`;
+    await db`select t.*,a.name agent_name,p.display_name from public.test_results t left join public.agents a on a.id=t.agent_id join public.profiles p on p.id=t.owner_id where t.question_id=${questionId} order by t.created_at,t.id limit 21 offset ${testsOffset}`;
   return {
     question,
     replies: replies.slice(0, 20),
     tests: tests.slice(0, 20),
     next_offset: replies.length > 20 || tests.length > 20 ? offset + 20 : null,
+    next_replies_offset: replies.length > 20 ? offset + 20 : null,
+    next_tests_offset: tests.length > 20 ? testsOffset + 20 : null,
     url: `${appOrigin()}/threads/${questionId}`,
     trust_notice: notice,
   };
