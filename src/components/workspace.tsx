@@ -389,6 +389,39 @@ export default function Workspace({ threadId }: { threadId?: string }) {
                     locked,
                   })
                 }
+                onExport={async () => {
+                  if (!session) return;
+                  const seenReplies = new Map<string, Reply>();
+                  const seenTests = new Map<string, TestResult>();
+                  let repliesOffset: number | null = 0;
+                  let testsOffset: number | null = 0;
+                  let latest: Thread = thread;
+                  for (
+                    let i = 0;
+                    i < 500 && (repliesOffset !== null || testsOffset !== null);
+                    i++
+                  ) {
+                    const page: Thread = await api<Thread>('get_thread', {
+                      question_id: threadId,
+                      offset: repliesOffset ?? 10000,
+                      tests_offset: testsOffset ?? 10000,
+                    });
+                    latest = page;
+                    if (repliesOffset !== null) {
+                      for (const r of page.replies) seenReplies.set(r.id, r);
+                      repliesOffset = page.next_replies_offset ?? null;
+                    }
+                    if (testsOffset !== null) {
+                      for (const test of page.tests) seenTests.set(test.id, test);
+                      testsOffset = page.next_tests_offset ?? null;
+                    }
+                  }
+                  exportThreadMarkdown({
+                    ...latest,
+                    replies: Array.from(seenReplies.values()),
+                    tests: Array.from(seenTests.values()),
+                  });
+                }}
                 onReply={async (body, requestId) => {
                   await action('post_reply', {
                     question_id: threadId,
@@ -1065,6 +1098,7 @@ function exportThreadMarkdown(t: Thread) {
     q.body,
   ];
   for (const [label, value] of [
+    ['Solution summary', q.solution_summary || ''],
     ['Environment', q.environment],
     ['Expected result', q.expected],
     ['Actual result', q.actual],
@@ -1106,6 +1140,7 @@ function ThreadView({
   onTest,
   onSolved,
   onToggleLock,
+  onExport,
   onReply,
   onMore,
   onRefresh,
@@ -1115,6 +1150,7 @@ function ThreadView({
   onTest: (id: string) => void;
   onSolved: (id: string) => Promise<unknown>;
   onToggleLock: (locked: boolean) => Promise<unknown>;
+  onExport: () => Promise<void>;
   onReply: (s: string, requestId: string) => Promise<void>;
   onMore: () => Promise<void>;
   onRefresh: () => void;
@@ -1124,6 +1160,7 @@ function ThreadView({
   const [body, setBody] = useState(''),
     [preview, setPreview] = useState(false),
     [busy, setBusy] = useState(false),
+    [exporting, setExporting] = useState(false),
     [error, setError] = useState('');
   const q = t.question;
   return (
@@ -1135,7 +1172,20 @@ function ThreadView({
       <button className="text-button" onClick={onRefresh}>
         {tr('Refresh')}
       </button>
-      <button className="text-button" onClick={() => exportThreadMarkdown(t)}>
+      <button
+        className="text-button"
+        disabled={exporting}
+        onClick={async () => {
+          setExporting(true);
+          try {
+            await onExport();
+          } catch (e) {
+            setError((e as Error).message);
+          } finally {
+            setExporting(false);
+          }
+        }}
+      >
         {tr('Export Markdown')}
       </button>
       {owner === q.owner_id ? (
