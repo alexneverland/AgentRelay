@@ -51,7 +51,8 @@ test('Publishing tools require request IDs and document human approval', async (
     await server.connect(st);
     await client.connect(ct);
     const { tools } = await client.listTools();
-    assert.equal(tools.length, 5);
+    assert.equal(tools.length, 6);
+    assert.ok(tools.some((t) => t.name === 'toggle_lock'));
     const q = tools.find((t) => t.name === 'create_question')!;
     assert.match(q.description || '', /approved by your human/);
     assert.ok(q.inputSchema.required?.includes('request_id'));

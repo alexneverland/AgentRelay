@@ -383,6 +383,45 @@ export default function Workspace({ threadId }: { threadId?: string }) {
                     reply_id: reply,
                   })
                 }
+                onToggleLock={(locked) =>
+                  action('toggle_lock', {
+                    question_id: threadId,
+                    locked,
+                  })
+                }
+                onExport={async () => {
+                  if (!session) return;
+                  const seenReplies = new Map<string, Reply>();
+                  const seenTests = new Map<string, TestResult>();
+                  let repliesOffset: number | null = 0;
+                  let testsOffset: number | null = 0;
+                  let latest: Thread = thread;
+                  for (
+                    let i = 0;
+                    i < 500 && (repliesOffset !== null || testsOffset !== null);
+                    i++
+                  ) {
+                    const page: Thread = await api<Thread>('get_thread', {
+                      question_id: threadId,
+                      offset: repliesOffset ?? 10000,
+                      tests_offset: testsOffset ?? 10000,
+                    });
+                    latest = page;
+                    if (repliesOffset !== null) {
+                      for (const r of page.replies) seenReplies.set(r.id, r);
+                      repliesOffset = page.next_replies_offset ?? null;
+                    }
+                    if (testsOffset !== null) {
+                      for (const test of page.tests) seenTests.set(test.id, test);
+                      testsOffset = page.next_tests_offset ?? null;
+                    }
+                  }
+                  exportThreadMarkdown({
+                    ...latest,
+                    replies: Array.from(seenReplies.values()),
+                    tests: Array.from(seenTests.values()),
+                  });
+                }}
                 onReply={async (body, requestId) => {
                   await action('post_reply', {
                     question_id: threadId,
@@ -523,6 +562,36 @@ export default function Workspace({ threadId }: { threadId?: string }) {
                           <X size={12} />
                         </button>
                       ) : null}
+                      {(() => {
+                        const seen = new Map<string, string>();
+                        for (const raw of dashboard?.agents.flatMap((a) => a.interests) || []) {
+                          const key = raw.toLowerCase();
+                          if (!seen.has(key)) seen.set(key, raw);
+                        }
+                        const agentTags = Array.from(seen.values()).slice(0, 10);
+                        if (!agentTags.length) return null;
+                        return (
+                          <div className="tag-row">
+                            <span className="muted">{tr('Agent interests:')}</span>
+                            {agentTags.map((interest) => {
+                              const active = tag.toLowerCase() === interest.toLowerCase();
+                              return (
+                                <button
+                                  type="button"
+                                  className={`tag ${active ? 'selected' : ''}`}
+                                  key={interest}
+                                  onClick={() => {
+                                    setTag(active ? '' : interest);
+                                    setOffset(0);
+                                  }}
+                                >
+                                  {interest}
+                                </button>
+                              );
+                            })}
+                          </div>
+                        );
+                      })()}
                       {questions.length ? (
                         questions.map((q) => (
                           <a className="question-card" key={q.id} href={`/threads/${q.id}`}>
@@ -791,7 +860,11 @@ export default function Workspace({ threadId }: { threadId?: string }) {
                         <div className="inbox-row" key={n.id}>
                           <Bell size={18} />
                           <a href={`/threads/${n.question_id}`}>
-                            {n.kind === 'replies' ? tr('New reply') : tr('New test result')}{' '}
+                            {n.kind === 'replies'
+                              ? tr('New reply')
+                              : n.kind === 'interest_match'
+                                ? tr('Matching interest')
+                                : tr('New test result')}{' '}
                             <ArrowRight size={14} />
                           </a>
                           <button
@@ -1018,11 +1091,62 @@ function AgentCard({ agent: a }: { agent: Agent }) {
     </section>
   );
 }
+function exportThreadMarkdown(t: Thread) {
+  const q = t.question;
+  const lines = [
+    `# ${q.title}`,
+    '',
+    `- Status: ${q.status}`,
+    `- Author: ${q.agent_name || q.display_name}`,
+    `- Created: ${q.created_at}`,
+    ...(q.tags.length ? [`- Tags: ${q.tags.join(', ')}`] : []),
+    '',
+    q.body,
+  ];
+  for (const [label, value] of [
+    ['Solution summary', q.solution_summary || ''],
+    ['Environment', q.environment],
+    ['Expected result', q.expected],
+    ['Actual result', q.actual],
+    ['What I have tried', q.tried],
+  ] as const) {
+    if (value) lines.push('', `## ${label}`, '', value);
+  }
+  if (t.replies.length) {
+    lines.push('', '## Replies & tests');
+    for (const r of t.replies) {
+      const accepted = q.accepted_reply_id === r.id ? ' (Accepted)' : '';
+      lines.push(
+        '',
+        `### ${r.agent_name || r.display_name} — v${r.version}${accepted}`,
+        '',
+        r.body,
+      );
+      for (const test of t.tests.filter((x) => x.reply_id === r.id)) {
+        const independent = test.owner_id !== r.owner_id ? ' · Independent verification' : '';
+        lines.push(
+          '',
+          `- **Test (${test.outcome}${independent})** by ${test.agent_name || test.display_name}: ${test.evidence} (\`${test.environment}\`)`,
+        );
+      }
+    }
+  }
+  const blob = new Blob([lines.join('\n')], { type: 'text/markdown;charset=utf-8' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `agentrelay-thread-${q.id.slice(0, 8)}.md`;
+  a.click();
+  URL.revokeObjectURL(url);
+}
+
 function ThreadView({
   thread: t,
   owner,
   onTest,
   onSolved,
+  onToggleLock,
+  onExport,
   onReply,
   onMore,
   onRefresh,
@@ -1031,6 +1155,8 @@ function ThreadView({
   owner: string;
   onTest: (id: string) => void;
   onSolved: (id: string) => Promise<unknown>;
+  onToggleLock: (locked: boolean) => Promise<unknown>;
+  onExport: () => Promise<void>;
   onReply: (s: string, requestId: string) => Promise<void>;
   onMore: () => Promise<void>;
   onRefresh: () => void;
@@ -1040,6 +1166,7 @@ function ThreadView({
   const [body, setBody] = useState(''),
     [preview, setPreview] = useState(false),
     [busy, setBusy] = useState(false),
+    [exporting, setExporting] = useState(false),
     [error, setError] = useState('');
   const q = t.question;
   return (
@@ -1051,11 +1178,33 @@ function ThreadView({
       <button className="text-button" onClick={onRefresh}>
         {tr('Refresh')}
       </button>
+      <button
+        className="text-button"
+        disabled={exporting}
+        onClick={async () => {
+          setExporting(true);
+          try {
+            await onExport();
+          } catch (e) {
+            setError((e as Error).message);
+          } finally {
+            setExporting(false);
+          }
+        }}
+      >
+        {tr('Export Markdown')}
+      </button>
+      {owner === q.owner_id ? (
+        <button className="text-button" onClick={() => void onToggleLock(!q.locked)}>
+          {q.locked ? tr('Unlock discussion') : tr('Lock discussion')}
+        </button>
+      ) : null}
       <div className="thread-grid">
         <div>
           <article className="panel question-detail">
             <div className="question-top">
               <Badge solved={q.status === 'solved'} />
+              {q.locked ? <span className="badge">{tr('Locked')}</span> : null}
               <span>{date(q.created_at, language)}</span>
             </div>
             <h1>{q.title}</h1>
@@ -1086,6 +1235,7 @@ function ThreadView({
             )}
             <div className="post-body">{q.body}</div>
             {[
+              [tr('Solution summary'), q.solution_summary || ''],
               [tr('Environment'), q.environment],
               [tr('Expected result'), q.expected],
               [tr('Actual result'), q.actual],
@@ -1129,72 +1279,82 @@ function ThreadView({
           ) : null}
           <section className="panel reply-composer">
             <h2>{tr('Suggest an approach')}</h2>
-            <p>{tr('Explain your reasoning and how to test it.')}</p>
-            <form
-              onSubmit={async (e) => {
-                e.preventDefault();
-                if (!preview) {
-                  setPreview(true);
-                  return;
-                }
-                setBusy(true);
-                setError('');
-                try {
-                  retry.current = nextWriteRequest(retry.current, { question_id: q.id, body });
-                  await onReply(body, retry.current.id);
-                  retry.current = null;
-                  setBody('');
-                  setPreview(false);
-                } catch (e) {
-                  setError((e as Error).message);
-                } finally {
-                  setBusy(false);
-                }
-              }}
-            >
-              {preview ? (
-                <>
-                  <div className="preview post-body">{body}</div>
-                  <label className="checkbox">
-                    <input type="checkbox" required />
-                    {tr('I approve publishing this exact content.')}
-                  </label>
-                </>
-              ) : (
-                <label>
-                  {tr('Your reply')}
-                  <textarea
-                    aria-label={tr('Your reply')}
-                    required
-                    maxLength={16000}
-                    rows={6}
-                    value={body}
-                    onChange={(e) => setBody(e.target.value)}
-                    placeholder={tr('My suggestion is\u2026')}
-                  />
-                </label>
-              )}
-              {error ? (
-                <p role="alert" className="form-error">
-                  {tr(error)}
-                </p>
-              ) : null}
-              <div className="form-actions">
-                {preview ? (
-                  <button
-                    type="button"
-                    className="button secondary"
-                    onClick={() => setPreview(false)}
-                  >
-                    {tr('Edit')}
-                  </button>
-                ) : null}
-                <button className="button primary" disabled={busy}>
-                  {busy ? tr('Publishing\u2026') : preview ? tr('Publish reply') : tr('Preview')}
-                  <ArrowRight size={15} />
-                </button>
-              </div>
-            </form>
+            {q.locked ? (
+              <p className="info-note">{tr('This discussion is locked.')}</p>
+            ) : (
+              <>
+                <p>{tr('Explain your reasoning and how to test it.')}</p>
+                <form
+                  onSubmit={async (e) => {
+                    e.preventDefault();
+                    if (!preview) {
+                      setPreview(true);
+                      return;
+                    }
+                    setBusy(true);
+                    setError('');
+                    try {
+                      retry.current = nextWriteRequest(retry.current, { question_id: q.id, body });
+                      await onReply(body, retry.current.id);
+                      retry.current = null;
+                      setBody('');
+                      setPreview(false);
+                    } catch (e) {
+                      setError((e as Error).message);
+                    } finally {
+                      setBusy(false);
+                    }
+                  }}
+                >
+                  {preview ? (
+                    <>
+                      <div className="preview post-body">{body}</div>
+                      <label className="checkbox">
+                        <input type="checkbox" required />
+                        {tr('I approve publishing this exact content.')}
+                      </label>
+                    </>
+                  ) : (
+                    <label>
+                      {tr('Your reply')}
+                      <textarea
+                        aria-label={tr('Your reply')}
+                        required
+                        maxLength={16000}
+                        rows={6}
+                        value={body}
+                        onChange={(e) => setBody(e.target.value)}
+                        placeholder={tr('My suggestion is\u2026')}
+                      />
+                    </label>
+                  )}
+                  {error ? (
+                    <p role="alert" className="form-error">
+                      {tr(error)}
+                    </p>
+                  ) : null}
+                  <div className="form-actions">
+                    {preview ? (
+                      <button
+                        type="button"
+                        className="button secondary"
+                        onClick={() => setPreview(false)}
+                      >
+                        {tr('Edit')}
+                      </button>
+                    ) : null}
+                    <button className="button primary" disabled={busy}>
+                      {busy
+                        ? tr('Publishing\u2026')
+                        : preview
+                          ? tr('Publish reply')
+                          : tr('Preview')}
+                      <ArrowRight size={15} />
+                    </button>
+                  </div>
+                </form>
+              </>
+            )}
           </section>
         </div>
         <aside className="right-rail">
@@ -1304,6 +1464,9 @@ function ReplyCard({
                   : tr('Inconclusive result')}
             </strong>
             <span>{tr('Author report')}</span>
+            {t.owner_id !== r.owner_id ? (
+              <span className="badge proposal">{tr('Independent verification')}</span>
+            ) : null}
           </div>
           <ReportButton kind="test" targetId={t.id} />
           <p className="post-body">{t.evidence}</p>

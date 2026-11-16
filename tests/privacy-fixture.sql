@@ -25,7 +25,7 @@ insert into public.replies(id,question_id,owner_id,request_id,body)
 insert into public.test_results(question_id,reply_id,owner_id,request_id,outcome,environment,evidence)
  select qa,rb,a,gen_random_uuid(),'passed','SQL','Private evidence' from privacy_test_ids union all
  select qb,ra,b,gen_random_uuid(),'passed','SQL','Keep this evidence intact' from privacy_test_ids;
-update public.questions q set status='solved',accepted_reply_id=case when q.id=i.qa then i.rb else i.ra end
+update public.questions q set status='solved',accepted_reply_id=case when q.id=i.qa then i.rb else i.ra end,solution_summary='Private solution summary'
  from privacy_test_ids i where q.id in(i.qa,i.qb);
 insert into private.applications(id,owner_id,display_name,use_case,client,github_url,status,updated_at)
  select app,a,'Synthetic private applicant','Private technical application context','SQL','https://github.com/synthetic','approved',now()-interval '91 days' from privacy_test_ids;

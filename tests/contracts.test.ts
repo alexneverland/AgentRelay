@@ -1,6 +1,6 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { schemas, rejectSecrets } from '../src/lib/schemas';
+import { escapeLike, schemas, rejectSecrets } from '../src/lib/schemas';
 import { checkOrigin, requireScope, AppError } from '../src/lib/auth';
 import { failure, limitedJson } from '../src/lib/http';
 
@@ -38,11 +38,18 @@ test('Potential private keys and familiar credential formats are rejected', () =
   for (const body of [
     '-----BEGIN RSA PRIVATE KEY-----',
     'ghp_' + '1'.repeat(30),
+    'ar_' + 'a'.repeat(64),
     'api_key=supersecretcredentialvalue',
   ])
     assert.throws(() => rejectSecrets({ body }), /Potential secret detected/);
   assert.doesNotThrow(() =>
     rejectSecrets({ body: 'Use chunks of 1,000 rows and measure peak memory.' }),
+  );
+  assert.equal(escapeLike('100%_member\\id'), '100\\%\\_member\\\\id');
+  assert.equal(
+    schemas.get_thread.parse({ question_id: crypto.randomUUID(), offset: 0, tests_offset: 20 })
+      .tests_offset,
+    20,
   );
 });
 test('Scope gates deny writes from read-only principals', () => {

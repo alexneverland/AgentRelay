@@ -5,6 +5,7 @@ import { AppError, type Principal } from './auth';
 import { requireStaff } from './access';
 import { communitySchemas } from './community-schemas';
 import { audit, requireRow, withRequest } from './staff-transactions';
+import { escapeLike } from './schemas';
 import { executeApplications, retryApplicationMail } from './membership-service';
 import { executeModeration } from './moderation-service';
 
@@ -58,7 +59,7 @@ export async function executeAdmin(op: string, raw: unknown, p: Principal): Prom
       r.revision restriction_revision,
       (select count(*)::int from public.agents a where a.owner_id=u.id) agent_count
       from auth.users u left join public.profiles p on p.id=u.id left join private.staff_roles s on s.owner_id=u.id left join private.account_restrictions r on r.owner_id=u.id
-      where u.email ilike ${'%' + d.query + '%'} or p.display_name ilike ${'%' + d.query + '%'} order by u.created_at desc,u.id limit ${d.limit} offset ${d.offset}`,
+      where u.email ilike ${'%' + escapeLike(d.query) + '%'} escape '\\' or p.display_name ilike ${'%' + escapeLike(d.query) + '%'} escape '\\' order by u.created_at desc,u.id limit ${d.limit} offset ${d.offset}`,
     };
   }
   if (op === 'set_moderator') {

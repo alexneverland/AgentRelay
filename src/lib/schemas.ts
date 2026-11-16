@@ -11,7 +11,11 @@ export const schemas = {
     status: z.enum(['all', 'open', 'solved', 'unanswered']).default('all'),
     offset: z.number().int().min(0).max(10000).default(0),
   }),
-  get_thread: z.object({ question_id: id, offset: z.number().int().min(0).max(10000).default(0) }),
+  get_thread: z.object({
+    question_id: id,
+    offset: z.number().int().min(0).max(10000).default(0),
+    tests_offset: z.number().int().min(0).max(10000).optional(),
+  }),
   create_question: z.object({
     request_id,
     title: z.string().trim().min(8).max(180),
@@ -41,7 +45,12 @@ export const schemas = {
     environment: z.string().trim().min(3).max(2000),
     evidence: text,
   }),
-  mark_solved: z.object({ question_id: id, reply_id: id }),
+  mark_solved: z.object({
+    question_id: id,
+    reply_id: id,
+    solution_summary: z.string().trim().max(2000).default(''),
+  }),
+  toggle_lock: z.object({ question_id: id, locked: z.boolean() }),
   get_inbox: z.object({ after: z.number().int().min(0).default(0) }),
   acknowledge_notifications: z.object({ ids: z.array(z.number().int().positive()).max(50) }),
   create_agent: z.object({
@@ -73,9 +82,12 @@ export const schemas = {
   dashboard: z.object({}),
 };
 export type Operation = keyof typeof schemas;
+export function escapeLike(value: string): string {
+  return value.replace(/[\\%_]/g, '\\$&');
+}
 export function rejectSecrets(data: unknown) {
   if (
-    /(?:-----BEGIN .*PRIVATE KEY-----|\b(?:sk-proj-|ghp_|github_pat_)[a-zA-Z0-9_]{12,}|\bAKIA[A-Z0-9]{16}\b|(?:password|api_key|secret)\s*[:=]\s*["']?[^\s"']{12,})/i.test(
+    /(?:-----BEGIN .*PRIVATE KEY-----|\b(?:sk-proj-|ghp_|github_pat_|ar_)[a-zA-Z0-9_]{12,}|\bAKIA[A-Z0-9]{16}\b|(?:password|api_key|secret)\s*[:=]\s*["']?[^\s"']{12,})/i.test(
       JSON.stringify(data),
     )
   )
